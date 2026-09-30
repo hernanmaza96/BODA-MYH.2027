@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Invitación de boda de María y Hernán · 20 de febrero de 2027 · Urbana Lounge.">
+  <meta name="theme-color" content="#f8f0ed">
+  <title>María & Hernán · Nuestra boda</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&family=Allura&family=Cormorant+Garamond:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="page-loader" id="page-loader" aria-hidden="true"><span></span></div>
+
+  <!-- APERTURA / SOBRE -->
+  <div class="envelope-opening" id="envelope-opening" aria-label="Abrir invitación">
+    <div class="envelope-intro">
+      <p class="eyebrow">Nuestra boda</p>
+      <div class="opening-monogram">María <span>&amp;</span> Hernán</div>
+
+      <button class="opening-envelope" id="opening-envelope" type="button" aria-label="Abrir la invitación">
+        <span class="opening-envelope__body"></span>
+        <span class="opening-envelope__letter">
+          <strong>María &amp; Hernán</strong>
+        </span>
+        <span class="opening-envelope__flap"></span>
+        <span class="opening-envelope__seal">M H</span>
+      </button>
+
+      <p class="opening-hint">Tocá el sello para abrir la invitación</p>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <section class="hero" id="hero" aria-label="Portada de la invitación">
+    <div class="hero__sticky">
+      <div class="door-scene" aria-hidden="true">
+        <img src="img/izquierda.jpeg" alt="" class="door door-left" fetchpriority="high">
+        <img src="img/derecha.jpeg" alt="" class="door door-right" fetchpriority="high">
+        <div class="door-scene__veil"></div>
+      </div>
+      <div class="hero__grain" aria-hidden="true"></div>
+      <div class="door-overlay">
+        <span class="door-overlay__eyebrow">María &amp; Hernán</span>
+        <h1 class="door-overlay__title">Nuestra boda</h1>
+        <div class="hero-rule" aria-hidden="true"><span></span><i>♡</i><span></span></div>
+        <p class="door-overlay__date">20 · 02 · 2027</p>
+        <p class="door-overlay__subtitle">Una historia de amor que hoy abre un nuevo capítulo.</p>
+        <div class="scroll-indicator" aria-hidden="true">
+          <span>Deslizá para abrir</span>
+          <i></i>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NAV + MÚSICA -->
+  <nav class="floating-nav" id="floating-nav" aria-label="Navegación de la invitación">
+    <a href="#portada">Inicio</a>
+    <a href="#gran-dia">Nuestro día</a>
+    <a href="#vestimenta">Vestimenta</a>
+    <a href="#playlist">Playlist</a>
+    <a href="#ubicacion">Lugar</a>
+    <a href="#regalos">Regalos</a>
+    <a href="#confirmacion">Confirmar</a>
+  </nav>
+
+  <div class="music-player" id="music-player">
+    <audio id="wedding-audio" preload="auto" loop playsinline><source src="audio/bailando-bachata.mp3" type="audio/mpeg"></audio>
+    <button class="music-player__button" id="music-toggle" type="button" aria-label="Reproducir música" aria-pressed="false">
+      <span class="music-icon music-icon--play">▶</span>
+      <span class="music-icon music-icon--pause">Ⅱ</span>
+    </button>
+    <div class="music-player__copy"><strong>Bailando Bachata</strong><span>Chayanne</span></div>
+  </div>
+
+  <main>
+    <!-- PORTADA -->
+    <section class="cover-section" id="portada">
+      <div class="section-frame reveal-card">
+        <span class="section-kicker">Con mucha ilusión</span>
+        <h2 class="display-title">María <em>&amp;</em> Hernán</h2>
+        <p class="cover-intro">Hay momentos que se vuelven eternos cuando los compartimos con las personas que amamos. Queremos celebrar este día con vos.</p>
+        <div class="ornament" aria-hidden="true"><span></span><i>♡</i><span></span></div>
+        <p class="cover-date">Sábado 20 de febrero de 2027 <b>·</b> 19:00 hs</p>
+
+        <div class="countdown" id="countdown" data-countdown-date="2027-02-20T19:00:00-03:00" aria-label="Cuenta regresiva">
+          <div class="countdown__item"><strong id="cd-days">00</strong><span>Días</span></div>
+          <div class="countdown__item"><strong id="cd-hours">00</strong><span>Horas</span></div>
+          <div class="countdown__item"><strong id="cd-minutes">00</strong><span>Minutos</span></div>
+          <div class="countdown__item"><strong id="cd-seconds">00</strong><span>Segundos</span></div>
+        </div>
+        <p class="countdown-caption">Cada segundo nos acerca a nuestro gran día</p>
+        <div class="cover-actions">
+          <a class="text-link" href="#gran-dia">Conocé los detalles <span>↓</span></a>
+          <button class="mini-action" id="save-date" type="button"><span>＋</span> Guardar la fecha</button>
+          <button class="mini-action" id="share-invitation" type="button"><span>↗</span> Compartir invitación</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- NUESTRO GRAN DÍA -->
+    <section class="grand-day-section" id="gran-dia">
+      <div class="content-width">
+        <header class="section-heading reveal-section">
+          <span class="section-kicker">20 · 02 · 2027</span>
+          <h2>Nuestro gran día</h2>
+          <p>Una noche para celebrar el amor, brindar y disfrutar cada instante juntos.</p>
+        </header>
+
+        <div class="timeline" aria-label="Cronograma de la boda">
+          <article class="timeline-item reveal-section"><div class="timeline-time">19:00</div><div class="timeline-dot timeline-dot--rings" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none"><circle cx="20" cy="24" r="8.2"/><circle cx="29" cy="24" r="8.2"/><path d="M15.4 16.9l-1.8-2.6M32.6 16.9l1.8-2.6"/></svg></div><div class="timeline-copy"><span>Ceremonia</span><p>El momento en que comienza oficialmente nuestra nueva etapa.</p></div></article>
+          <article class="timeline-item reveal-section"><div class="timeline-time">20:00</div><div class="timeline-dot timeline-dot--glasses" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none"><path d="M11 14h11l-1.4 10.2a5.1 5.1 0 0 1-5 4.4 5.1 5.1 0 0 1-5-4.4L11 14Z"/><path d="M26 14h11l-1.4 10.2a5.1 5.1 0 0 1-5 4.4 5.1 5.1 0 0 1-5-4.4L26 14Z"/><path d="M16 29v8M32 29v8M13 37h6M29 37h6M22.5 19h3"/></svg></div><div class="timeline-copy"><span>Recepción</span><p>Nos encontramos para abrazarnos, brindar y celebrar.</p></div></article>
+          <article class="timeline-item reveal-section"><div class="timeline-time">20:30</div><div class="timeline-dot timeline-dot--couple" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none"><circle cx="18" cy="15" r="5"/><circle cx="30" cy="15" r="5"/><path d="M9.5 34c.8-7 4-10.5 8.5-10.5S25.7 27 26.5 34M21.5 34c.8-7 4-10.5 8.5-10.5s7.7 3.5 8.5 10.5"/><path d="M24 25v9"/></svg></div><div class="timeline-copy"><span>Entrada de los novios</span><p>¡Llegó nuestro momento de entrar a la fiesta!</p></div></article>
+          <article class="timeline-item reveal-section"><div class="timeline-time">21:00</div><div class="timeline-dot timeline-dot--toast" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none"><path d="M10 12h11l-1.2 9.6a5 5 0 0 1-4.9 4.4 5 5 0 0 1-4.9-4.4L10 12Z"/><path d="M27 17h11l-1.2 9.6a5 5 0 0 1-4.9 4.4 5 5 0 0 1-4.9-4.4L27 17Z"/><path d="M15.5 26v11M32.5 31v6M12.5 37h6M29.5 37h6M21 15l3-3 3 3"/></svg></div><div class="timeline-copy"><span>Brindis</span><p>Levantamos nuestras copas por el amor y por todos ustedes.</p></div></article>
+          <article class="timeline-item reveal-section"><div class="timeline-time">21:30</div><div class="timeline-dot timeline-dot--dinner" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none"><circle cx="25" cy="25" r="10.5"/><path d="M14.5 25h21M25 14.5v21M10 13v24M7 13v9M13 13v9M10 22v15M39 13v24M36 13v8c0 2 1.2 3 3 3"/></svg></div><div class="timeline-copy"><span>Cena</span><p>Una noche para disfrutar, compartir y festejar.</p></div></article>
+        </div>
+      </div>
+    </section>
+
+    <!-- CÓDIGO DE VESTIMENTA -->
+    <section class="dress-code-section" id="vestimenta">
+      <div class="dress-code-card reveal-card">
+        <div class="dress-code-card__top">
+          <span class="section-kicker">Para acompañarnos en este día</span>
+          <div class="dress-code-card__ornament" aria-hidden="true">✦</div>
+          <h2>Código de vestimenta</h2>
+          <p class="dress-code-card__intro">Queremos que esta noche se sienta tan especial como la imaginamos, rodeados de elegancia y de las personas que más queremos.</p>
+        </div>
+
+        <div class="dress-code-card__visual" aria-hidden="true">
+          <div class="dress-code-line"></div>
+          <div class="dress-code-icon dress-code-icon--left">
+            <svg viewBox="0 0 72 88" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="36" cy="13" r="6.5"/>
+              <path d="M25 27l-7 6 4 34h28l4-34-7-6"/>
+              <path d="M25 27l11 12 11-12M29 30l7 9 7-9M36 39v28M22 67l-4 12M50 67l4 12"/>
+              <path d="M30 23l6 4 6-4M33 30l3 5 3-5"/>
+            </svg>
+          </div>
+          <div class="dress-code-icon dress-code-icon--right">
+            <svg viewBox="0 0 72 88" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="36" cy="13" r="6.5"/>
+              <path d="M29 24l7 7 7-7 4 11-5 7 10 33H20l10-33-5-7 4-11Z"/>
+              <path d="M29 24l7 7 7-7M31 40h10M36 31v9"/>
+            </svg>
+          </div>
+          <div class="dress-code-label">
+            <strong>Elegante</strong>
+            <span>Un look sofisticado y especial</span>
+          </div>
+          <div class="dress-code-line"></div>
+        </div>
+
+        <p class="dress-code-card__note">Vístanse con ese toque especial que merece una noche para celebrar el amor. No hace falta seguir una etiqueta estricta: simplemente elegancia, comodidad y ganas de festejar.</p>
+      </div>
+    </section>
+
+    <!-- PLAYLIST -->
+    <section class="playlist-section" id="playlist">
+      <div class="playlist-shell reveal-card">
+        <div class="playlist-copy">
+          <span class="section-kicker">La música también cuenta nuestra historia</span>
+          <h2>Armemos juntos nuestra playlist</h2>
+          <p>Ya tenemos una canción que nos acompaña en este momento, pero queremos que la fiesta también tenga un poquito de cada uno de ustedes.</p>
+          <div class="playlist-current">
+            <div class="playlist-disc" aria-hidden="true"><span>♪</span></div>
+            <div><span class="playlist-label">Sonando en nuestra invitación</span><strong>Bailando Bachata</strong><small>Chayanne · nuestra canción de bienvenida</small></div>
+          </div>
+          <button class="playlist-button" id="open-playlist-form" type="button"><span>♩</span> Sugerir una canción</button>
+          <p class="playlist-note">Elegí esa canción que no puede faltar cuando llegue el momento de bailar. ♡</p>
+        </div>
+        <div class="playlist-visual" aria-hidden="true">
+          <div class="playlist-vinyl"><span>MH</span></div>
+          <div class="playlist-quote">“Una noche, muchas canciones y recuerdos para siempre.”</div>
+        </div>
+      </div>
+
+      <div class="playlist-modal" id="playlist-modal" aria-hidden="true">
+        <div class="playlist-modal__overlay" id="playlist-modal-overlay"></div>
+        <div class="playlist-modal__card" role="dialog" aria-modal="true" aria-labelledby="playlist-modal-title">
+          <button class="playlist-modal__close" id="playlist-modal-close" type="button" aria-label="Cerrar">×</button>
+          <span class="section-kicker">Una canción para nosotros</span>
+          <h3 id="playlist-modal-title">¿Qué canción querés escuchar?</h3>
+          <p>Dejanos tu sugerencia y la recibimos directamente por WhatsApp.</p>
+          <div class="playlist-form">
+            <label>Tu nombre<input id="playlist-name" type="text" autocomplete="name" placeholder="Ej. Sofía"></label>
+            <label>Canción<input id="playlist-song" type="text" placeholder="Ej. Perfect"></label>
+            <label>Artista<input id="playlist-artist" type="text" placeholder="Ej. Ed Sheeran"></label>
+            <button id="playlist-send" type="button">Enviar sugerencia <span>→</span></button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LA PROPUESTA -->
+    <section class="proposal-section" id="propuesta">
+      <div class="proposal-card reveal-card">
+        <span class="section-kicker">El comienzo de un nuevo capítulo</span>
+        <div class="proposal-date">22 · 02 · 2026</div>
+        <div class="proposal-ornament">♡</div>
+        <h2>La propuesta</h2>
+        <p>Aquel día dijimos que sí a seguir construyendo nuestra historia. Hoy, con el mismo amor y mucha más ilusión, queremos celebrar con ustedes todo lo que viene.</p>
+        <div class="proposal-signature"><span>María</span><i>&amp;</i><span>Hernán</span></div>
+      </div>
+    </section>
+
+    <!-- LUGAR -->
+    <section class="location-section" id="ubicacion">
+      <div class="location-inner content-width">
+        <header class="location-heading reveal-section">
+          <span class="section-kicker">El lugar donde vamos a celebrar</span>
+          <h2>El lugar donde todo sucederá</h2>
+          <div class="location-name-script">Urbana Lounge</div>
+          <p>La ceremonia y la recepción serán en el mismo lugar, para que solo tengas que preocuparte por disfrutar y celebrar con nosotros.</p>
+        </header>
+
+        <div class="location-feature reveal-card">
+          <div class="location-feature__info">
+            <div class="location-feature__monogram">U</div>
+            <span class="location-feature__eyebrow">20 · 02 · 2027</span>
+            <h3>Urbana Lounge</h3>
+            <p class="location-feature__type">Ceremonia · Recepción</p>
+            <div class="location-feature__line"></div>
+            <div class="location-points">
+              <div><span class="location-points__icon">19</span><p><strong>19:00 hs</strong><small>Comienza la ceremonia</small></p></div>
+              <div><span class="location-points__icon">P</span><p><strong>Estacionamiento</strong><small>Incluido para invitados</small></p></div>
+            </div>
+            <a class="location-map-button" href="https://maps.app.goo.gl/ZsN1QgvrcwLaLR7JA" target="_blank" rel="noopener noreferrer"><span>Cómo llegar</span><b>↗</b></a>
+          </div>
+          <div class="location-feature__map">
+            <div class="map-label"><span>UBICACIÓN</span><strong>Urbana Lounge</strong></div>
+            <iframe class="map-iframe" src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d307.04791067268894!2d-58.28978758768871!3d-37.87386790263354!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e1!3m2!1ses-419!2sar!4v1785870036932!5m2!1ses-419!2sar" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin" title="Mapa de Urbana Lounge"></iframe>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- REGALOS -->
+    <section class="gifts-section" id="regalos">
+      <div class="gifts-card reveal-card">
+        <span class="section-kicker">Si quieren acompañarnos con un detalle</span>
+        <h2>Un detalle de amor</h2>
+        <div class="ornament" aria-hidden="true"><span></span><i>♡</i><span></span></div>
+        <p class="gifts-message">El mejor regalo es compartir este día con ustedes. Pero si además quieren hacernos un mimo para acompañarnos en esta nueva etapa, les dejamos nuestros datos. ¡Gracias por tanto cariño! ♡</p>
+
+        <div class="bank-details">
+          <div class="bank-detail"><span>Banco</span><strong>Mercado Pago</strong></div>
+          <div class="bank-detail"><span>Titular</span><strong>Maza Gabriel Hernán</strong></div>
+          <div class="bank-detail bank-detail--copy"><div><span>CBU</span><strong id="gift-cbu">0000003100096259769812</strong></div><button type="button" class="copy-button" data-copy-target="gift-cbu">Copiar</button></div>
+          <div class="bank-detail bank-detail--copy"><div><span>Alias</span><strong id="gift-alias">hernan.maza.mp</strong></div><button type="button" class="copy-button" data-copy-target="gift-alias">Copiar</button></div>
+        </div>
+        <p class="gifts-thanks">Gracias por acompañarnos y ser parte de este momento tan especial.</p>
+      </div>
+    </section>
+
+    <!-- CONFIRMACIÓN -->
+    <section class="confirm-section" id="confirmacion">
+      <div class="confirm-card reveal-card">
+        <span class="section-kicker">Queremos contar con vos</span>
+        <div class="confirm-symbol">♡</div>
+        <h2>¿Nos acompañás?</h2>
+        <p>Tu presencia, tus abrazos y tu alegría harán que esta noche sea todavía más especial para nosotros.</p>
+        <div class="confirm-deadline"><span>RSVP</span> · Confirmar antes del <strong>10 de enero</strong></div>
+        <div class="confirm-guest-note" id="confirm-guest-text">Tu invitación es para 1 persona.</div>
+        <div class="confirm-actions">
+          <button class="confirm-btn confirm-btn--primary" id="btn-confirm-all" type="button">Sí, allí estaremos <span>→</span></button>
+          <button class="confirm-btn" id="btn-confirm-less" type="button">Asistiremos menos personas <span>→</span></button>
+          <button class="confirm-btn confirm-btn--ghost" id="btn-decline" type="button">No podremos acompañarlos</button>
+        </div>
+      </div>
+
+      <div class="confirm-modal" id="contact-modal" aria-hidden="true">
+        <div class="modal-overlay" id="modal-overlay"></div>
+        <div class="confirm-modal__card" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+          <button class="modal-close" id="modal-close" type="button" aria-label="Cerrar">×</button>
+          <span class="section-kicker">Tu respuesta</span>
+          <h3 id="modal-title">¿A quién querés enviarla?</h3>
+          <p class="modal-intro" id="modal-action-summary">Elegí un contacto para abrir WhatsApp con el mensaje preparado.</p>
+          <div class="less-selector" id="less-guests-container" hidden><label for="less-guests-select">¿Cuántas personas asistirán?</label><select id="less-guests-select"></select></div>
+          <div class="contact-grid">
+            <a href="#" id="whatsapp-groom" target="_blank" rel="noopener noreferrer" class="contact-card"><span class="contact-card__initial">H</span><span><strong>Hernán</strong><small>Enviar por WhatsApp</small></span><b>→</b></a>
+            <a href="#" id="whatsapp-bride" target="_blank" rel="noopener noreferrer" class="contact-card"><span class="contact-card__initial">M</span><span><strong>María</strong><small>Enviar por WhatsApp</small></span><b>→</b></a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ACCIONES FINALES -->
+  <section class="useful-section">
+    <div class="useful-grid content-width">
+      <article class="useful-card reveal-card"><span>♡</span><strong>Una noche para disfrutar</strong><p>La ceremonia y la recepción son en Urbana Lounge. El estacionamiento está incluido.</p></article>
+      <article class="useful-card reveal-card"><span>19</span><strong>Nos encontramos a las 19:00 hs</strong><p>Te recomendamos llegar unos minutos antes para disfrutar desde el comienzo.</p></article>
+      <article class="useful-card reveal-card"><span>MH</span><strong>Gracias por estar</strong><p>Esta invitación es un pequeño adelanto de todo lo que queremos compartir con ustedes.</p></article>
+    </div>
+  </section>
+
+  <!-- CIERRE -->
+  <footer class="closing-section">
+    <div class="closing-content reveal-card">
+      <span class="closing-monogram">M <i>&amp;</i> H</span>
+      <span class="section-kicker">Con amor</span>
+      <h2>Gracias por ser parte de nuestra historia</h2>
+      <p>Nos vemos para celebrar una noche que queremos guardar para siempre.</p>
+      <div class="closing-love">El comienzo de nuestro para siempre.</div>
+      <div class="closing-date">20 · 02 · 2027</div>
+      <a class="closing-button" href="#confirmacion">Confirmar asistencia <span>♡</span></a>
+    </div>
+  </footer>
+
+  <script src="js/script.js"></script>
+</body>
+</html>
