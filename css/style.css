@@ -747,3 +747,90 @@ body{background:var(--cream);}
   .playlist-modal{padding:12px}
   .playlist-modal__card{padding:34px 22px 25px}
 }
+
+
+/* =========================================================
+   CORRECCIÓN MOBILE — FECHA / CUENTA REGRESIVA / PLAYLIST
+   ========================================================= */
+/* El rótulo "CUENTA REGRESIVA" generaba el recuadro que tapaba la fecha. */
+.countdown::before{
+  content:none !important;
+  display:none !important;
+}
+.countdown::after{
+  display:none !important;
+}
+.cover-date{
+  position:relative !important;
+  z-index:30 !important;
+  display:block !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  margin-bottom:26px !important;
+}
+.countdown{
+  margin-top:0 !important;
+  padding-top:8px !important;
+}
+
+@media(max-width:700px){
+  .cover-date{
+    margin-bottom:24px !important;
+    padding:0 8px !important;
+    line-height:1.55 !important;
+  }
+  .countdown{
+    padding-top:4px !important;
+  }
+
+  /* En celular la frase queda debajo del vinilo, sin superponerse. */
+  .playlist-visual{
+    min-height:430px !important;
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:center !important;
+    justify-content:center !important;
+    box-sizing:border-box !important;
+    padding:28px 20px 48px !important;
+  }
+  .playlist-vinyl{
+    width:220px !important;
+    flex:none !important;
+    transform:rotate(-11deg) !important;
+    margin:0 0 20px !important;
+  }
+  .playlist-quote{
+    position:relative !important;
+    left:auto !important;
+    bottom:auto !important;
+    transform:none !important;
+    width:min(320px,92%) !important;
+    margin:0 auto !important;
+    font-size:1.22rem !important;
+    line-height:1.25 !important;
+    text-align:center !important;
+    z-index:5 !important;
+  }
+}
+
+@media(max-width:430px){
+  .cover-date{
+    font-size:.9rem !important;
+    letter-spacing:.02em !important;
+    margin-bottom:22px !important;
+  }
+  .countdown__item{
+    min-height:94px !important;
+  }
+  .playlist-visual{
+    min-height:410px !important;
+    padding:24px 16px 42px !important;
+  }
+  .playlist-vinyl{
+    width:205px !important;
+    margin-bottom:18px !important;
+  }
+  .playlist-quote{
+    font-size:1.12rem !important;
+  }
+}
