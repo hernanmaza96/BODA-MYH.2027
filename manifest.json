@@ -11,10 +11,16 @@
   "lang": "es-AR",
   "icons": [
     {
-      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='96' fill='%233a4020'/%3E%3Ctext x='50%25' y='58%25' font-family='Georgia,serif' font-size='220' fill='%23d6b987' text-anchor='middle' dominant-baseline='middle'%3EM%C2%B7H%3C/text%3E%3C/svg%3E",
+      "src": "img/WhatsApp.png",
       "sizes": "512x512",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "img/WhatsApp.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }

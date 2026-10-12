@@ -1,44 +1,72 @@
 // ============================================================
 // Service Worker · María & Hernán
-// Estrategia: network-first. Siempre trae lo más nuevo,
-// y solo usa caché como fallback si no hay internet.
+// Estrategia: precache de assets críticos + stale-while-revalidate
 // ============================================================
 
-const CACHE = 'myh-v3'; // ← versión nueva para forzar limpieza
+const CACHE = 'myh-v4';
+const PRECACHE = [
+  './',
+  './index.html',
+  './css/style.css',
+  './js/script.js',
+  './manifest.json',
+  './img/WhatsApp.png',
+  './img/flores-izquierda.webp',
+  './img/flores-derecha.webp',
+  './img/galeria-01.jpg',
+  './img/galeria-02.jpg',
+  './img/galeria-03.jpg',
+  './img/galeria-04.jpg',
+  './img/galeria-05.jpg',
+  './img/galeria-06.jpg',
+  './img/galeria-07.jpg',
+  './img/galeria-08.jpg',
+  './img/galeria-09.jpg',
+  './img/cerrado.jpeg',
+  './audio/bailando-bachata.mp3'
+];
 
-// Al instalar: activa inmediatamente sin esperar
+// Al instalar: precachear todos los assets críticos
 self.addEventListener('install', (e) => {
+  e.waitUntil(
+    caches.open(CACHE)
+      .then(c => c.addAll(PRECACHE))
+      .catch(err => console.warn('[SW] precache parcial:', err))
+  );
   self.skipWaiting();
 });
 
-// Al activar: borra TODAS las cachés viejas
+// Al activar: borrar cachés viejas y tomar control
 self.addEventListener('activate', (e) => {
   e.waitUntil(
-    caches.keys().then((keys) =>
+    caches.keys().then(keys =>
       Promise.all(
-        keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))
+        keys.filter(k => k !== CACHE).map(k => caches.delete(k))
       )
     ).then(() => self.clients.claim())
   );
 });
 
-// Fetch: primero red, después caché
+// Fetch: stale-while-revalidate (sirve caché al instante, actualiza en background)
 self.addEventListener('fetch', (e) => {
-  // Solo manejamos GET
   if (e.request.method !== 'GET') return;
 
-  // Ignoramos las peticiones a Google Maps y a terceros
   const url = new URL(e.request.url);
   if (url.origin !== self.location.origin) return;
 
   e.respondWith(
-    fetch(e.request)
-      .then((res) => {
-        // Guardamos una copia en caché para uso offline
-        const copy = res.clone();
-        caches.open(CACHE).then((c) => c.put(e.request, copy)).catch(() => {});
-        return res;
+    caches.open(CACHE).then(cache =>
+      cache.match(e.request).then(cached => {
+        const fetchPromise = fetch(e.request)
+          .then(res => {
+            if (res && res.status === 200 && res.type === 'basic') {
+              cache.put(e.request, res.clone());
+            }
+            return res;
+          })
+          .catch(() => cached);
+        return cached || fetchPromise;
       })
-      .catch(() => caches.match(e.request))
+    )
   );
 });
