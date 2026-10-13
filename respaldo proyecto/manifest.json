@@ -1,0 +1,26 @@
+{
+  "name": "María & Hernán · Nuestra boda",
+  "short_name": "M & H",
+  "description": "Invitación de boda de María y Hernán · Urbana Lounge",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#3a4020",
+  "theme_color": "#3a4020",
+  "lang": "es-AR",
+  "icons": [
+    {
+      "src": "img/WhatsApp.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "img/WhatsApp.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+LISTADO DE INVITADOS EN GOOGLE SHEETS (gratis, 5 minutos)
+
+1. Entrá a sheets.google.com y creá una planilla nueva (ej: "Invitados boda").
+2. Menú Extensiones > Apps Script.
+3. Borrá lo que haya y pegá el contenido de Code.gs. Guardá.
+4. Tocá Implementar > Nueva implementación > tipo "Aplicación web".
+   - Ejecutar como: Yo
+   - Quién tiene acceso: Cualquier persona
+5. Autorizá los permisos y copiá la "URL de la aplicación web".
+6. Pegala en js/config.js, en  sheetsUrl: "..."
+7. Probá la invitación: cada confirmación aparece como una fila nueva.
+
+Si cambiás el código de Apps Script, hay que hacer una nueva implementación para que tome los cambios.
