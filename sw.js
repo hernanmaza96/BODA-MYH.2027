@@ -3,7 +3,7 @@
 // Estrategia: precache de assets críticos + stale-while-revalidate
 // ============================================================
 
-const CACHE = 'myh-v4';
+const CACHE = 'myh-v5';
 const PRECACHE = [
   './',
   './index.html',
@@ -22,8 +22,7 @@ const PRECACHE = [
   './img/galeria-07.jpg',
   './img/galeria-08.jpg',
   './img/galeria-09.jpg',
-  './img/cerrado.jpeg',
-  './audio/bailando-bachata.mp3'
+  './img/cerrado.jpeg'
 ];
 
 // Al instalar: precachear todos los assets críticos
@@ -53,6 +52,10 @@ self.addEventListener('fetch', (e) => {
 
   const url = new URL(e.request.url);
   if (url.origin !== self.location.origin) return;
+
+  // El audio NO se intercepta: Safari/iOS pide el archivo por partes (Range) y
+  // si el caché devuelve el archivo entero, la música no arranca.
+  if (e.request.headers.has('range') || e.request.destination === 'audio' || url.pathname.endsWith('.mp3')) return;
 
   e.respondWith(
     caches.open(CACHE).then(cache =>

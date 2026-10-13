@@ -165,28 +165,81 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => opening.remove(), 1100);
   };
 
+  /* ============================================================
+     MÚSICA · arranque automático
+     Los navegadores solo dejan sonar el audio después de un toque,
+     así que arranca solo cuando se puede y, si no, con el primer toque
+     (el sello del sobre). Si falla, reintenta en el siguiente toque.
+     ============================================================ */
+  const MUSIC_VOLUME = 0.42;
+  let musicFadeTimer = null;
+  let musicUserPaused = false;   // true solo si la persona la pausa con el botón
+  let musicWanted = false;
+  let musicRetryArmed = false;
+
+  const fadeMusic = (audio, target, ms, done) => {
+    clearInterval(musicFadeTimer);
+    const from = audio.volume;
+    const start = Date.now();
+    musicFadeTimer = setInterval(() => {
+      const t = Math.min(1, (Date.now() - start) / ms);
+      try { audio.volume = from + (target - from) * t; } catch (_) {}
+      if (t >= 1) {
+        clearInterval(musicFadeTimer);
+        if (done) done();
+      }
+    }, 40);
+  };
+
+  const armMusicRetry = () => {
+    if (musicRetryArmed) return;
+    musicRetryArmed = true;
+    const events = ['pointerup', 'touchend', 'click', 'keydown'];
+    const retry = (e) => {
+      // el botón de música se encarga solo de su propio toque
+      if (e && e.target && e.target.closest && e.target.closest('#music-toggle')) return;
+      events.forEach(ev => window.removeEventListener(ev, retry, true));
+      musicRetryArmed = false;
+      startMusic();
+    };
+    events.forEach(ev => window.addEventListener(ev, retry, true));
+  };
+
+  function startMusic() {
+    const audio = document.getElementById('wedding-audio');
+    if (!audio || musicUserPaused || !audio.paused) return;
+    if (audio.error) { try { audio.load(); } catch (_) {} }
+    try { audio.volume = 0; } catch (_) {}
+    let p;
+    try { p = audio.play(); } catch (_) { armMusicRetry(); return; }
+    musicWanted = true;
+    if (p && typeof p.then === 'function') {
+      p.then(() => fadeMusic(audio, MUSIC_VOLUME, 1500))
+       .catch(() => {
+         try { audio.volume = MUSIC_VOLUME; } catch (_) {}
+         armMusicRetry();
+       });
+    } else {
+      fadeMusic(audio, MUSIC_VOLUME, 1500);
+    }
+  }
+
+  // Si el sistema pausó la música (llamada, bloqueo de pantalla), retoma al volver
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState !== 'visible' || !musicWanted || musicUserPaused) return;
+    const audio = document.getElementById('wedding-audio');
+    if (!audio || !audio.paused) return;
+    try { audio.volume = MUSIC_VOLUME; } catch (_) {}
+    const p = audio.play();
+    if (p && typeof p.catch === 'function') p.catch(() => armMusicRetry());
+  });
+
   const openInvitation = () => {
     if (!opening || !envelope || envelope.classList.contains('is-opening')) return;
     envelope.classList.add('is-opening');
     try { localStorage.setItem(ENVELOPE_STORAGE_KEY, '1'); } catch (_) {}
 
-    const music = document.getElementById('wedding-audio');
-    const wantMusic = localStorage.getItem(MUSIC_STORAGE_KEY) !== 'paused';
-    if (music && wantMusic) {
-      music.volume = 0;
-      const p = music.play();
-      if (p && typeof p.then === 'function') {
-        p.then(() => {
-          const start = performance.now();
-          const step = (now) => {
-            const t = Math.min(1, (now - start) / 1500);
-            music.volume = 0.42 * t;
-            if (t < 1) requestAnimationFrame(step);
-          };
-          requestAnimationFrame(step);
-        }).catch(() => {});
-      }
-    }
+    startMusic();
 
     if (reducedMotion) {
       opening.classList.add('is-instant');
@@ -200,6 +253,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   document.body.classList.add('invitation-locked');
+  startMusic();
   envelope?.addEventListener('click', openInvitation);
   envelope?.addEventListener('keydown', e => {
     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openInvitation(); }
@@ -781,38 +835,21 @@ document.addEventListener('DOMContentLoaded', () => {
     musicToggle?.setAttribute('aria-label', playing ? 'Pausar música' : 'Reproducir música');
   }
 
-  music?.addEventListener('play', () => {
-    setMusicState(true);
-    try { localStorage.setItem(MUSIC_STORAGE_KEY, 'playing'); } catch (_) {}
-  });
-  music?.addEventListener('pause', () => {
-    setMusicState(false);
-    try { localStorage.setItem(MUSIC_STORAGE_KEY, 'paused'); } catch (_) {}
-  });
+  music?.addEventListener('play', () => setMusicState(true));
+  music?.addEventListener('pause', () => setMusicState(false));
 
   musicToggle?.addEventListener('click', async () => {
     if (!music) return;
     try {
       if (music.paused) {
+        musicUserPaused = false;
+        musicWanted = true;
         music.volume = 0;
         await music.play();
-        const start = performance.now();
-        const step = (now) => {
-          const t = Math.min(1, (now - start) / 1200);
-          music.volume = 0.42 * t;
-          if (t < 1) requestAnimationFrame(step);
-        };
-        requestAnimationFrame(step);
+        fadeMusic(music, MUSIC_VOLUME, 1200);
       } else {
-        const startVol = music.volume;
-        const start = performance.now();
-        const step = (now) => {
-          const t = Math.min(1, (now - start) / 350);
-          music.volume = startVol * (1 - t);
-          if (t < 1) requestAnimationFrame(step);
-          else music.pause();
-        };
-        requestAnimationFrame(step);
+        musicUserPaused = true;
+        fadeMusic(music, 0, 350, () => music.pause());
       }
     } catch (_) {
       setMusicState(false);
