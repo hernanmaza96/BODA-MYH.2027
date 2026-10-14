@@ -1031,6 +1031,54 @@ document.addEventListener('DOMContentLoaded', () => {
     return `Registramos que no podrán acompañarnos. Gracias por avisarnos. ❤️`;
   }
 
+  /* ---- Bloque opcional de WhatsApp dentro del confirm-done ---- */
+  function ensureOptionalWhatsAppBlock() {
+    if (!confirmDone) return;
+    if (document.getElementById('confirm-whatsapp-optional')) return;
+
+    const wrap = document.createElement('div');
+    wrap.id = 'confirm-whatsapp-optional';
+    wrap.style.marginTop = '14px';
+    wrap.style.display = 'flex';
+    wrap.style.flexDirection = 'column';
+    wrap.style.gap = '10px';
+    wrap.style.alignItems = 'center';
+    wrap.style.width = '100%';
+    wrap.innerHTML = `
+      <span style="font-family:var(--sans);font-size:.55rem;letter-spacing:.24em;text-transform:uppercase;color:var(--gold-light);opacity:.85;text-align:center;">
+        ¿Querés avisarnos por WhatsApp también?
+      </span>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;">
+        <a href="#" id="wa-optional-groom" target="_blank" rel="noopener noreferrer"
+           style="border:1px solid rgba(214,185,135,.5);border-radius:999px;padding:9px 16px;color:var(--gold-light);font-family:var(--sans);font-size:.55rem;letter-spacing:.18em;text-transform:uppercase;text-decoration:none;transition:background .25s ease,color .25s ease;">
+          Avisar a Hernán
+        </a>
+        <a href="#" id="wa-optional-bride" target="_blank" rel="noopener noreferrer"
+           style="border:1px solid rgba(214,185,135,.5);border-radius:999px;padding:9px 16px;color:var(--gold-light);font-family:var(--sans);font-size:.55rem;letter-spacing:.18em;text-transform:uppercase;text-decoration:none;transition:background .25s ease,color .25s ease;">
+          Avisar a María
+        </a>
+      </div>
+    `;
+    const resetBtn = document.getElementById('confirm-done-reset');
+    if (resetBtn && resetBtn.parentNode === confirmDone) {
+      confirmDone.insertBefore(wrap, resetBtn);
+    } else {
+      confirmDone.appendChild(wrap);
+    }
+  }
+
+  function buildWhatsAppUrl(recipient) {
+    const phone = recipient === 'María' ? PHONE_BRIDE : PHONE_GROOM;
+    return `https://wa.me/${phone}?text=${encodeURIComponent(buildMessage())}`;
+  }
+
+  function updateOptionalWhatsAppLinks() {
+    const g = document.getElementById('wa-optional-groom');
+    const b = document.getElementById('wa-optional-bride');
+    if (g) g.href = buildWhatsAppUrl('Hernán');
+    if (b) b.href = buildWhatsAppUrl('María');
+  }
+
   function renderRsvpDone(saved) {
     if (!confirmActions || !confirmDone) return;
     confirmActions.hidden = true;
@@ -1038,12 +1086,16 @@ document.addEventListener('DOMContentLoaded', () => {
     if (confirmDoneText) confirmDoneText.textContent = getRsvpMessage(saved);
     const path = confirmDone.querySelector('.confirm-done__check path');
     if (path) { path.style.animation = 'none'; void path.offsetWidth; path.style.animation = ''; }
+    ensureOptionalWhatsAppBlock();
+    updateOptionalWhatsAppLinks();
   }
 
   function renderRsvpActions() {
     if (!confirmActions || !confirmDone) return;
     confirmActions.hidden = false;
     confirmDone.hidden = true;
+    const opt = document.getElementById('confirm-whatsapp-optional');
+    if (opt) opt.remove();
   }
 
   const savedRsvp = loadRsvp();
@@ -1092,23 +1144,25 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* ============================================================
-     HANDLE RSVP → Google Sheets + WhatsApp
+     HANDLE RSVP → Google Sheets (guarda directo, SIN abrir WhatsApp)
+     Las tarjetas del modal ahora solo envían al Sheet y muestran el
+     estado confirmado. WhatsApp queda como opción secundaria en el
+     bloque de confirmación (botones "Avisar a Hernán / María").
      ============================================================ */
-  function handleRsvpClick(e) {
-    // ¿Es Hernán o María? Detectamos por el href del link que se clickeó.
+  async function handleRsvpClick(e) {
+    e.preventDefault();
+
     const clickedId = e.currentTarget?.id;
     const recipient = clickedId === 'whatsapp-bride' ? 'María' : 'Hernán';
     const selectedCount = action === 'less' ? Number(lessSelect?.value || 1) : totalGuests;
 
-    // Guardamos localmente
     saveRsvp(action, selectedCount);
 
-    // Enviamos al Google Sheets (Apps Script)
     let statusText = 'confirmado';
     if (action === 'less') statusText = 'confirmado parcialmente';
     if (action === 'none') statusText = 'rechazado';
 
-    SheetsAPI.send({
+    const payload = {
       type: 'rsvp',
       name: guestName,
       guests: totalGuests,
@@ -1117,11 +1171,26 @@ document.addEventListener('DOMContentLoaded', () => {
       action,
       recipient,
       message: buildMessage()
-    });
+    };
 
-    setTimeout(() => { renderRsvpDone(loadRsvp()); }, 400);
-    Toast.show('Guardamos tu respuesta. Confirmá en WhatsApp para avisarnos.', 'heart', 3200);
+    // Feedback visual mientras se envía
+    const contactGrid = modal?.querySelector('.contact-grid');
+    if (contactGrid) contactGrid.style.opacity = '0.45';
+
+    const res = await SheetsAPI.send(payload);
+
+    if (contactGrid) contactGrid.style.opacity = '';
+
+    closeModal();
+    setTimeout(() => { renderRsvpDone(loadRsvp()); }, 250);
+
+    if (res.ok) {
+      Toast.show('¡Listo! Guardamos tu respuesta 💛', 'heart', 3200);
+    } else {
+      Toast.show('Guardamos tu respuesta. Si podés, avisanos por WhatsApp.', 'info', 3600);
+    }
   }
+
   groomLink?.addEventListener('click', handleRsvpClick);
   brideLink?.addEventListener('click', handleRsvpClick);
 
