@@ -352,17 +352,66 @@
           </div>
           <div class="confirm-notes"><p class="confirm-notes__closing">Esta invitación es un pequeño adelanto de todo lo que queremos compartir con ustedes.</p></div>
         </div>
+
+        <!-- ===== MODAL RSVP (formulario + éxito) ===== -->
         <div class="confirm-modal" id="contact-modal" aria-hidden="true">
           <div class="modal-overlay" id="modal-overlay"></div>
           <div class="confirm-modal__card" role="dialog" aria-modal="true" aria-labelledby="modal-title">
             <button class="modal-close" id="modal-close" type="button" aria-label="Cerrar">×</button>
-            <span class="section-kicker">Tu respuesta</span>
-            <h3 id="modal-title">¿A quién querés enviarla?</h3>
-            <p class="modal-intro" id="modal-action-summary">Elegí un contacto para abrir WhatsApp con el mensaje preparado.</p>
-            <div class="less-selector" id="less-guests-container" hidden><label for="less-guests-select">¿Cuántas personas asistirán?</label><select id="less-guests-select"></select></div>
-            <div class="contact-grid">
-              <a href="#" id="whatsapp-groom" target="_blank" rel="noopener noreferrer" class="contact-card"><span class="contact-card__initial">H</span><span><strong>Hernán</strong><small>Enviar por WhatsApp</small></span><b>→</b></a>
-              <a href="#" id="whatsapp-bride" target="_blank" rel="noopener noreferrer" class="contact-card"><span class="contact-card__initial">M</span><span><strong>María</strong><small>Enviar por WhatsApp</small></span><b>→</b></a>
+
+            <!-- === Vista Formulario === -->
+            <div class="rsvp-form-wrap" id="rsvp-form-wrap">
+              <span class="section-kicker">Tu respuesta</span>
+              <h3 id="modal-title">Confirmá tu asistencia</h3>
+              <p class="modal-intro" id="modal-action-summary">Completá tus datos y nos ayudás a organizarnos.</p>
+
+              <form class="rsvp-form" id="rsvp-form" novalidate>
+                <div class="rsvp-form__field">
+                  <label for="rsvp-name">Nombre y apellido <span>· obligatorio</span></label>
+                  <input type="text" id="rsvp-name" name="name" placeholder="¿Cómo te llamás?" autocomplete="name" required />
+                </div>
+
+                <div class="rsvp-form__field" id="rsvp-guests-field">
+                  <label for="rsvp-guests">¿Cuántas personas asistirán? <span>· obligatorio</span></label>
+                  <select id="rsvp-guests" name="guests"></select>
+                </div>
+
+                <div class="rsvp-form__field">
+                  <label for="rsvp-message">Mensaje <span>· opcional</span></label>
+                  <textarea id="rsvp-message" name="message" rows="2" placeholder="Algo que quieras contarnos…"></textarea>
+                </div>
+
+                <div class="rsvp-form__actions">
+                  <button type="submit" class="rsvp-form__submit" id="rsvp-submit">
+                    <span>Confirmar</span><b>→</b>
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            <!-- === Vista Éxito === -->
+            <div class="rsvp-success" id="rsvp-success" hidden>
+              <span class="section-kicker">¡Gracias!</span>
+              <div class="rsvp-success__check" aria-hidden="true">
+                <svg viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg"><circle cx="26" cy="26" r="24" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M15 27l7.5 7.5L38 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <p class="rsvp-success__text" id="rsvp-success-text"></p>
+
+              <div class="rsvp-success__whatsapp">
+                <span class="rsvp-success__whatsapp-title">¿Querés avisarnos por WhatsApp también?</span>
+                <div class="rsvp-success__whatsapp-buttons">
+                  <a href="#" id="wa-optional-groom" target="_blank" rel="noopener noreferrer" class="rsvp-wa-btn">
+                    <span class="rsvp-wa-btn__initial">H</span>
+                    <span class="rsvp-wa-btn__name">Avisar a Hernán</span>
+                  </a>
+                  <a href="#" id="wa-optional-bride" target="_blank" rel="noopener noreferrer" class="rsvp-wa-btn">
+                    <span class="rsvp-wa-btn__initial">M</span>
+                    <span class="rsvp-wa-btn__name">Avisar a María</span>
+                  </a>
+                </div>
+              </div>
+
+              <button type="button" class="rsvp-success__reset" id="rsvp-success-reset">Cambiar mi respuesta</button>
             </div>
           </div>
         </div>

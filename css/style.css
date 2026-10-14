@@ -1147,4 +1147,214 @@ body.post-boda .gallery-section .section-heading h2::after{
 @keyframes konamiPulse{
   0%,100%{transform:scale(1);opacity:.9}
   50%{transform:scale(1.05);opacity:1}
+}/* ================================================================
+   FORMULARIO RSVP (nuevo flujo)
+   ================================================================ */
+
+.rsvp-form-wrap { text-align: left; }
+.rsvp-form-wrap .section-kicker { color: var(--olive-dark); }
+.rsvp-form-wrap h3 {
+  font-family: var(--serif);
+  font-size: clamp(1.7rem, 5vw, 2.3rem);
+  font-weight: 500;
+  line-height: 1.15;
+  margin: 10px 0 6px;
+  color: var(--ink-dark);
+}
+.rsvp-form-wrap .modal-intro {
+  color: var(--muted-dark);
+  font-size: .85rem;
+  margin: 0 0 20px;
+}
+
+.rsvp-form { display: flex; flex-direction: column; gap: 16px; margin-top: 8px; }
+.rsvp-form__field { display: flex; flex-direction: column; gap: 6px; }
+.rsvp-form__field label {
+  font-family: var(--sans);
+  font-size: .6rem;
+  font-weight: 500;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--olive-dark);
+}
+.rsvp-form__field label span {
+  color: var(--muted-dark);
+  font-weight: 400;
+  letter-spacing: .06em;
+  text-transform: none;
+  font-size: .62rem;
+  opacity: .7;
+}
+.rsvp-form__field input,
+.rsvp-form__field select,
+.rsvp-form__field textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid rgba(109,119,67,.25);
+  background: #fff;
+  border-radius: 8px;
+  color: var(--ink-dark);
+  font-family: var(--sans);
+  font-size: .92rem;
+  min-height: 46px;
+  transition: border-color .25s ease, box-shadow .25s ease;
+}
+.rsvp-form__field input::placeholder,
+.rsvp-form__field textarea::placeholder {
+  color: rgba(122,122,94,.5);
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1rem;
+}
+.rsvp-form__field input:focus,
+.rsvp-form__field select:focus,
+.rsvp-form__field textarea:focus {
+  outline: none;
+  border-color: var(--olive-dark);
+  box-shadow: 0 0 0 3px rgba(109,119,67,.12);
+}
+.rsvp-form__field textarea { min-height: 62px; resize: vertical; line-height: 1.5; }
+.rsvp-form__field[hidden] { display: none; }
+
+.rsvp-form__actions { margin-top: 4px; }
+.rsvp-form__submit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 52px;
+  padding: 14px 22px;
+  border: 1px solid var(--olive-dark);
+  border-radius: 999px;
+  background: var(--olive-dark);
+  color: #fff;
+  font-family: var(--sans);
+  font-size: .68rem;
+  font-weight: 500;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: transform .35s cubic-bezier(.2,.7,.2,1), background .35s ease, box-shadow .35s ease;
+  box-shadow: 0 10px 24px rgba(60,66,32,.22);
+}
+.rsvp-form__submit b { font-size: 1rem; font-weight: 400; transition: transform .25s ease; }
+.rsvp-form__submit:hover { background: var(--olive); border-color: var(--olive); transform: translateY(-2px); box-shadow: 0 16px 32px rgba(60,66,32,.3); }
+.rsvp-form__submit:hover b { transform: translateX(4px); }
+.rsvp-form__submit:active { transform: translateY(0); }
+.rsvp-form__submit:disabled { opacity: .6; cursor: wait; transform: none; }
+
+/* ===== Vista Éxito ===== */
+.rsvp-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 6px 4px 4px;
+  text-align: center;
+  animation: rsvpSuccessIn .55s cubic-bezier(.2,.7,.2,1) both;
+}
+.rsvp-success[hidden] { display: none; }
+@keyframes rsvpSuccessIn {
+  from { opacity: 0; transform: translateY(10px) scale(.97); }
+  to { opacity: 1; transform: none; }
+}
+.rsvp-success .section-kicker { color: var(--olive-dark); }
+.rsvp-success__check { width: 72px; height: 72px; color: var(--olive-dark); }
+.rsvp-success__check svg { width: 100%; height: 100%; display: block; }
+.rsvp-success__check path { stroke-dasharray: 40; stroke-dashoffset: 40; animation: checkDraw .8s ease .25s forwards; }
+.rsvp-success__text {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  line-height: 1.55;
+  color: var(--ink-dark);
+  max-width: 380px;
+}
+.rsvp-success__whatsapp {
+  width: 100%;
+  margin-top: 6px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(109,119,67,.18);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+.rsvp-success__whatsapp-title {
+  font-family: var(--sans);
+  font-size: .58rem;
+  font-weight: 500;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--muted-dark);
+  text-align: center;
+}
+.rsvp-success__whatsapp-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+}
+.rsvp-wa-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px 10px 12px;
+  border: 1px solid rgba(109,119,67,.28);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--olive-dark);
+  font-family: var(--sans);
+  font-size: .6rem;
+  font-weight: 500;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: transform .3s ease, border-color .3s ease, box-shadow .3s ease, background .3s ease;
+  flex: 1 1 0;
+  min-width: 140px;
+  justify-content: flex-start;
+}
+.rsvp-wa-btn:hover {
+  transform: translateY(-2px);
+  border-color: var(--olive-dark);
+  box-shadow: 0 8px 18px rgba(60,66,32,.12);
+  background: #fffdf8;
+}
+.rsvp-wa-btn__initial {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--olive-veil);
+  color: var(--olive-dark);
+  font-family: var(--serif);
+  font-size: .85rem;
+  font-weight: 600;
+  flex: none;
+}
+.rsvp-wa-btn__name { line-height: 1; }
+.rsvp-success__reset {
+  margin-top: 6px;
+  border: 1px solid rgba(109,119,67,.3);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted-dark);
+  font-family: var(--sans);
+  font-size: .58rem;
+  font-weight: 500;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  padding: 9px 18px;
+  cursor: pointer;
+  transition: .25s;
+}
+.rsvp-success__reset:hover { background: var(--olive-dark); color: #fff; border-color: var(--olive-dark); }
+
+@media (max-width: 480px) {
+  .rsvp-success__whatsapp-buttons { flex-direction: column; }
+  .rsvp-wa-btn { min-width: 100%; justify-content: center; padding-left: 16px; }
 }

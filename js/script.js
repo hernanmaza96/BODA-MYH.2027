@@ -92,22 +92,18 @@ const CONFIG = {
     defaultName: 'Familia Invitada',
     defaultCount: 1
   },
-  /* ==== Google Apps Script Web App (RSVP + Playlist) ==== */
   appsScript: {
     url: 'https://script.google.com/macros/s/AKfycby0xaHxbRE7fLqq1mNkDxJqmdqKaNUkFAlLFkvsBN8wMWm9ZlcF6rb9BMomruMy623KsA/exec'
   }
 };
 
-const RSVP_STORAGE_KEY = 'mh-rsvp-v1';
+const RSVP_STORAGE_KEY = 'mh-rsvp-v2';
 const MUSIC_STORAGE_KEY = 'mh-music-v1';
 const ENVELOPE_STORAGE_KEY = 'mh-opened-v1';
 const PLAYLIST_DRAFT_KEY = 'mh-playlist-draft-v1';
 
 /* ============================================================
-   GOOGLE APPS SCRIPT — envío de datos
-   Usamos text/plain para evitar el preflight CORS, porque
-   Apps Script no responde a OPTIONS. El script parsea
-   e.postData.contents con JSON.parse().
+   GOOGLE APPS SCRIPT — envío
    ============================================================ */
 const SheetsAPI = (() => {
   async function send(payload) {
@@ -131,7 +127,6 @@ const SheetsAPI = (() => {
       });
       return { ok: true };
     } catch (err) {
-      // Fallback: GET con parámetro payload (Apps Script también lo lee)
       try {
         const params = new URLSearchParams({ payload: body });
         const img = new Image();
@@ -191,7 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
           raf = null;
         });
       }, { passive: true });
-      const hoverTargets = 'a, button, .gallery-item, .contact-card, .copy-button, .map-toggle';
+      const hoverTargets = 'a, button, .gallery-item, .copy-button, .map-toggle, .rsvp-wa-btn';
       document.querySelectorAll(hoverTargets).forEach(el => {
         el.addEventListener('mouseenter', () => cursor.classList.add('is-hover'));
         el.addEventListener('mouseleave', () => cursor.classList.remove('is-hover'));
@@ -818,7 +813,6 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // 1) Guardar en Google Sheets (Apps Script)
     SheetsAPI.send({
       type: 'playlist',
       name: name || guestName,
@@ -828,7 +822,6 @@ document.addEventListener('DOMContentLoaded', () => {
       totalSongs: entries.length
     });
 
-    // 2) Abrir WhatsApp con el mensaje prearmado
     let text = '';
     if (entries.length === 1) {
       const e0 = entries[0];
@@ -951,52 +944,65 @@ document.addEventListener('DOMContentLoaded', () => {
   const EVENT_PLACE = CONFIG.event.place;
   const MAP_LINK = CONFIG.event.mapLink;
 
+  /* ----- refs DOM ----- */
   const modal = document.getElementById('contact-modal');
   const modalClose = document.getElementById('modal-close');
   const modalOverlay = document.getElementById('modal-overlay');
-  const summary = document.getElementById('modal-action-summary');
-  const lessContainer = document.getElementById('less-guests-container');
-  const lessSelect = document.getElementById('less-guests-select');
-  const groomLink = document.getElementById('whatsapp-groom');
-  const brideLink = document.getElementById('whatsapp-bride');
+  const modalSummary = document.getElementById('modal-action-summary');
   const confirmActions = document.getElementById('confirm-actions');
   const confirmDone = document.getElementById('confirm-done');
   const confirmDoneText = document.getElementById('confirm-done-text');
   const confirmDoneReset = document.getElementById('confirm-done-reset');
+
+  const rsvpFormWrap = document.getElementById('rsvp-form-wrap');
+  const rsvpForm = document.getElementById('rsvp-form');
+  const rsvpName = document.getElementById('rsvp-name');
+  const rsvpGuests = document.getElementById('rsvp-guests');
+  const rsvpGuestsField = document.getElementById('rsvp-guests-field');
+  const rsvpMessage = document.getElementById('rsvp-message');
+  const rsvpSubmit = document.getElementById('rsvp-submit');
+
+  const rsvpSuccess = document.getElementById('rsvp-success');
+  const rsvpSuccessText = document.getElementById('rsvp-success-text');
+  const rsvpSuccessReset = document.getElementById('rsvp-success-reset');
+  const waOptionalGroom = document.getElementById('wa-optional-groom');
+  const waOptionalBride = document.getElementById('wa-optional-bride');
+
   let action = 'all';
 
-  function setupLessGuests() {
-    if (!lessSelect) return;
-    lessSelect.innerHTML = '';
-    for (let i = 1; i < totalGuests; i++) {
-      const option = document.createElement('option');
-      option.value = i;
-      option.textContent = `${i} ${i === 1 ? 'persona' : 'personas'}`;
-      lessSelect.appendChild(option);
+  /* ----- helpers RSVP ----- */
+  function fillGuestsOptions(maxAllowed) {
+    if (!rsvpGuests) return;
+    rsvpGuests.innerHTML = '';
+    const min = 1;
+    const max = Math.max(min, maxAllowed);
+    for (let i = min; i <= max; i++) {
+      const opt = document.createElement('option');
+      opt.value = i;
+      opt.textContent = `${i} ${i === 1 ? 'persona' : 'personas'}`;
+      rsvpGuests.appendChild(opt);
     }
-    if (!lessSelect.options.length) {
-      const option = document.createElement('option');
-      option.value = 1;
-      option.textContent = '1 persona';
-      lessSelect.appendChild(option);
-    }
+    rsvpGuests.value = max;
   }
 
-  function buildMessage() {
-    if (action === 'all') return `¡Hola! Confirmo mi asistencia a la boda. 💍✨\n\nNombre: ${guestName}\nAsistentes: ${totalGuests} ${totalGuests === 1 ? 'persona' : 'personas'}\nLugar: ${EVENT_PLACE}\nUbicación: ${MAP_LINK}\n\n¡Nos vemos muy pronto!`;
+  function buildMessageForRsvp(name, confirmedCount, extraMessage) {
+    const safeName = name || guestName;
+    if (action === 'all') {
+      return `¡Hola! Confirmo mi asistencia a la boda. 💍✨\n\nNombre: ${safeName}\nAsistentes: ${confirmedCount} ${confirmedCount === 1 ? 'persona' : 'personas'}\nLugar: ${EVENT_PLACE}\nUbicación: ${MAP_LINK}\n\n¡Nos vemos muy pronto!`;
+    }
     if (action === 'less') {
-      const selected = Number(lessSelect?.value || 1);
-      return `¡Hola! Confirmo asistencia parcial a la boda. 💍✨\n\nNombre: ${guestName}\nAsistentes confirmados: ${selected} de ${totalGuests}\nLugar: ${EVENT_PLACE}\nUbicación: ${MAP_LINK}\n\n¡Muchas gracias!`;
+      return `¡Hola! Confirmo asistencia parcial a la boda. 💍✨\n\nNombre: ${safeName}\nAsistentes confirmados: ${confirmedCount} de ${totalGuests}\nLugar: ${EVENT_PLACE}\nUbicación: ${MAP_LINK}\n\n¡Muchas gracias!`;
     }
-    return `¡Hola! Lamentablemente no podremos acompañarlos en la boda. ❤️\n\nNombre: ${guestName}\nLugar: ${EVENT_PLACE}\n\nLes deseamos lo mejor en este día tan especial.`;
+    return `¡Hola! Lamentablemente no podremos acompañarlos en la boda. ❤️\n\nNombre: ${safeName}\nLugar: ${EVENT_PLACE}\n\nLes deseamos lo mejor en este día tan especial.`;
   }
 
-  function updateWhatsAppLinks() {
-    const encoded = encodeURIComponent(buildMessage());
-    if (groomLink) groomLink.href = `https://wa.me/${PHONE_GROOM}?text=${encoded}`;
-    if (brideLink) brideLink.href = `https://wa.me/${PHONE_BRIDE}?text=${encoded}`;
+  function buildWhatsAppUrl(recipient, name, confirmedCount, extraMessage) {
+    const phone = recipient === 'María' ? PHONE_BRIDE : PHONE_GROOM;
+    const msg = buildMessageForRsvp(name, confirmedCount, extraMessage);
+    return `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
   }
 
+  /* ----- persistencia ----- */
   function loadRsvp() {
     try {
       const raw = localStorage.getItem(RSVP_STORAGE_KEY);
@@ -1004,13 +1010,12 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (_) { return null; }
   }
 
-  function saveRsvp(type, count) {
+  function saveRsvp(data) {
     try {
       localStorage.setItem(RSVP_STORAGE_KEY, JSON.stringify({
-        type,
-        count: count || 0,
+        ...data,
         guests: totalGuests,
-        name: guestName,
+        totalGuests,
         timestamp: Date.now()
       }));
     } catch (_) {}
@@ -1022,63 +1027,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function getRsvpMessage(saved) {
     if (!saved) return '';
-    if (saved.type === 'all') {
-      return `Confirmaste tu asistencia para ${saved.guests} ${saved.guests === 1 ? 'persona' : 'personas'}. ¡Nos vemos pronto! ✨`;
+    const name = saved.name ? `, ${saved.name}` : '';
+    if (saved.action === 'all') {
+      return `¡Gracias${name}! Confirmamos tu asistencia para ${saved.confirmedGuests} ${saved.confirmedGuests === 1 ? 'persona' : 'personas'}. ¡Nos vemos pronto! ✨`;
     }
-    if (saved.type === 'less') {
-      return `Confirmaste que asistirán ${saved.count} de ${saved.guests} personas. ¡Gracias por avisarnos! ✨`;
+    if (saved.action === 'less') {
+      return `¡Gracias${name}! Confirmamos que asistirán ${saved.confirmedGuests} de ${saved.totalGuests} personas. ¡Gracias por avisarnos! ✨`;
     }
-    return `Registramos que no podrán acompañarnos. Gracias por avisarnos. ❤️`;
+    return `Gracias${name} por avisarnos. Los vamos a extrañar. ❤️`;
   }
 
-  /* ---- Bloque opcional de WhatsApp dentro del confirm-done ---- */
-  function ensureOptionalWhatsAppBlock() {
-    if (!confirmDone) return;
-    if (document.getElementById('confirm-whatsapp-optional')) return;
-
-    const wrap = document.createElement('div');
-    wrap.id = 'confirm-whatsapp-optional';
-    wrap.style.marginTop = '14px';
-    wrap.style.display = 'flex';
-    wrap.style.flexDirection = 'column';
-    wrap.style.gap = '10px';
-    wrap.style.alignItems = 'center';
-    wrap.style.width = '100%';
-    wrap.innerHTML = `
-      <span style="font-family:var(--sans);font-size:.55rem;letter-spacing:.24em;text-transform:uppercase;color:var(--gold-light);opacity:.85;text-align:center;">
-        ¿Querés avisarnos por WhatsApp también?
-      </span>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;">
-        <a href="#" id="wa-optional-groom" target="_blank" rel="noopener noreferrer"
-           style="border:1px solid rgba(214,185,135,.5);border-radius:999px;padding:9px 16px;color:var(--gold-light);font-family:var(--sans);font-size:.55rem;letter-spacing:.18em;text-transform:uppercase;text-decoration:none;transition:background .25s ease,color .25s ease;">
-          Avisar a Hernán
-        </a>
-        <a href="#" id="wa-optional-bride" target="_blank" rel="noopener noreferrer"
-           style="border:1px solid rgba(214,185,135,.5);border-radius:999px;padding:9px 16px;color:var(--gold-light);font-family:var(--sans);font-size:.55rem;letter-spacing:.18em;text-transform:uppercase;text-decoration:none;transition:background .25s ease,color .25s ease;">
-          Avisar a María
-        </a>
-      </div>
-    `;
-    const resetBtn = document.getElementById('confirm-done-reset');
-    if (resetBtn && resetBtn.parentNode === confirmDone) {
-      confirmDone.insertBefore(wrap, resetBtn);
-    } else {
-      confirmDone.appendChild(wrap);
-    }
-  }
-
-  function buildWhatsAppUrl(recipient) {
-    const phone = recipient === 'María' ? PHONE_BRIDE : PHONE_GROOM;
-    return `https://wa.me/${phone}?text=${encodeURIComponent(buildMessage())}`;
-  }
-
-  function updateOptionalWhatsAppLinks() {
-    const g = document.getElementById('wa-optional-groom');
-    const b = document.getElementById('wa-optional-bride');
-    if (g) g.href = buildWhatsAppUrl('Hernán');
-    if (b) b.href = buildWhatsAppUrl('María');
-  }
-
+  /* ----- vista confirm-done de la sección principal ----- */
   function renderRsvpDone(saved) {
     if (!confirmActions || !confirmDone) return;
     confirmActions.hidden = true;
@@ -1086,16 +1045,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (confirmDoneText) confirmDoneText.textContent = getRsvpMessage(saved);
     const path = confirmDone.querySelector('.confirm-done__check path');
     if (path) { path.style.animation = 'none'; void path.offsetWidth; path.style.animation = ''; }
-    ensureOptionalWhatsAppBlock();
-    updateOptionalWhatsAppLinks();
   }
 
   function renderRsvpActions() {
     if (!confirmActions || !confirmDone) return;
     confirmActions.hidden = false;
     confirmDone.hidden = true;
-    const opt = document.getElementById('confirm-whatsapp-optional');
-    if (opt) opt.remove();
   }
 
   const savedRsvp = loadRsvp();
@@ -1107,20 +1062,40 @@ document.addEventListener('DOMContentLoaded', () => {
     renderRsvpActions();
   });
 
+  /* ============================================================
+     MODAL RSVP
+     ============================================================ */
   function openModal(type) {
     action = type;
+
+    // Configurar títulos y campos según acción
+    const titleEl = document.getElementById('modal-title');
     if (type === 'all') {
-      if (summary) summary.textContent = `Confirmando asistencia para ${totalGuests} ${totalGuests === 1 ? 'persona' : 'personas'}.`;
-      lessContainer?.setAttribute('hidden', '');
+      if (titleEl) titleEl.textContent = 'Confirmá tu asistencia';
+      if (modalSummary) modalSummary.textContent = `Tu invitación es para ${totalGuests} ${totalGuests === 1 ? 'persona' : 'personas'}. Completá los datos para confirmar.`;
+      rsvpGuestsField?.removeAttribute('hidden');
+      fillGuestsOptions(totalGuests);
     } else if (type === 'less') {
-      if (summary) summary.textContent = 'Elegí cuántas personas asistirán.';
-      setupLessGuests();
-      lessContainer?.removeAttribute('hidden');
+      if (titleEl) titleEl.textContent = '¿Cuántas personas asistirán?';
+      if (modalSummary) modalSummary.textContent = `Tu invitación es para ${totalGuests} ${totalGuests === 1 ? 'persona' : 'personas'}. Indicá cuántas podrán venir.`;
+      rsvpGuestsField?.removeAttribute('hidden');
+      fillGuestsOptions(Math.max(1, totalGuests - 1));
     } else {
-      if (summary) summary.textContent = 'Vamos a enviar que no podremos acompañarlos.';
-      lessContainer?.setAttribute('hidden', '');
+      if (titleEl) titleEl.textContent = 'Nos avisás que no van a poder';
+      if (modalSummary) modalSummary.textContent = 'Dejanos tu nombre y, si querés, un mensaje. Los vamos a extrañar.';
+      rsvpGuestsField?.setAttribute('hidden', '');
     }
-    updateWhatsAppLinks();
+
+    // Prellenar formulario
+    if (rsvpName) rsvpName.value = (guestName && guestName !== CONFIG.guest.defaultName) ? guestName : '';
+    if (rsvpMessage) rsvpMessage.value = '';
+
+    // Mostrar form, ocultar éxito
+    rsvpFormWrap?.removeAttribute('hidden');
+    rsvpSuccess?.setAttribute('hidden', '');
+    rsvpSuccess?.setAttribute('aria-hidden', 'true');
+
+    // Abrir modal
     modal?.classList.add('is-open');
     modal?.setAttribute('aria-hidden', 'false');
     document.body.classList.add('modal-open');
@@ -1138,61 +1113,88 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btn-decline')?.addEventListener('click', () => openModal('none'));
   modalClose?.addEventListener('click', closeModal);
   modalOverlay?.addEventListener('click', closeModal);
-  lessSelect?.addEventListener('change', updateWhatsAppLinks);
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape' && modal?.classList.contains('is-open')) closeModal();
   });
 
   /* ============================================================
-     HANDLE RSVP → Google Sheets (guarda directo, SIN abrir WhatsApp)
-     Las tarjetas del modal ahora solo envían al Sheet y muestran el
-     estado confirmado. WhatsApp queda como opción secundaria en el
-     bloque de confirmación (botones "Avisar a Hernán / María").
+     SUBMIT DEL FORMULARIO RSVP
      ============================================================ */
-  async function handleRsvpClick(e) {
+  rsvpForm?.addEventListener('submit', async e => {
     e.preventDefault();
 
-    const clickedId = e.currentTarget?.id;
-    const recipient = clickedId === 'whatsapp-bride' ? 'María' : 'Hernán';
-    const selectedCount = action === 'less' ? Number(lessSelect?.value || 1) : totalGuests;
+    const name = String(rsvpName?.value || '').trim();
+    const message = String(rsvpMessage?.value || '').trim();
+    const confirmedCount = action === 'none' ? 0 : Number(rsvpGuests?.value || totalGuests);
 
-    saveRsvp(action, selectedCount);
+    if (!name) {
+      Toast.show('Completá tu nombre para confirmar', 'info');
+      rsvpName?.focus();
+      return;
+    }
 
+    if (rsvpSubmit) {
+      rsvpSubmit.disabled = true;
+      const span = rsvpSubmit.querySelector('span');
+      if (span) span.textContent = 'Enviando…';
+    }
+
+    // Guardar localmente
+    saveRsvp({
+      action,
+      name,
+      confirmedGuests: confirmedCount,
+      message
+    });
+
+    // Enviar a Sheets
     let statusText = 'confirmado';
     if (action === 'less') statusText = 'confirmado parcialmente';
     if (action === 'none') statusText = 'rechazado';
 
-    const payload = {
+    const res = await SheetsAPI.send({
       type: 'rsvp',
-      name: guestName,
+      name,
       guests: totalGuests,
-      confirmedGuests: action === 'none' ? 0 : selectedCount,
+      confirmedGuests: confirmedCount,
       status: statusText,
       action,
-      recipient,
-      message: buildMessage()
-    };
+      message
+    });
 
-    // Feedback visual mientras se envía
-    const contactGrid = modal?.querySelector('.contact-grid');
-    if (contactGrid) contactGrid.style.opacity = '0.45';
+    if (rsvpSubmit) {
+      rsvpSubmit.disabled = false;
+      const span = rsvpSubmit.querySelector('span');
+      if (span) span.textContent = 'Confirmar';
+    }
 
-    const res = await SheetsAPI.send(payload);
+    // Mostrar vista de éxito
+    rsvpFormWrap?.setAttribute('hidden', '');
+    rsvpSuccess?.removeAttribute('hidden');
+    rsvpSuccess?.setAttribute('aria-hidden', 'false');
 
-    if (contactGrid) contactGrid.style.opacity = '';
+    const saved = loadRsvp();
+    if (rsvpSuccessText) rsvpSuccessText.textContent = getRsvpMessage(saved);
 
-    closeModal();
-    setTimeout(() => { renderRsvpDone(loadRsvp()); }, 250);
+    // Actualizar links de WhatsApp opcionales
+    if (waOptionalGroom) waOptionalGroom.href = buildWhatsAppUrl('Hernán', name, confirmedCount, message);
+    if (waOptionalBride) waOptionalBride.href = buildWhatsAppUrl('María', name, confirmedCount, message);
+
+    // Actualizar la vista principal de la sección
+    renderRsvpDone(saved);
 
     if (res.ok) {
       Toast.show('¡Listo! Guardamos tu respuesta 💛', 'heart', 3200);
     } else {
-      Toast.show('Guardamos tu respuesta. Si podés, avisanos por WhatsApp.', 'info', 3600);
+      Toast.show('Guardamos tu respuesta localmente. Si querés, avisanos por WhatsApp.', 'info', 3600);
     }
-  }
+  });
 
-  groomLink?.addEventListener('click', handleRsvpClick);
-  brideLink?.addEventListener('click', handleRsvpClick);
+  rsvpSuccessReset?.addEventListener('click', () => {
+    clearRsvp();
+    closeModal();
+    renderRsvpActions();
+  });
 
   /* ============================================================
      GALERÍA — lightbox
