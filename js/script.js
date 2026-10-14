@@ -91,6 +91,10 @@ const CONFIG = {
   guest: {
     defaultName: 'Familia Invitada',
     defaultCount: 1
+  },
+  /* ==== Google Apps Script Web App (RSVP + Playlist) ==== */
+  appsScript: {
+    url: 'https://script.google.com/macros/s/AKfycby0xaHxbRE7fLqq1mNkDxJqmdqKaNUkFAlLFkvsBN8wMWm9ZlcF6rb9BMomruMy623KsA/exec'
   }
 };
 
@@ -98,6 +102,50 @@ const RSVP_STORAGE_KEY = 'mh-rsvp-v1';
 const MUSIC_STORAGE_KEY = 'mh-music-v1';
 const ENVELOPE_STORAGE_KEY = 'mh-opened-v1';
 const PLAYLIST_DRAFT_KEY = 'mh-playlist-draft-v1';
+
+/* ============================================================
+   GOOGLE APPS SCRIPT — envío de datos
+   Usamos text/plain para evitar el preflight CORS, porque
+   Apps Script no responde a OPTIONS. El script parsea
+   e.postData.contents con JSON.parse().
+   ============================================================ */
+const SheetsAPI = (() => {
+  async function send(payload) {
+    const url = CONFIG.appsScript.url;
+    if (!url) { console.warn('[SheetsAPI] URL no configurada'); return { ok: false }; }
+
+    const body = JSON.stringify({
+      ...payload,
+      userAgent: navigator.userAgent,
+      referrer: document.referrer || '',
+      pageUrl: location.href,
+      timestamp: new Date().toISOString()
+    });
+
+    try {
+      await fetch(url, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body
+      });
+      return { ok: true };
+    } catch (err) {
+      // Fallback: GET con parámetro payload (Apps Script también lo lee)
+      try {
+        const params = new URLSearchParams({ payload: body });
+        const img = new Image();
+        img.src = `${url}?${params.toString()}`;
+        return { ok: true, fallback: true };
+      } catch (e2) {
+        console.warn('[SheetsAPI] Falló el envío', err);
+        return { ok: false, error: err };
+      }
+    }
+  }
+
+  return { send };
+})();
 
 /* ============================================================
    APP
@@ -111,7 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setTimeout(hideLoader, 800);
 
   /* ============================================================
-     REVEAL + cortina títulos
+     REVEAL
      ============================================================ */
   const reveal = document.querySelectorAll('.reveal-card, .reveal-section');
   if ('IntersectionObserver' in window && !reducedMotion) {
@@ -129,7 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ============================================================
-     CURSOR PERSONALIZADO (desktop only)
+     CURSOR
      ============================================================ */
   if (window.matchMedia('(hover:hover) and (pointer:fine)').matches && !reducedMotion) {
     const cursor = document.getElementById('cursor');
@@ -166,14 +214,11 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   /* ============================================================
-     MÚSICA · arranque automático
-     Los navegadores solo dejan sonar el audio después de un toque,
-     así que arranca solo cuando se puede y, si no, con el primer toque
-     (el sello del sobre). Si falla, reintenta en el siguiente toque.
+     MÚSICA
      ============================================================ */
   const MUSIC_VOLUME = 0.42;
   let musicFadeTimer = null;
-  let musicUserPaused = false;   // true solo si la persona la pausa con el botón
+  let musicUserPaused = false;
   let musicWanted = false;
   let musicRetryArmed = false;
 
@@ -196,7 +241,6 @@ document.addEventListener('DOMContentLoaded', () => {
     musicRetryArmed = true;
     const events = ['pointerup', 'touchend', 'click', 'keydown'];
     const retry = (e) => {
-      // el botón de música se encarga solo de su propio toque
       if (e && e.target && e.target.closest && e.target.closest('#music-toggle')) return;
       events.forEach(ev => window.removeEventListener(ev, retry, true));
       musicRetryArmed = false;
@@ -224,7 +268,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Si el sistema pausó la música (llamada, bloqueo de pantalla), retoma al volver
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState !== 'visible' || !musicWanted || musicUserPaused) return;
     const audio = document.getElementById('wedding-audio');
@@ -258,7 +301,6 @@ document.addEventListener('DOMContentLoaded', () => {
   envelope?.addEventListener('keydown', e => {
     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openInvitation(); }
   });
-  // Timeout de seguridad (nunca dejar bloqueada la pantalla)
   setTimeout(() => {
     if (document.getElementById('envelope-opening')) finishOpening();
   }, 15000);
@@ -378,7 +420,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ============================================================
-     RSVP DEADLINE INTELIGENTE
+     RSVP DEADLINE
      ============================================================ */
   const deadlineEl = document.getElementById('confirm-deadline');
   if (deadlineEl) {
@@ -755,7 +797,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.key === 'Escape' && playlistModal?.classList.contains('is-open')) closePlaylistModal();
   });
 
-  playlistForm?.addEventListener('submit', e => {
+  playlistForm?.addEventListener('submit', async e => {
     e.preventDefault();
     const data = new FormData(playlistForm);
     const songs = data.getAll('song[]').map(s => String(s).trim());
@@ -776,6 +818,17 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
+    // 1) Guardar en Google Sheets (Apps Script)
+    SheetsAPI.send({
+      type: 'playlist',
+      name: name || guestName,
+      message,
+      songs: entries,
+      guests: totalGuests,
+      totalSongs: entries.length
+    });
+
+    // 2) Abrir WhatsApp con el mensaje prearmado
     let text = '';
     if (entries.length === 1) {
       const e0 = entries[0];
@@ -823,7 +876,7 @@ document.addEventListener('DOMContentLoaded', () => {
   toggleNav();
 
   /* ============================================================
-     MÚSICA
+     MÚSICA (toggle)
      ============================================================ */
   const music = document.getElementById('wedding-audio');
   const musicPlayer = document.getElementById('music-player');
@@ -1038,9 +1091,34 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.key === 'Escape' && modal?.classList.contains('is-open')) closeModal();
   });
 
-  function handleRsvpClick() {
-    const count = action === 'less' ? Number(lessSelect?.value || 1) : totalGuests;
-    saveRsvp(action, count);
+  /* ============================================================
+     HANDLE RSVP → Google Sheets + WhatsApp
+     ============================================================ */
+  function handleRsvpClick(e) {
+    // ¿Es Hernán o María? Detectamos por el href del link que se clickeó.
+    const clickedId = e.currentTarget?.id;
+    const recipient = clickedId === 'whatsapp-bride' ? 'María' : 'Hernán';
+    const selectedCount = action === 'less' ? Number(lessSelect?.value || 1) : totalGuests;
+
+    // Guardamos localmente
+    saveRsvp(action, selectedCount);
+
+    // Enviamos al Google Sheets (Apps Script)
+    let statusText = 'confirmado';
+    if (action === 'less') statusText = 'confirmado parcialmente';
+    if (action === 'none') statusText = 'rechazado';
+
+    SheetsAPI.send({
+      type: 'rsvp',
+      name: guestName,
+      guests: totalGuests,
+      confirmedGuests: action === 'none' ? 0 : selectedCount,
+      status: statusText,
+      action,
+      recipient,
+      message: buildMessage()
+    });
+
     setTimeout(() => { renderRsvpDone(loadRsvp()); }, 400);
     Toast.show('Guardamos tu respuesta. Confirmá en WhatsApp para avisarnos.', 'heart', 3200);
   }
@@ -1110,7 +1188,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }, { passive: true });
 
   /* ============================================================
-     MAPA — toggle satélite + teclado
+     MAPA — toggle satélite
      ============================================================ */
   const mapIframe = document.getElementById('map-iframe');
   const mapToggle = document.getElementById('map-toggle');
@@ -1147,7 +1225,7 @@ document.addEventListener('DOMContentLoaded', () => {
   updateThemeColor();
 
   /* ============================================================
-     TÍTULO ROTATIVO POR SECCIÓN
+     TÍTULO ROTATIVO
      ============================================================ */
   const TITLES = {
     default: 'María & Hernán · Nuestra boda',
@@ -1195,7 +1273,7 @@ document.addEventListener('DOMContentLoaded', () => {
   checkPostBoda();
 
   /* ============================================================
-     EASTER EGG: CÓDIGO KONAMI
+     EASTER EGG: KONAMI
      ============================================================ */
   const KONAMI = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
   let konamiIndex = 0;
@@ -1226,7 +1304,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ============================================================
-     FOCUS TRAP GLOBAL EN MODALES
+     FOCUS TRAP GLOBAL
      ============================================================ */
   document.addEventListener('keydown', e => {
     if (e.key !== 'Tab') return;

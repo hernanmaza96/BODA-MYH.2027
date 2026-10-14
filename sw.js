@@ -3,7 +3,7 @@
 // Estrategia: precache de assets críticos + stale-while-revalidate
 // ============================================================
 
-const CACHE = 'myh-v5';
+const CACHE = 'myh-v6';
 const PRECACHE = [
   './',
   './index.html',
@@ -46,15 +46,16 @@ self.addEventListener('activate', (e) => {
   );
 });
 
-// Fetch: stale-while-revalidate (sirve caché al instante, actualiza en background)
+// Fetch: stale-while-revalidate
 self.addEventListener('fetch', (e) => {
   if (e.request.method !== 'GET') return;
 
   const url = new URL(e.request.url);
+
+  // No interceptar peticiones cross-origin (ej: Google Apps Script)
   if (url.origin !== self.location.origin) return;
 
-  // El audio NO se intercepta: Safari/iOS pide el archivo por partes (Range) y
-  // si el caché devuelve el archivo entero, la música no arranca.
+  // El audio NO se intercepta (Safari/iOS pide por Range)
   if (e.request.headers.has('range') || e.request.destination === 'audio' || url.pathname.endsWith('.mp3')) return;
 
   e.respondWith(
