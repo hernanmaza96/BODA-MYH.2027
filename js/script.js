@@ -75,7 +75,7 @@ const CONFIG = {
   },
   event: {
     place: 'Urbana Lounge',
-    mapLink: 'https://maps.app.goo.gl/ZsN1QgvrcwLaLR7JA',
+    mapLink: 'https://www.google.com/maps?q=-37.8745289,-58.289135&z=17&hl=es',
     isoTimestamp: '2027-02-20T19:00:00-03:00',
     endTimestamp: '2027-02-21T01:00:00-03:00',
     rsvpDeadline: '2027-01-10T23:59:59-03:00',
@@ -169,29 +169,6 @@ document.addEventListener('DOMContentLoaded', () => {
     reveal.forEach(el => observer.observe(el));
   } else {
     reveal.forEach(el => el.classList.add('is-visible'));
-  }
-
-  /* ============================================================
-     CURSOR
-     ============================================================ */
-  if (window.matchMedia('(hover:hover) and (pointer:fine)').matches && !reducedMotion) {
-    const cursor = document.getElementById('cursor');
-    if (cursor) {
-      document.body.classList.add('has-cursor');
-      let raf = null, x = 0, y = 0;
-      window.addEventListener('mousemove', e => {
-        x = e.clientX; y = e.clientY;
-        if (!raf) raf = requestAnimationFrame(() => {
-          cursor.style.transform = `translate(${x}px,${y}px) translate(-50%,-50%)`;
-          raf = null;
-        });
-      }, { passive: true });
-      const hoverTargets = 'a, button, .gallery-item, .copy-button, .map-toggle, .rsvp-wa-btn';
-      document.querySelectorAll(hoverTargets).forEach(el => {
-        el.addEventListener('mouseenter', () => cursor.classList.add('is-hover'));
-        el.addEventListener('mouseleave', () => cursor.classList.remove('is-hover'));
-      });
-    }
   }
 
   /* ============================================================
@@ -1146,6 +1123,7 @@ document.addEventListener('DOMContentLoaded', () => {
     saveRsvp({
       action,
       name,
+      contact,
       confirmedGuests: confirmedCount,
       message
     });
@@ -1158,11 +1136,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const res = await SheetsAPI.send({
       type: 'rsvp',
       name,
+      contact,
       guests: totalGuests,
       confirmedGuests: confirmedCount,
       status: statusText,
       action,
-      contact,
       message
     });
 
@@ -1267,8 +1245,8 @@ document.addEventListener('DOMContentLoaded', () => {
      ============================================================ */
   const mapIframe = document.getElementById('map-iframe');
   const mapToggle = document.getElementById('map-toggle');
-  const MAP_SRC_SAT = 'https://www.google.com/maps/embed?pb=!1m13!1m8!1m3!1d1228.1822814795387!2d-58.2904493!3d-37.8744294!3m2!1i1024!2i768!4f13.1!3m2!1m1!2s!5e1!3m2!1ses!2sar!4v1791673363669!5m2!1ses!2sar&t=k';
-  const MAP_SRC_NORMAL = 'https://www.google.com/maps/embed?pb=!1m13!1m8!1m3!1d1228.1822814795387!2d-58.2904493!3d-37.8744294!3m2!1i1024!2i768!4f13.1!3m2!1m1!2s!5e1!3m2!1ses!2sar!4v1791673363669!5m2!1ses!2sar';
+  const MAP_SRC_SAT = 'https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d2456.3945676431235!2d-58.2901971582274!3d-37.873529537009674!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMzfCsDUyJzI4LjMiUyA1OMKwMTcnMjAuOSJX!5e1!3m2!1ses!2sar!4v1792075270424!5m2!1ses!2sar&t=k';
+  const MAP_SRC_NORMAL = 'https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d2456.3945676431235!2d-58.2901971582274!3d-37.873529537009674!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMzfCsDUyJzI4LjMiUyA1OMKwMTcnMjAuOSJX!5e1!3m2!1ses!2sar!4v1792075270424!5m2!1ses!2sar';
   let mapIsSat = false;
 
   mapToggle?.addEventListener('click', () => {

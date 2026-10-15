@@ -74,7 +74,13 @@
           "addressLocality": "Mar del Plata",
           "addressRegion": "Buenos Aires",
           "addressCountry": "AR"
-        }
+        },
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": -37.8745289,
+          "longitude": -58.289135
+        },
+        "hasMap": "https://www.google.com/maps?q=-37.8745289,-58.289135"
       },
       "image": ["https://hernanmaza96.github.io/BODA-MYH.2027/img/og-boda.jpg"],
       "description": "Ceremonia y recepción en Urbana Lounge. ¡Te esperamos para celebrar juntos!",
@@ -87,7 +93,6 @@
   </head>
   <body>
     <div class="grain" aria-hidden="true"></div>
-    <div class="cursor" id="cursor" aria-hidden="true"><span></span></div>
     <div class="toast-container" id="toast-container" aria-live="polite" aria-atomic="true"></div>
 
     <div class="page-loader" id="page-loader" aria-hidden="true"><span></span></div>
@@ -123,7 +128,7 @@
     <!-- ===================== NAV ===================== -->
     <nav class="floating-nav" id="floating-nav" aria-label="Navegación de la invitación">
       <a href="#portada">Inicio</a>
-      <a href="#gran-dia">Nuestro día</a>
+      <a href="#gran-dia">Nuestra celebración</a>
       <a href="#vestimenta">Vestimenta</a>
       <a href="#playlist">Playlist</a>
       <a href="#galeria">Fotos</a>
@@ -287,15 +292,15 @@
                 <div><span class="location-points__icon">P</span><p><strong>Estacionamiento</strong><small>Incluido para invitados</small></p></div>
               </div>
               <div class="location-actions">
-                <a class="location-map-button" href="https://maps.app.goo.gl/ZsN1QgvrcwLaLR7JA" target="_blank" rel="noopener noreferrer"><span>Cómo llegar</span><b>↗</b></a>
-                <a class="location-map-button location-map-button--waze" href="https://waze.com/ul?ll=-37.8744294,-58.2904493&navigate=yes" target="_blank" rel="noopener noreferrer"><span>Abrir en Waze</span><b>→</b></a>
+                <a class="location-map-button" href="https://www.google.com/maps?q=-37.8745289,-58.289135&z=17&hl=es" target="_blank" rel="noopener noreferrer"><span>Cómo llegar</span><b>↗</b></a>
+                <a class="location-map-button location-map-button--waze" href="https://waze.com/ul?ll=-37.8745289,-58.289135&navigate=yes" target="_blank" rel="noopener noreferrer"><span>Abrir en Waze</span><b>→</b></a>
               </div>
             </div>
             <div class="location-feature__map">
               <div class="map-label"><span>UBICACIÓN</span><strong>Urbana Lounge</strong></div>
               <button type="button" class="map-toggle" id="map-toggle" aria-label="Cambiar vista del mapa"><span class="map-toggle__label">Satélite</span></button>
-              <a class="map-link" href="https://maps.app.goo.gl/ZsN1QgvrcwLaLR7JA" target="_blank" rel="noopener noreferrer" aria-label="Abrir ubicación de Urbana Lounge en Google Maps">
-                <iframe class="map-iframe" id="map-iframe" src="https://www.google.com/maps/embed?pb=!1m13!1m8!1m3!1d1228.1822814795387!2d-58.2904493!3d-37.8744294!3m2!1i1024!2i768!4f13.1!3m2!1m1!2s!5e1!3m2!1ses!2sar!4v1791673363669!5m2!1ses!2sar" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin" title="Mapa de Urbana Lounge" tabindex="-1"></iframe>
+              <a class="map-link" href="https://www.google.com/maps?q=-37.8745289,-58.289135&z=17&hl=es" target="_blank" rel="noopener noreferrer" aria-label="Abrir ubicación de Urbana Lounge en Google Maps">
+                <iframe class="map-iframe" id="map-iframe" src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d2456.3945676431235!2d-58.2901971582274!3d-37.873529537009674!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMzfCsDUyJzI4LjMiUyA1OMKwMTcnMjAuOSJX!5e1!3m2!1ses!2sar!4v1792075270424!5m2!1ses!2sar" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin" title="Mapa de Urbana Lounge" tabindex="-1"></iframe>
               </a>
             </div>
           </div>
@@ -449,7 +454,7 @@
                 <span class="calendar__day calendar__day--heart"><svg class="calendar__heart" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span class="calendar__day-num">20</span></span>
                 <span class="calendar__day">21</span><span class="calendar__day">22</span><span class="calendar__day">23</span><span class="calendar__day">24</span><span class="calendar__day">25</span><span class="calendar__day">26</span><span class="calendar__day">27</span><span class="calendar__day">28</span>
               </div>
-              <div class="calendar__caption"><strong>Sábado 20 de febrero de 2027</strong><span>19:00 hs · Urbana Lounge</span></div>
+              <div class="calendar__caption"><strong>Sábado 20 de febrero de 2027</strong><span>19:00 hs</span></div>
             </div>
             <div class="countdown" id="countdown" data-countdown-date="2027-02-20T19:00:00-03:00" aria-label="Cuenta regresiva">
               <div class="countdown__item"><strong id="cd-days">00</strong><span>Días</span></div>
