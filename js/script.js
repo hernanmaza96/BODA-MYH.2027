@@ -93,7 +93,12 @@ const CONFIG = {
     defaultCount: 1
   },
   appsScript: {
+    // URL del Web App de Apps Script (RSVP + Playlist)
     url: 'https://script.google.com/macros/s/AKfycby0xaHxbRE7fLqq1mNkDxJqmdqKaNUkFAlLFkvsBN8wMWm9ZlcF6rb9BMomruMy623KsA/exec'
+  },
+  // Web App del formulario de playlist (Apps Script)
+  playlistApp: {
+    url: 'https://script.google.com/macros/s/AKfycbxe9DXL1m3cpvFdjk2MlwbC7QRvTSlmIo1z8Z4dgmOraBq5bxKCxzaQMZgtLMOImcz5JA/exec'
   }
 };
 
@@ -103,7 +108,7 @@ const ENVELOPE_STORAGE_KEY = 'mh-opened-v1';
 const PLAYLIST_DRAFT_KEY = 'mh-playlist-draft-v1';
 
 /* ============================================================
-   GOOGLE APPS SCRIPT — envío
+   GOOGLE APPS SCRIPT — envío (RSVP)
    ============================================================ */
 const SheetsAPI = (() => {
   async function send(payload) {
@@ -647,103 +652,42 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* ============================================================
-     PLAYLIST
+     PLAYLIST — embebida desde Apps Script
      ============================================================ */
   const playlistBtn = document.getElementById('playlist-btn');
   const playlistModal = document.getElementById('playlist-modal');
   const playlistOverlay = document.getElementById('playlist-overlay');
   const playlistClose = document.getElementById('playlist-modal-close');
-  const playlistForm = document.getElementById('playlist-form');
-  const playlistSongsContainer = document.getElementById('playlist-songs');
-  const playlistAddBtn = document.getElementById('playlist-add');
-  const playlistSuccess = document.getElementById('playlist-success');
+  const playlistFrame = document.getElementById('playlist-frame');
+  const playlistLoader = document.getElementById('playlist-loader');
 
-  let songIndex = 0;
-  let successTimer = null;
-
-  function createSongBlock(index) {
-    const block = document.createElement('div');
-    block.className = 'playlist-song';
-    block.setAttribute('data-song-block', '');
-    const songId = `playlist-song-${index}`;
-    const artistId = `playlist-artist-${index}`;
-    block.innerHTML = `
-      <div class="playlist-song__head">
-        <span class="playlist-song__num">Canción ${index + 1}</span>
-        <button type="button" class="playlist-song__remove" aria-label="Quitar esta canción" data-remove-song hidden>×</button>
-      </div>
-      <div class="playlist-field">
-        <label for="${songId}">Título <span>· opcional</span></label>
-        <input type="text" id="${songId}" name="song[]" placeholder="Ej: Bailando Bachata" autocomplete="off" />
-      </div>
-      <div class="playlist-field">
-        <label for="${artistId}">Artista <span>· opcional</span></label>
-        <input type="text" id="${artistId}" name="artist[]" placeholder="Ej: Chayanne" autocomplete="off" />
-      </div>
-    `;
-    return block;
+  function buildPlaylistUrl() {
+    const base = CONFIG.playlistApp.url;
+    if (!base) return '';
+    const params = new URLSearchParams();
+    if (guestName && guestName !== CONFIG.guest.defaultName) {
+      params.set('n', guestName);
+    }
+    const qs = params.toString();
+    return qs ? `${base}?${qs}` : base;
   }
-
-  function refreshSongNumbers() {
-    if (!playlistSongsContainer) return;
-    const blocks = playlistSongsContainer.querySelectorAll('[data-song-block]');
-    const total = blocks.length;
-    blocks.forEach((block, i) => {
-      const num = block.querySelector('.playlist-song__num');
-      if (num) num.textContent = `Canción ${i + 1}`;
-      const removeBtn = block.querySelector('[data-remove-song]');
-      if (removeBtn) removeBtn.hidden = (total === 1);
-    });
-  }
-
-  function resetSongs() {
-    if (!playlistSongsContainer) return;
-    playlistSongsContainer.innerHTML = '';
-    songIndex = 0;
-    playlistSongsContainer.appendChild(createSongBlock(0));
-    refreshSongNumbers();
-  }
-
-  function addSongBlock() {
-    if (!playlistSongsContainer) return;
-    songIndex++;
-    const block = createSongBlock(songIndex);
-    playlistSongsContainer.appendChild(block);
-    refreshSongNumbers();
-    setTimeout(() => {
-      const input = block.querySelector('input');
-      if (input) {
-        input.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'center' });
-        input.focus();
-      }
-    }, 60);
-  }
-
-  resetSongs();
-  playlistAddBtn?.addEventListener('click', addSongBlock);
-
-  playlistSongsContainer?.addEventListener('click', e => {
-    const removeBtn = e.target.closest('[data-remove-song]');
-    if (!removeBtn) return;
-    const blocks = playlistSongsContainer.querySelectorAll('[data-song-block]');
-    if (blocks.length <= 1) return;
-    const block = removeBtn.closest('[data-song-block]');
-    if (!block) return;
-    block.style.transition = 'opacity .25s ease, transform .25s ease';
-    block.style.opacity = '0';
-    block.style.transform = 'translateY(-6px)';
-    setTimeout(() => { block.remove(); refreshSongNumbers(); }, 220);
-  });
 
   function openPlaylistModal() {
     if (!playlistModal) return;
     playlistModal.classList.add('is-open');
     playlistModal.setAttribute('aria-hidden', 'false');
     document.body.classList.add('modal-open');
-    setTimeout(() => {
-      const first = document.getElementById('playlist-song-0');
-      first?.focus();
-    }, 60);
+
+    // Cargar el iframe solo la primera vez (lazy)
+    if (playlistFrame && !playlistFrame.src) {
+      const url = buildPlaylistUrl();
+      if (url) {
+        if (playlistLoader) playlistLoader.hidden = false;
+        playlistFrame.src = url;
+      }
+    }
+
+    setTimeout(() => playlistClose?.focus(), 60);
   }
 
   function closePlaylistModal() {
@@ -751,14 +695,6 @@ document.addEventListener('DOMContentLoaded', () => {
     playlistModal.classList.remove('is-open');
     playlistModal.setAttribute('aria-hidden', 'true');
     document.body.classList.remove('modal-open');
-    if (successTimer) { clearTimeout(successTimer); successTimer = null; }
-    setTimeout(() => {
-      if (playlistSuccess) {
-        playlistSuccess.hidden = true;
-        playlistSuccess.setAttribute('aria-hidden', 'true');
-      }
-      if (playlistForm) playlistForm.hidden = false;
-    }, 300);
   }
 
   playlistBtn?.addEventListener('click', openPlaylistModal);
@@ -769,71 +705,16 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.key === 'Escape' && playlistModal?.classList.contains('is-open')) closePlaylistModal();
   });
 
-  playlistForm?.addEventListener('submit', async e => {
-    e.preventDefault();
-    const data = new FormData(playlistForm);
-    const songs = data.getAll('song[]').map(s => String(s).trim());
-    const artists = data.getAll('artist[]').map(s => String(s).trim());
-    const name = String(data.get('name') || '').trim();
-    const message = String(data.get('message') || '').trim();
+  // Cuando el iframe termina de cargar, ocultamos el loader
+  playlistFrame?.addEventListener('load', () => {
+    if (playlistLoader) playlistLoader.hidden = true;
+  });
 
-    const entries = [];
-    const max = Math.max(songs.length, artists.length);
-    for (let i = 0; i < max; i++) {
-      const s = songs[i] || '';
-      const a = artists[i] || '';
-      if (s || a) entries.push({ song: s, artist: a });
-    }
-
-    if (entries.length === 0) {
-      Toast.show('Completá al menos una canción para enviarnos', 'info');
-      return;
-    }
-
-    SheetsAPI.send({
-      type: 'playlist',
-      name: name || guestName,
-      message,
-      songs: entries,
-      guests: totalGuests,
-      totalSongs: entries.length
-    });
-
-    let text = '';
-    if (entries.length === 1) {
-      const e0 = entries[0];
-      text = '¡Hola! Quiero recomendar una canción para la playlist de la boda 🎶\n\n';
-      if (e0.song)   text += `🎵 Canción: ${e0.song}\n`;
-      if (e0.artist) text += `🎤 Artista: ${e0.artist}\n`;
-    } else {
-      text = `¡Hola! Quiero recomendar ${entries.length} canciones para la playlist de la boda 🎶\n\n`;
-      entries.forEach((entry, i) => {
-        const parts = [];
-        if (entry.song)   parts.push(entry.song);
-        if (entry.artist) parts.push(entry.artist);
-        text += `${i + 1}. 🎵 ${parts.join(' · ')}\n`;
-      });
-    }
-    if (name)    text += `\n🙋 De parte de: ${name}`;
-    if (message) text += `\n💌 Mensaje: ${message}`;
-    text += '\n\n¡Gracias!';
-
-    window.open(`https://wa.me/${CONFIG.phones.bride}?text=${encodeURIComponent(text)}`, '_blank');
-
-    if (playlistForm && playlistSuccess) {
-      playlistForm.hidden = true;
-      playlistSuccess.hidden = false;
-      playlistSuccess.setAttribute('aria-hidden', 'false');
-      const path = playlistSuccess.querySelector('.playlist-success__check path');
-      if (path) { path.style.animation = 'none'; void path.offsetWidth; path.style.animation = ''; }
-      playlistForm.reset();
-      resetSongs();
-      try { localStorage.removeItem(PLAYLIST_DRAFT_KEY); } catch (_) {}
-      successTimer = setTimeout(() => closePlaylistModal(), 2600);
-    } else {
-      playlistForm.reset();
-      resetSongs();
-      setTimeout(() => closePlaylistModal(), 300);
+  // Mensajes desde el iframe (éxito del formulario)
+  window.addEventListener('message', (e) => {
+    if (!e || !e.data || typeof e.data !== 'object') return;
+    if (e.data.type === 'playlist-success') {
+      Toast.show('¡Gracias! Recibimos tus recomendaciones 🎶', 'heart', 3400);
     }
   });
 

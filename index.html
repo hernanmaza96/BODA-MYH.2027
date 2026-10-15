@@ -483,31 +483,23 @@
       <div class="olive-divider" aria-hidden="true"><svg viewBox="0 0 800 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 30 C 150 5, 300 55, 400 30 S 650 5, 800 30" stroke="currentColor" fill="none" stroke-width="1"/></svg></div>
     </main>
 
-    <!-- ===================== MODAL PLAYLIST ===================== -->
-    <div class="confirm-modal" id="playlist-modal" aria-hidden="true">
+    <!-- ===================== MODAL PLAYLIST (iframe Apps Script) ===================== -->
+    <div class="confirm-modal confirm-modal--playlist" id="playlist-modal" aria-hidden="true">
       <div class="modal-overlay" id="playlist-overlay"></div>
-      <div class="confirm-modal__card" role="dialog" aria-modal="true" aria-labelledby="playlist-modal-title">
+      <div class="confirm-modal__card confirm-modal__card--playlist" role="dialog" aria-modal="true" aria-labelledby="playlist-modal-title">
         <button class="modal-close" id="playlist-modal-close" type="button" aria-label="Cerrar">×</button>
-        <span class="section-kicker">Para bailar toda la noche</span>
-        <h3 id="playlist-modal-title">Recomendá tus canciones</h3>
-        <p class="modal-intro">Contanos qué temas no pueden faltar en la fiesta. Todos los campos son opcionales, completá lo que sepas. ♡</p>
-        <form class="playlist-form" id="playlist-form" novalidate>
-          <div class="playlist-songs" id="playlist-songs"></div>
-          <button type="button" class="playlist-add" id="playlist-add">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
-            <span>Agregar más canciones</span>
-          </button>
-          <hr class="playlist-divider" />
-          <div class="playlist-field"><label for="playlist-name">Tu nombre <span>· opcional</span></label><input type="text" id="playlist-name" name="name" placeholder="¿Cómo te llamás?" autocomplete="name" /></div>
-          <div class="playlist-field"><label for="playlist-message">Mensaje <span>· opcional</span></label><textarea id="playlist-message" name="message" rows="2" placeholder="Algo que quieras contarnos…"></textarea></div>
-          <div class="playlist-actions"><button type="submit" class="playlist-submit"><span>Enviar recomendación</span><b>→</b></button></div>
-        </form>
-        <div class="playlist-success" id="playlist-success" hidden aria-hidden="true">
-          <div class="playlist-success__check" aria-hidden="true">
-            <svg viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg"><circle cx="26" cy="26" r="24" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M15 27l7.5 7.5L38 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div class="playlist-embed" id="playlist-embed">
+          <div class="playlist-embed__loader" id="playlist-loader" aria-hidden="true">
+            <span class="playlist-embed__spinner"></span>
+            <span class="playlist-embed__loading-text">Cargando formulario…</span>
           </div>
-          <h4>¡Gracias!</h4>
-          <p>Recibimos tu recomendación 🎶</p>
+          <iframe
+            class="playlist-embed__frame"
+            id="playlist-frame"
+            title="Formulario de recomendación de canciones"
+            allow="clipboard-write"
+            loading="lazy"
+            referrerpolicy="strict-origin-when-cross-origin"></iframe>
         </div>
       </div>
     </div>

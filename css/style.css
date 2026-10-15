@@ -1572,3 +1572,80 @@ body.post-boda .gallery-section .section-heading h2::after{
   .rsvp-success__whatsapp-buttons { flex-direction: column; }
   .rsvp-wa-btn { min-width: 100%; justify-content: center; padding-left: 16px; }
 }
+/* ================================================================
+   MODAL PLAYLIST — iframe embebido desde Apps Script
+   ================================================================ */
+.confirm-modal__card--playlist{
+  padding:0;
+  width:min(720px,100%);
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+}
+.confirm-modal__card--playlist .modal-close{
+  position:absolute;
+  z-index:10;
+  background:rgba(247,243,232,.85);
+  backdrop-filter:blur(6px);
+  border-radius:50%;
+  transition:background .25s ease, transform .25s ease;
+}
+.confirm-modal__card--playlist .modal-close:hover{
+  background:rgba(247,243,232,1);
+  transform:rotate(90deg);
+}
+.playlist-embed{
+  position:relative;
+  width:100%;
+  height:min(80vh, 720px);
+  height:min(80dvh, 720px);
+  background:#f7f3e8;
+}
+.playlist-embed__frame{
+  width:100%;
+  height:100%;
+  border:0;
+  display:block;
+  background:#f7f3e8;
+}
+.playlist-embed__loader{
+  position:absolute;
+  inset:0;
+  z-index:5;
+  display:grid;
+  place-items:center;
+  gap:14px;
+  background:#f7f3e8;
+  color:#4c5429;
+  transition:opacity .35s ease;
+}
+.playlist-embed__loader[hidden]{
+  display:none;
+}
+.playlist-embed__spinner{
+  width:34px;
+  height:34px;
+  border:2px solid rgba(109,119,67,.2);
+  border-top-color:#4c5429;
+  border-radius:50%;
+  animation:spin .9s linear infinite;
+}
+.playlist-embed__loading-text{
+  font-family:'Jost',sans-serif;
+  font-size:.72rem;
+  font-weight:500;
+  letter-spacing:.2em;
+  text-transform:uppercase;
+  color:#4c5429;
+  opacity:.75;
+}
+@media(max-width:600px){
+  .confirm-modal__card--playlist{
+    width:100%;
+    max-height:92dvh;
+    border-radius:0;
+  }
+  .playlist-embed{
+    height:88dvh;
+  }
+}
