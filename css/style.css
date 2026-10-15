@@ -884,7 +884,7 @@ section{position:relative}
 @media(max-width:800px){
   .location-feature{grid-template-columns:1fr;min-height:0}
   .location-feature__map,.location-feature__map .map-iframe{min-height:400px;height:400px}
-  .music-player{right:12px;bottom:70px}
+  .music-player{right:12px;left:auto;top:max(12px,calc(env(safe-area-inset-top,0px) + 12px));bottom:auto;padding:8px}
   .music-player__copy{display:none}
   .music-player__button{width:52px;height:52px}
   .music-player__vinyl{width:50px;height:50px}
@@ -972,7 +972,6 @@ section{position:relative}
 @media(max-width:430px){
   .display-title{font-size:clamp(3rem,14vw,4.1rem)}
   .floating-nav a{font-size:.54rem;padding:8px 8px}
-  .music-player{bottom:66px;left:12px;right:auto}
   .timeline::before{left:68px}
   .timeline-item{grid-template-columns:50px 36px 1fr}
   .location-feature__info h3{font-size:3.15rem}
@@ -1047,7 +1046,7 @@ section{position:relative}
 }
 @media(max-width:800px){
   .floating-nav{ bottom:max(70px, calc(env(safe-area-inset-bottom, 0px) + 70px)); }
-  .music-player{ bottom:max(70px, calc(env(safe-area-inset-bottom, 0px) + 70px)); }
+  .music-player{ top:max(12px, calc(env(safe-area-inset-top, 0px) + 12px)); bottom:auto; }
 }
 
 /* ---------- Números old-style ---------- */
