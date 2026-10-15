@@ -3,7 +3,7 @@
 // Estrategia: precache de assets críticos + stale-while-revalidate
 // ============================================================
 
-const CACHE = 'myh-v11';
+const CACHE = 'myh-v12';
 const PRECACHE = [
   './',
   './index.html',
