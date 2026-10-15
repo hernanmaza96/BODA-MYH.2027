@@ -960,6 +960,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const rsvpGuests = document.getElementById('rsvp-guests');
   const rsvpGuestsField = document.getElementById('rsvp-guests-field');
   const rsvpMessage = document.getElementById('rsvp-message');
+  const rsvpContact = document.getElementById('rsvp-contact');
   const rsvpSubmit = document.getElementById('rsvp-submit');
 
   const rsvpSuccess = document.getElementById('rsvp-success');
@@ -1089,6 +1090,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Prellenar formulario
     if (rsvpName) rsvpName.value = (guestName && guestName !== CONFIG.guest.defaultName) ? guestName : '';
     if (rsvpMessage) rsvpMessage.value = '';
+    if (rsvpContact) rsvpContact.value = '';
 
     // Mostrar form, ocultar éxito
     rsvpFormWrap?.removeAttribute('hidden');
@@ -1125,6 +1127,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const name = String(rsvpName?.value || '').trim();
     const message = String(rsvpMessage?.value || '').trim();
+    const contact = String(rsvpContact?.value || '').trim();
     const confirmedCount = action === 'none' ? 0 : Number(rsvpGuests?.value || totalGuests);
 
     if (!name) {
@@ -1159,6 +1162,7 @@ document.addEventListener('DOMContentLoaded', () => {
       confirmedGuests: confirmedCount,
       status: statusText,
       action,
+      contact,
       message
     });
 
