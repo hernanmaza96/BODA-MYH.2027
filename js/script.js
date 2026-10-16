@@ -155,6 +155,49 @@ document.addEventListener('DOMContentLoaded', () => {
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const loader = document.getElementById('page-loader');
 
+  /* ============================================================
+     🧪 MODO TEST (solo para desarrollo)
+     URL: ?test=event-day  o  ?test=post-boda
+     Cuando no hay ?test, el comportamiento es el normal.
+     ============================================================ */
+  const testMode = new URLSearchParams(window.location.search).get('test');
+
+  // Marcar el modo en el body para que otras funciones lo detecten
+  if (testMode) {
+    document.body.dataset.testMode = testMode;
+  }
+
+  if (testMode === 'event-day') {
+    document.body.classList.add('event-day');
+    const banner = document.getElementById('event-day-banner');
+    if (banner) {
+      banner.innerHTML = '<span class="event-day-banner__emoji" aria-hidden="true">💍</span>' +
+        '<strong>¡Hoy es el gran día!</strong>' +
+        '<span>Los esperamos a las 19:00</span>';
+      banner.removeAttribute('hidden');
+      banner.setAttribute('aria-hidden', 'false');
+    }
+  }
+
+  if (testMode === 'post-boda') {
+    document.body.classList.add('post-boda');
+    // Ocultar banner del día de la boda
+    const banner = document.getElementById('event-day-banner');
+    if (banner) {
+      banner.setAttribute('hidden', '');
+      banner.setAttribute('aria-hidden', 'true');
+    }
+    // Mostrar botón saltar animación
+    const skipBtn = document.getElementById('date-skip-btn');
+    if (skipBtn) skipBtn.removeAttribute('hidden');
+    // Mostrar bloque del álbum dentro de la galería
+    const galleryAlbumCta = document.getElementById('gallery-album-cta');
+    if (galleryAlbumCta) galleryAlbumCta.removeAttribute('hidden');
+    // Cambiar el caption del countdown
+    const caption = document.querySelector('.countdown-caption');
+    if (caption) caption.textContent = '¡Nos casamos! Gracias por ser parte 💛';
+  }
+
   const hideLoader = () => loader?.classList.add('is-hidden');
   window.addEventListener('load', () => setTimeout(hideLoader, 200), { once: true });
   setTimeout(hideLoader, 800);
@@ -310,11 +353,13 @@ document.addEventListener('DOMContentLoaded', () => {
   let countdownTimer = null;
 
   function checkEventDay() {
+    // 🧪 Si estamos en modo test, NO tocamos el estado
+    if (document.body.dataset.testMode) return;
+
     const now = new Date();
     const ev = new Date(CONFIG.event.isoTimestamp);
     const endEv = new Date(CONFIG.event.endTimestamp);
 
-    // ¿Estamos entre las 00:00 del día de la boda y la 01:00 del día siguiente?
     const sameDay = now.getFullYear() === ev.getFullYear()
       && now.getMonth() === ev.getMonth()
       && now.getDate() === ev.getDate();
@@ -727,7 +772,6 @@ document.addEventListener('DOMContentLoaded', () => {
     playlistModal.setAttribute('aria-hidden', 'false');
     document.body.classList.add('modal-open');
 
-    // Cargar el iframe solo la primera vez (lazy)
     if (playlistFrame && !playlistFrame.src) {
       const url = buildPlaylistUrl();
       if (url) {
@@ -754,12 +798,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.key === 'Escape' && playlistModal?.classList.contains('is-open')) closePlaylistModal();
   });
 
-  // Cuando el iframe termina de cargar, ocultamos el loader
   playlistFrame?.addEventListener('load', () => {
     if (playlistLoader) playlistLoader.hidden = true;
   });
 
-  // Mensajes desde el iframe (éxito del formulario)
   window.addEventListener('message', (e) => {
     if (!e || !e.data || typeof e.data !== 'object') return;
     if (e.data.type === 'playlist-success') {
@@ -1008,7 +1050,6 @@ document.addEventListener('DOMContentLoaded', () => {
     return `Gracias${name} por avisarnos. Los vamos a extrañar. ❤️`;
   }
 
-  /* ----- vista confirm-done de la sección principal ----- */
   function renderRsvpDone(saved) {
     if (!confirmActions || !confirmDone) return;
     confirmActions.hidden = true;
@@ -1039,7 +1080,6 @@ document.addEventListener('DOMContentLoaded', () => {
   function openModal(type) {
     action = type;
 
-    // Configurar títulos y campos según acción
     const titleEl = document.getElementById('modal-title');
     if (type === 'all') {
       if (titleEl) titleEl.textContent = 'Confirmá tu asistencia';
@@ -1057,17 +1097,14 @@ document.addEventListener('DOMContentLoaded', () => {
       rsvpGuestsField?.setAttribute('hidden', '');
     }
 
-    // Prellenar formulario
     if (rsvpName) rsvpName.value = (guestName && guestName !== CONFIG.guest.defaultName) ? guestName : '';
     if (rsvpMessage) rsvpMessage.value = '';
     if (rsvpContact) rsvpContact.value = '';
 
-    // Mostrar form, ocultar éxito
     rsvpFormWrap?.removeAttribute('hidden');
     rsvpSuccess?.setAttribute('hidden', '');
     rsvpSuccess?.setAttribute('aria-hidden', 'true');
 
-    // Abrir modal
     modal?.classList.add('is-open');
     modal?.setAttribute('aria-hidden', 'false');
     document.body.classList.add('modal-open');
@@ -1112,7 +1149,6 @@ document.addEventListener('DOMContentLoaded', () => {
       if (span) span.textContent = 'Enviando…';
     }
 
-    // Guardar localmente
     saveRsvp({
       action,
       name,
@@ -1121,7 +1157,6 @@ document.addEventListener('DOMContentLoaded', () => {
       message
     });
 
-    // Enviar a Sheets
     let statusText = 'confirmado';
     if (action === 'less') statusText = 'confirmado parcialmente';
     if (action === 'none') statusText = 'rechazado';
@@ -1143,7 +1178,6 @@ document.addEventListener('DOMContentLoaded', () => {
       if (span) span.textContent = 'Confirmar';
     }
 
-    // Mostrar vista de éxito
     rsvpFormWrap?.setAttribute('hidden', '');
     rsvpSuccess?.removeAttribute('hidden');
     rsvpSuccess?.setAttribute('aria-hidden', 'false');
@@ -1151,11 +1185,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const saved = loadRsvp();
     if (rsvpSuccessText) rsvpSuccessText.textContent = getRsvpMessage(saved);
 
-    // Actualizar links de WhatsApp opcionales
     if (waOptionalGroom) waOptionalGroom.href = buildWhatsAppUrl('Hernán', name, confirmedCount, message);
     if (waOptionalBride) waOptionalBride.href = buildWhatsAppUrl('María', name, confirmedCount, message);
 
-    // Actualizar la vista principal de la sección
     renderRsvpDone(saved);
 
     if (res.ok) {
@@ -1305,26 +1337,25 @@ document.addEventListener('DOMContentLoaded', () => {
      MODO POST-BODA
      ============================================================ */
   function checkPostBoda() {
+    // 🧪 Si estamos en modo test, NO tocamos el estado
+    if (document.body.dataset.testMode) return;
+
     const eventEnd = new Date(CONFIG.event.endTimestamp).getTime();
     if (Date.now() > eventEnd) {
       document.body.classList.add('post-boda');
 
-      // Ocultar el banner del día de la boda
       const banner = document.getElementById('event-day-banner');
       if (banner) {
         banner.setAttribute('hidden', '');
         banner.setAttribute('aria-hidden', 'true');
       }
 
-      // Mostrar el botón para saltar la animación
       const skipBtn = document.getElementById('date-skip-btn');
       if (skipBtn) skipBtn.removeAttribute('hidden');
 
-      // Mostrar el bloque de álbum dentro de la galería
       const galleryAlbumCta = document.getElementById('gallery-album-cta');
       if (galleryAlbumCta) galleryAlbumCta.removeAttribute('hidden');
 
-      // Actualizar el texto del countdown
       const caption = document.querySelector('.countdown-caption');
       if (caption) caption.textContent = '¡Nos casamos! Gracias por ser parte 💛';
     }
