@@ -158,22 +158,32 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ============================================================
      🧪 MODO TEST (solo para desarrollo)
      URL: ?test=event-day  o  ?test=post-boda
-     Cuando no hay ?test, el comportamiento es el normal.
      ============================================================ */
   const testMode = new URLSearchParams(window.location.search).get('test');
 
-  // Marcar el modo en el body para que otras funciones lo detecten
   if (testMode) {
     document.body.dataset.testMode = testMode;
   }
+
+  // Helper: HTML del banner del día de la boda (reutilizable)
+  const BANNER_HTML =
+    '<div class="event-day-banner__glow" aria-hidden="true"></div>' +
+    '<div class="event-day-banner__inner">' +
+      '<span class="event-day-banner__kicker">' +
+        '<span class="event-day-banner__star" aria-hidden="true">✦</span>' +
+        'Hoy es el gran día' +
+        '<span class="event-day-banner__star" aria-hidden="true">✦</span>' +
+      '</span>' +
+      '<span class="event-day-banner__title">¡Nos casamos!</span>' +
+      '<span class="event-day-banner__names">María <em>&amp;</em> Hernán</span>' +
+      '<span class="event-day-banner__subtitle">Los esperamos a las 19:00</span>' +
+    '</div>';
 
   if (testMode === 'event-day') {
     document.body.classList.add('event-day');
     const banner = document.getElementById('event-day-banner');
     if (banner) {
-      banner.innerHTML = '<span class="event-day-banner__emoji" aria-hidden="true">💍</span>' +
-        '<strong>¡Hoy es el gran día!</strong>' +
-        '<span>Los esperamos a las 19:00</span>';
+      banner.innerHTML = BANNER_HTML;
       banner.removeAttribute('hidden');
       banner.setAttribute('aria-hidden', 'false');
     }
@@ -181,19 +191,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (testMode === 'post-boda') {
     document.body.classList.add('post-boda');
-    // Ocultar banner del día de la boda
     const banner = document.getElementById('event-day-banner');
     if (banner) {
       banner.setAttribute('hidden', '');
       banner.setAttribute('aria-hidden', 'true');
     }
-    // Mostrar botón saltar animación
     const skipBtn = document.getElementById('date-skip-btn');
     if (skipBtn) skipBtn.removeAttribute('hidden');
-    // Mostrar bloque del álbum dentro de la galería
     const galleryAlbumCta = document.getElementById('gallery-album-cta');
     if (galleryAlbumCta) galleryAlbumCta.removeAttribute('hidden');
-    // Cambiar el caption del countdown
     const caption = document.querySelector('.countdown-caption');
     if (caption) caption.textContent = '¡Nos casamos! Gracias por ser parte 💛';
   }
@@ -353,7 +359,6 @@ document.addEventListener('DOMContentLoaded', () => {
   let countdownTimer = null;
 
   function checkEventDay() {
-    // 🧪 Si estamos en modo test, NO tocamos el estado
     if (document.body.dataset.testMode) return;
 
     const now = new Date();
@@ -371,9 +376,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (isSameDayAnyTime) {
       document.body.classList.add('event-day');
       if (banner) {
-        banner.innerHTML = '<span class="event-day-banner__emoji" aria-hidden="true">💍</span>' +
-          '<strong>¡Hoy es el gran día!</strong>' +
-          '<span>Los esperamos a las 19:00</span>';
+        banner.innerHTML = BANNER_HTML;
         banner.removeAttribute('hidden');
         banner.setAttribute('aria-hidden', 'false');
       }
@@ -402,7 +405,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (ids[i]) ids[i].textContent = String(value).padStart(2, '0');
       });
 
-      // Cambiar el texto según el momento
       if (caption) {
         if (document.body.classList.contains('post-boda')) {
           caption.textContent = '¡Nos casamos! Gracias por ser parte 💛';
@@ -671,15 +673,12 @@ document.addEventListener('DOMContentLoaded', () => {
      BOTÓN SALTAR ANIMACIÓN (solo post-boda)
      ============================================================ */
   dateSkipBtn?.addEventListener('click', () => {
-    // Ocultar ambos botones
     dateBtn?.classList.add('is-hidden');
     dateSkipBtn?.classList.add('is-hidden');
     dateSkipBtn?.setAttribute('hidden', '');
 
-    // Revelar el contenido directo (sin pre-contador, sin typewriter, sin pétalos)
     revealDateContent();
 
-    // Actualizar el texto del countdown a la frase especial
     const caption = document.querySelector('.countdown-caption');
     if (caption) caption.textContent = '¡Nos casamos! Gracias por ser parte 💛';
   });
@@ -1337,7 +1336,6 @@ document.addEventListener('DOMContentLoaded', () => {
      MODO POST-BODA
      ============================================================ */
   function checkPostBoda() {
-    // 🧪 Si estamos en modo test, NO tocamos el estado
     if (document.body.dataset.testMode) return;
 
     const eventEnd = new Date(CONFIG.event.endTimestamp).getTime();
