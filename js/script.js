@@ -165,7 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.dataset.testMode = testMode;
   }
 
-  // Helper: HTML del banner del día de la boda (reutilizable)
+  // Helper: HTML del banner del día de la boda
   const BANNER_HTML =
     '<div class="event-day-banner__glow" aria-hidden="true"></div>' +
     '<div class="event-day-banner__inner">' +
@@ -177,6 +177,26 @@ document.addEventListener('DOMContentLoaded', () => {
       '<span class="event-day-banner__title">¡Nos casamos!</span>' +
       '<span class="event-day-banner__names">María <em>&amp;</em> Hernán</span>' +
       '<span class="event-day-banner__subtitle">Los esperamos a las 19:00</span>' +
+    '</div>';
+
+  // Helper: HTML del banner post-boda (agradecimiento)
+  const POST_BANNER_HTML =
+    '<div class="event-day-banner__glow" aria-hidden="true"></div>' +
+    '<div class="event-day-banner__hearts" aria-hidden="true">' +
+      '<span class="event-day-banner__heart">♡</span>' +
+      '<span class="event-day-banner__heart">♡</span>' +
+      '<span class="event-day-banner__heart">♡</span>' +
+      '<span class="event-day-banner__heart">♡</span>' +
+    '</div>' +
+    '<div class="event-day-banner__inner">' +
+      '<span class="event-day-banner__kicker">' +
+        '<span class="event-day-banner__star" aria-hidden="true">✦</span>' +
+        'Con el corazón lleno' +
+        '<span class="event-day-banner__star" aria-hidden="true">✦</span>' +
+      '</span>' +
+      '<span class="event-day-banner__title">¡Gracias por tanto!</span>' +
+      '<span class="event-day-banner__names">María <em>&amp;</em> Hernán</span>' +
+      '<span class="event-day-banner__subtitle">Cada abrazo, cada risa, cada momento — gracias por ser parte</span>' +
     '</div>';
 
   if (testMode === 'event-day') {
@@ -193,8 +213,10 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.classList.add('post-boda');
     const banner = document.getElementById('event-day-banner');
     if (banner) {
-      banner.setAttribute('hidden', '');
-      banner.setAttribute('aria-hidden', 'true');
+      banner.classList.add('event-day-banner--post');
+      banner.innerHTML = POST_BANNER_HTML;
+      banner.removeAttribute('hidden');
+      banner.setAttribute('aria-hidden', 'false');
     }
     const skipBtn = document.getElementById('date-skip-btn');
     if (skipBtn) skipBtn.removeAttribute('hidden');
@@ -1342,10 +1364,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (Date.now() > eventEnd) {
       document.body.classList.add('post-boda');
 
+      // Mostrar banner de agradecimiento
       const banner = document.getElementById('event-day-banner');
       if (banner) {
-        banner.setAttribute('hidden', '');
-        banner.setAttribute('aria-hidden', 'true');
+        banner.classList.add('event-day-banner--post');
+        banner.innerHTML = POST_BANNER_HTML;
+        banner.removeAttribute('hidden');
+        banner.setAttribute('aria-hidden', 'false');
       }
 
       const skipBtn = document.getElementById('date-skip-btn');

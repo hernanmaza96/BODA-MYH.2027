@@ -1,9 +1,9 @@
 /* ================================================================
-   MARÍA & HERNÁN · V61
+   MARÍA & HERNÁN · V62
    + Banner día de la boda rediseñado
+   + Banner post-boda con agradecimiento
    + Álbum dentro de la galería
    + Botón saltar animación
-   + Countdown dinámico
    ================================================================ */
 :root{
   --olive:#6d7743; --olive-dark:#4c5429; --olive-deep:#3a4020;
@@ -239,6 +239,75 @@ section{position:relative}
   .event-day-banner__kicker{font-size:.46rem;letter-spacing:.22em}
   .event-day-banner__names{font-size:1.6rem}
   .event-day-banner__subtitle{font-size:.48rem;letter-spacing:.18em}
+}
+
+/* ================================================================
+   BANNER POST-BODA (agradecimiento)
+   ================================================================ */
+.event-day-banner--post{
+  background:linear-gradient(135deg,#f7f3e8 0%,#f0e7d2 45%,#ede0c4 100%);
+  border-bottom:1px solid rgba(184,148,100,.4);
+  box-shadow:0 8px 32px rgba(60,66,32,.25),inset 0 -1px 0 rgba(184,148,100,.3);
+  color:var(--olive-dark);
+}
+.event-day-banner--post::before{
+  background:linear-gradient(90deg,transparent,var(--gold-dark) 20%,var(--gold) 50%,var(--gold-dark) 80%,transparent);
+}
+.event-day-banner--post .event-day-banner__glow{
+  background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.5) 50%,transparent 70%);
+}
+.event-day-banner--post .event-day-banner__kicker{
+  color:var(--gold-dark);
+}
+.event-day-banner--post .event-day-banner__star{
+  color:var(--gold);
+}
+.event-day-banner--post .event-day-banner__title{
+  color:var(--olive-dark);
+  text-shadow:0 2px 12px rgba(184,148,100,.3);
+}
+.event-day-banner--post .event-day-banner__names{
+  color:var(--gold-dark);
+  text-shadow:0 2px 16px rgba(184,148,100,.4);
+}
+.event-day-banner--post .event-day-banner__names em{
+  color:var(--olive-dark);
+}
+.event-day-banner--post .event-day-banner__subtitle{
+  color:var(--olive);
+  opacity:.95;
+}
+.event-day-banner--post .event-day-banner__subtitle::before{
+  background:linear-gradient(90deg,transparent,var(--gold-dark));
+}
+.event-day-banner--post .event-day-banner__subtitle::after{
+  background:linear-gradient(90deg,var(--gold-dark),transparent);
+}
+
+.event-day-banner--post .event-day-banner__hearts{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  overflow:hidden;
+  z-index:0;
+}
+.event-day-banner--post .event-day-banner__heart{
+  position:absolute;
+  bottom:-10px;
+  color:var(--rose-heart);
+  opacity:0;
+  font-size:.85rem;
+  animation:heartFloat 6s ease-in-out infinite;
+}
+.event-day-banner--post .event-day-banner__heart:nth-child(1){left:8%;animation-delay:0s}
+.event-day-banner--post .event-day-banner__heart:nth-child(2){left:22%;animation-delay:1.2s;font-size:.65rem}
+.event-day-banner--post .event-day-banner__heart:nth-child(3){left:78%;animation-delay:.6s}
+.event-day-banner--post .event-day-banner__heart:nth-child(4){left:92%;animation-delay:1.8s;font-size:.7rem}
+@keyframes heartFloat{
+  0%{opacity:0;transform:translateY(20px) scale(.8)}
+  20%{opacity:.55}
+  80%{opacity:.45}
+  100%{opacity:0;transform:translateY(-28px) scale(1.05)}
 }
 
 /* ============ SOBRE ============ */
@@ -620,7 +689,7 @@ section{position:relative}
 }
 .hand-note--light{color:var(--gold-light)}
 .closing-content .hand-note,
-.closing-content .handwritten-note{margin-top:18px}
+.closing-content .closing-content .handwritten-note{margin-top:18px}
 
 /* ============ PLAYLIST ============ */
 .playlist-section{padding:clamp(80px,12vw,150px) 20px;background:radial-gradient(ellipse at 50% 100%,#4c5429 0%,var(--olive-deep) 65%)}
@@ -1434,6 +1503,7 @@ body.post-boda .gallery-album-cta{
   .event-day-banner{animation:none;opacity:1;transform:none}
   .event-day-banner__glow{animation:none;opacity:0}
   .event-day-banner__star{animation:none;opacity:.8}
+  .event-day-banner--post .event-day-banner__heart{animation:none;opacity:0}
 }
 
 /* ================================================================
