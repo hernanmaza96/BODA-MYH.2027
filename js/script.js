@@ -93,12 +93,13 @@ const CONFIG = {
     defaultCount: 1
   },
   appsScript: {
-    // URL del Web App de Apps Script (RSVP + Playlist)
     url: 'https://script.google.com/macros/s/AKfycby0xaHxbRE7fLqq1mNkDxJqmdqKaNUkFAlLFkvsBN8wMWm9ZlcF6rb9BMomruMy623KsA/exec'
   },
-  // Web App del formulario de playlist (Apps Script)
   playlistApp: {
     url: 'https://script.google.com/macros/s/AKfycbxe9DXL1m3cpvFdjk2MlwbC7QRvTSlmIo1z8Z4dgmOraBq5bxKCxzaQMZgtLMOImcz5JA/exec'
+  },
+  albumApp: {
+    url: 'https://script.google.com/macros/s/AKfycbxgI8da3FxHj3_4MjxPrbfEEEpMOzkhLDOOS6ua6xEVCMhlCSbIZDIgjiIDJClKrqLaaQ/exec'
   }
 };
 
@@ -311,18 +312,32 @@ document.addEventListener('DOMContentLoaded', () => {
   function checkEventDay() {
     const now = new Date();
     const ev = new Date(CONFIG.event.isoTimestamp);
+    const endEv = new Date(CONFIG.event.endTimestamp);
+
+    // ¿Estamos entre las 00:00 del día de la boda y la 01:00 del día siguiente?
     const sameDay = now.getFullYear() === ev.getFullYear()
       && now.getMonth() === ev.getMonth()
       && now.getDate() === ev.getDate();
+
+    const isEventDay = sameDay && now >= ev && now <= endEv;
+    const isSameDayAnyTime = sameDay && !document.body.classList.contains('post-boda');
     const banner = document.getElementById('event-day-banner');
-    if (sameDay && !document.body.classList.contains('post-boda')) {
+
+    if (isSameDayAnyTime) {
       document.body.classList.add('event-day');
-      banner?.removeAttribute('hidden');
-      banner?.setAttribute('aria-hidden', 'false');
+      if (banner) {
+        banner.innerHTML = '<span class="event-day-banner__emoji" aria-hidden="true">💍</span>' +
+          '<strong>¡Hoy es el gran día!</strong>' +
+          '<span>Los esperamos a las 19:00</span>';
+        banner.removeAttribute('hidden');
+        banner.setAttribute('aria-hidden', 'false');
+      }
     } else if (!document.body.classList.contains('post-boda')) {
       document.body.classList.remove('event-day');
-      banner?.setAttribute('hidden', '');
-      banner?.setAttribute('aria-hidden', 'true');
+      if (banner) {
+        banner.setAttribute('hidden', '');
+        banner.setAttribute('aria-hidden', 'true');
+      }
     }
   }
 
@@ -330,6 +345,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!countdown || countdownTimer) return;
     const target = new Date(countdown.dataset.countdownDate).getTime();
     const ids = ['cd-days', 'cd-hours', 'cd-minutes', 'cd-seconds'].map(id => document.getElementById(id));
+    const caption = document.querySelector('.countdown-caption');
+
     const update = () => {
       const diff = Math.max(0, target - Date.now());
       const days = Math.floor(diff / 86400000);
@@ -339,6 +356,20 @@ document.addEventListener('DOMContentLoaded', () => {
       [days, hours, minutes, seconds].forEach((value, i) => {
         if (ids[i]) ids[i].textContent = String(value).padStart(2, '0');
       });
+
+      // Cambiar el texto según el momento
+      if (caption) {
+        if (document.body.classList.contains('post-boda')) {
+          caption.textContent = '¡Nos casamos! Gracias por ser parte 💛';
+        } else if (document.body.classList.contains('event-day')) {
+          caption.textContent = '¡Hoy es el gran día! 🥂';
+        } else if (diff <= 0) {
+          caption.textContent = '¡El gran día llegó!';
+        } else {
+          caption.textContent = 'Faltan apenas unos días para nuestro gran día';
+        }
+      }
+
       if (diff <= 0) { clearInterval(countdownTimer); countdownTimer = null; }
     };
     update();
@@ -420,6 +451,7 @@ document.addEventListener('DOMContentLoaded', () => {
      DESCUBRIR LA FECHA
      ============================================================ */
   const dateBtn = document.getElementById('date-reveal-btn');
+  const dateSkipBtn = document.getElementById('date-skip-btn');
   const dateContent = document.getElementById('date-reveal-content');
   const preCounter = document.getElementById('date-precounter');
   const preCounterNum = document.getElementById('date-precounter-num');
@@ -591,6 +623,23 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ============================================================
+     BOTÓN SALTAR ANIMACIÓN (solo post-boda)
+     ============================================================ */
+  dateSkipBtn?.addEventListener('click', () => {
+    // Ocultar ambos botones
+    dateBtn?.classList.add('is-hidden');
+    dateSkipBtn?.classList.add('is-hidden');
+    dateSkipBtn?.setAttribute('hidden', '');
+
+    // Revelar el contenido directo (sin pre-contador, sin typewriter, sin pétalos)
+    revealDateContent();
+
+    // Actualizar el texto del countdown a la frase especial
+    const caption = document.querySelector('.countdown-caption');
+    if (caption) caption.textContent = '¡Nos casamos! Gracias por ser parte 💛';
+  });
+
+  /* ============================================================
      CALENDARIO (Google + ICS)
      ============================================================ */
   const cal = CONFIG.event.calendar;
@@ -715,6 +764,69 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!e || !e.data || typeof e.data !== 'object') return;
     if (e.data.type === 'playlist-success') {
       Toast.show('¡Gracias! Recibimos tus recomendaciones 🎶', 'heart', 3400);
+    }
+  });
+
+  /* ============================================================
+     ÁLBUM — embebido desde Apps Script (post-boda)
+     ============================================================ */
+  const albumBtn = document.getElementById('album-btn');
+  const albumModal = document.getElementById('album-modal');
+  const albumOverlay = document.getElementById('album-overlay');
+  const albumClose = document.getElementById('album-modal-close');
+  const albumFrame = document.getElementById('album-frame');
+  const albumLoader = document.getElementById('album-loader');
+
+  function buildAlbumUrl() {
+    const base = CONFIG.albumApp.url;
+    if (!base) return '';
+    const params = new URLSearchParams();
+    if (guestName && guestName !== CONFIG.guest.defaultName) {
+      params.set('n', guestName);
+    }
+    const qs = params.toString();
+    return qs ? `${base}?${qs}` : base;
+  }
+
+  function openAlbumModal() {
+    if (!albumModal) return;
+    albumModal.classList.add('is-open');
+    albumModal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('modal-open');
+    if (albumFrame && !albumFrame.src) {
+      const url = buildAlbumUrl();
+      if (url) {
+        if (albumLoader) albumLoader.hidden = false;
+        albumFrame.src = url;
+      }
+    }
+    setTimeout(() => albumClose?.focus(), 60);
+  }
+
+  function closeAlbumModal() {
+    if (!albumModal) return;
+    albumModal.classList.remove('is-open');
+    albumModal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('modal-open');
+  }
+
+  albumBtn?.addEventListener('click', openAlbumModal);
+  albumClose?.addEventListener('click', closeAlbumModal);
+  albumOverlay?.addEventListener('click', closeAlbumModal);
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && albumModal?.classList.contains('is-open')) closeAlbumModal();
+  });
+
+  albumFrame?.addEventListener('load', () => {
+    if (albumLoader) albumLoader.hidden = true;
+  });
+
+  window.addEventListener('message', (e) => {
+    if (!e || !e.data || typeof e.data !== 'object') return;
+    if (e.data.type === 'album-success') {
+      const c = e.data.count || 0;
+      Toast.show(`¡Gracias! Recibimos ${c} ${c === 1 ? 'foto' : 'fotos'} 📸`, 'heart', 3400);
     }
   });
 
@@ -1196,12 +1308,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const eventEnd = new Date(CONFIG.event.endTimestamp).getTime();
     if (Date.now() > eventEnd) {
       document.body.classList.add('post-boda');
+
+      // Ocultar el banner del día de la boda
       const banner = document.getElementById('event-day-banner');
       if (banner) {
-        banner.removeAttribute('hidden');
-        banner.setAttribute('aria-hidden', 'false');
-        banner.innerHTML = '<span class="event-day-banner__emoji">💍</span><strong>¡Nos casamos!</strong><span>Gracias por acompañarnos</span>';
+        banner.setAttribute('hidden', '');
+        banner.setAttribute('aria-hidden', 'true');
       }
+
+      // Mostrar el botón para saltar la animación
+      const skipBtn = document.getElementById('date-skip-btn');
+      if (skipBtn) skipBtn.removeAttribute('hidden');
+
+      // Mostrar el bloque de álbum dentro de la galería
+      const galleryAlbumCta = document.getElementById('gallery-album-cta');
+      if (galleryAlbumCta) galleryAlbumCta.removeAttribute('hidden');
+
+      // Actualizar el texto del countdown
+      const caption = document.querySelector('.countdown-caption');
+      if (caption) caption.textContent = '¡Nos casamos! Gracias por ser parte 💛';
     }
   }
   checkPostBoda();

@@ -95,6 +95,9 @@
     <div class="grain" aria-hidden="true"></div>
     <div class="toast-container" id="toast-container" aria-live="polite" aria-atomic="true"></div>
 
+    <!-- ===================== BANNER DÍA DE LA BODA ===================== -->
+    <div id="event-day-banner" class="event-day-banner" hidden aria-hidden="true"></div>
+
     <div class="page-loader" id="page-loader" aria-hidden="true"><span></span></div>
 
     <!-- ===================== SOBRE ===================== -->
@@ -270,6 +273,17 @@
             <button type="button" class="gallery-item" aria-label="Ver foto 8 de 9"><img src="img/galeria-08.jpg" alt="María y Hernán riendo abrazados" loading="lazy" decoding="async" width="800" height="1200" /><span class="gallery-item__num">08</span></button>
             <button type="button" class="gallery-item gallery-item--wide" aria-label="Ver foto 9 de 9"><img src="img/galeria-09.jpg" alt="María y Hernán abrazados en un sendero de pinos, ella mostrando su anillo" loading="lazy" decoding="async" width="1200" height="800" /><span class="gallery-item__num">09</span></button>
           </div>
+
+          <!-- ===================== ÁLBUM POST-BODA (dentro de la galería) ===================== -->
+          <div class="gallery-album-cta" id="gallery-album-cta" hidden>
+            <span class="section-kicker">Después del gran día</span>
+            <h3>Compartí tus fotos</h3>
+            <p>Sumá tus fotos al álbum de la boda y ayudanos a revivir esa noche para siempre.</p>
+            <button class="album-btn" id="album-btn" type="button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <span>Subir mis fotos</span>
+            </button>
+          </div>
         </div>
       </section>
 
@@ -434,6 +448,10 @@
             <span class="reveal-date-btn__text">Tocá para descubrir la fecha</span>
             <span class="reveal-date-btn__heart" aria-hidden="true">♡</span>
           </button>
+          <button class="reveal-date-skip" id="date-skip-btn" type="button" hidden>
+            <span>Ver la fecha directo</span>
+            <span aria-hidden="true">→</span>
+          </button>
           <div class="date-precounter" id="date-precounter" hidden aria-hidden="true">
             <span class="date-precounter__num" id="date-precounter-num">10</span>
             <span class="date-precounter__hint" id="date-precounter-hint">Preparate…</span>
@@ -462,7 +480,7 @@
               <div class="countdown__item"><strong id="cd-minutes">00</strong><span>Minutos</span></div>
               <div class="countdown__item"><strong id="cd-seconds">00</strong><span>Segundos</span></div>
             </div>
-            <p class="countdown-caption">Faltan apenas unos días para nuestro gran día</p>
+            <p class="countdown-caption" id="countdown-caption">Faltan apenas unos días para nuestro gran día</p>
             <div class="calendar-cta">
               <span class="calendar-cta__kicker">No te lo pierdas</span>
               <div class="calendar-cta__buttons">
@@ -497,6 +515,27 @@
             class="playlist-embed__frame"
             id="playlist-frame"
             title="Formulario de recomendación de canciones"
+            allow="clipboard-write"
+            loading="lazy"
+            referrerpolicy="strict-origin-when-cross-origin"></iframe>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== MODAL ÁLBUM (iframe Apps Script) ===================== -->
+    <div class="confirm-modal confirm-modal--playlist" id="album-modal" aria-hidden="true">
+      <div class="modal-overlay" id="album-overlay"></div>
+      <div class="confirm-modal__card confirm-modal__card--playlist" role="dialog" aria-modal="true" aria-labelledby="album-modal-title">
+        <button class="modal-close" id="album-modal-close" type="button" aria-label="Cerrar">×</button>
+        <div class="playlist-embed" id="album-embed">
+          <div class="playlist-embed__loader" id="album-loader" aria-hidden="true">
+            <span class="playlist-embed__spinner"></span>
+            <span class="playlist-embed__loading-text">Cargando formulario…</span>
+          </div>
+          <iframe
+            class="playlist-embed__frame"
+            id="album-frame"
+            title="Formulario para subir fotos"
             allow="clipboard-write"
             loading="lazy"
             referrerpolicy="strict-origin-when-cross-origin"></iframe>
