@@ -1,5 +1,5 @@
 /* ================================================================
-   MARÍA & HERNÁN · V62
+   MARÍA & HERNÁN · V63
    + Banner día de la boda rediseñado
    + Banner post-boda con agradecimiento
    + Álbum dentro de la galería
@@ -207,6 +207,7 @@ section{position:relative}
   text-transform:uppercase;
   color:var(--gold-light);
   opacity:.85;
+  text-align:center;
 }
 .event-day-banner__subtitle::before,
 .event-day-banner__subtitle::after{
@@ -214,6 +215,7 @@ section{position:relative}
   display:inline-block;
   width:34px;
   height:1px;
+  flex-shrink:0;
   background:linear-gradient(90deg,transparent,var(--gold));
 }
 .event-day-banner__subtitle::after{
@@ -249,6 +251,7 @@ section{position:relative}
   border-bottom:1px solid rgba(184,148,100,.4);
   box-shadow:0 8px 32px rgba(60,66,32,.25),inset 0 -1px 0 rgba(184,148,100,.3);
   color:var(--olive-dark);
+  padding:22px 22px 24px;
 }
 .event-day-banner--post::before{
   background:linear-gradient(90deg,transparent,var(--gold-dark) 20%,var(--gold) 50%,var(--gold-dark) 80%,transparent);
@@ -264,7 +267,13 @@ section{position:relative}
 }
 .event-day-banner--post .event-day-banner__title{
   color:var(--olive-dark);
-  text-shadow:0 2px 12px rgba(184,148,100,.3);
+  font-style:italic;
+  font-size:clamp(1rem,2.6vw,1.4rem);
+  line-height:1.3;
+  max-width:780px;
+  text-wrap:balance;
+  margin:6px 0 4px;
+  text-shadow:0 2px 12px rgba(184,148,100,.25);
 }
 .event-day-banner--post .event-day-banner__names{
   color:var(--gold-dark);
@@ -276,8 +285,12 @@ section{position:relative}
 .event-day-banner--post .event-day-banner__subtitle{
   color:var(--olive);
   opacity:.95;
+  max-width:720px;
+  text-wrap:balance;
+  line-height:1.5;
 }
-.event-day-banner--post .event-day-banner__subtitle::before{
+.event-day-banner--post .event-day-banner__subtitle::before,
+.event-day-banner--post .event-day-banner__subtitle::after{
   background:linear-gradient(90deg,transparent,var(--gold-dark));
 }
 .event-day-banner--post .event-day-banner__subtitle::after{
@@ -308,6 +321,14 @@ section{position:relative}
   20%{opacity:.55}
   80%{opacity:.45}
   100%{opacity:0;transform:translateY(-28px) scale(1.05)}
+}
+
+@media(max-width:600px){
+  .event-day-banner--post .event-day-banner__title{font-size:1rem;line-height:1.35}
+  .event-day-banner--post .event-day-banner__subtitle{font-size:.5rem;line-height:1.5}
+}
+@media(max-width:380px){
+  .event-day-banner--post .event-day-banner__title{font-size:.92rem}
 }
 
 /* ============ SOBRE ============ */

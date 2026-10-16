@@ -191,12 +191,12 @@ document.addEventListener('DOMContentLoaded', () => {
     '<div class="event-day-banner__inner">' +
       '<span class="event-day-banner__kicker">' +
         '<span class="event-day-banner__star" aria-hidden="true">✦</span>' +
-        'Con el corazón lleno' +
+        'Un recuerdo para toda la vida' +
         '<span class="event-day-banner__star" aria-hidden="true">✦</span>' +
       '</span>' +
-      '<span class="event-day-banner__title">¡Gracias por tanto!</span>' +
+      '<span class="event-day-banner__title">Gracias por acompañarnos en el día más feliz de nuestras vidas</span>' +
       '<span class="event-day-banner__names">María <em>&amp;</em> Hernán</span>' +
-      '<span class="event-day-banner__subtitle">Cada abrazo, cada risa, cada momento — gracias por ser parte</span>' +
+      '<span class="event-day-banner__subtitle">Su presencia hizo que nuestro sueño fuera aún más hermoso</span>' +
     '</div>';
 
   if (testMode === 'event-day') {
