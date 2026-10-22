@@ -1225,7 +1225,10 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* ============================================================
-     GALERÍA — lightbox
+     GALERÍA — lightbox DESACTIVADO
+     El cliente pidió que solo se vean las miniaturas.
+     Las fotos en grande no se pueden abrir desde la galería.
+     Para reactivar el lightbox: descomentar la línea del forEach.
      ============================================================ */
   const galleryItems = Array.from(document.querySelectorAll('.gallery-item'));
   const lightbox = document.getElementById('lightbox');
@@ -1268,7 +1271,9 @@ document.addEventListener('DOMContentLoaded', () => {
     lastFocused?.focus?.();
   }
 
-  galleryItems.forEach((item, i) => item.addEventListener('click', () => openLightbox(i)));
+  // ⬇️ LIGHTBOX DESACTIVADO — solo miniaturas
+  // galleryItems.forEach((item, i) => item.addEventListener('click', () => openLightbox(i)));
+
   document.getElementById('lightbox-close')?.addEventListener('click', closeLightbox);
   document.getElementById('lightbox-prev')?.addEventListener('click', () => showPhoto(lightboxIndex - 1));
   document.getElementById('lightbox-next')?.addEventListener('click', () => showPhoto(lightboxIndex + 1));
@@ -1364,7 +1369,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (Date.now() > eventEnd) {
       document.body.classList.add('post-boda');
 
-      // Mostrar banner de agradecimiento
       const banner = document.getElementById('event-day-banner');
       if (banner) {
         banner.classList.add('event-day-banner--post');
