@@ -93,13 +93,22 @@ const CONFIG = {
     defaultCount: 1
   },
   appsScript: {
-    url: 'https://script.google.com/macros/s/AKfycby0xaHxbRE7fLqq1mNkDxJqmdqKaNUkFAlLFkvsBN8wMWm9ZlcF6rb9BMomruMy623KsA/exec'
+    // ⬇️ NUEVA URL DEL WEB APP DEL RSVP
+    url: 'https://script.google.com/macros/s/AKfycbwdqqHPoIuHWnnjDPbMWXhq8ovbwVPYuXX7i2mhZVkivZDf-DDfwqYvwuyS-j33DjmA/exec'
   },
   playlistApp: {
     url: 'https://script.google.com/macros/s/AKfycbxe9DXL1m3cpvFdjk2MlwbC7QRvTSlmIo1z8Z4dgmOraBq5bxKCxzaQMZgtLMOImcz5JA/exec'
   },
   albumApp: {
     url: 'https://script.google.com/macros/s/AKfycbxgI8da3FxHj3_4MjxPrbfEEEpMOzkhLDOOS6ua6xEVCMhlCSbIZDIgjiIDJClKrqLaaQ/exec'
+  },
+  vcard: {
+    org: 'María & Hernán',
+    firstName: 'Boda María',
+    lastName: '& Hernán',
+    email: 'bodamyh2027@gmail.com',
+    url: 'https://hernanmaza96.github.io/BODA-MYH.2027/',
+    note: 'Boda de María & Hernán · 20 de febrero de 2027 a las 19:00 hs · Urbana Lounge, Mar del Plata'
   }
 };
 
@@ -107,6 +116,7 @@ const RSVP_STORAGE_KEY = 'mh-rsvp-v2';
 const MUSIC_STORAGE_KEY = 'mh-music-v1';
 const ENVELOPE_STORAGE_KEY = 'mh-opened-v1';
 const PLAYLIST_DRAFT_KEY = 'mh-playlist-draft-v1';
+const THEME_STORAGE_KEY = 'mh-theme-v1';
 
 /* ============================================================
    GOOGLE APPS SCRIPT — envío (RSVP)
@@ -149,23 +159,139 @@ const SheetsAPI = (() => {
 })();
 
 /* ============================================================
+   DETECCIÓN DE HARDWARE LENTO
+   ============================================================ */
+(function detectLowEnd() {
+  try {
+    const lowCpu = navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2;
+    const lowRam = navigator.deviceMemory && navigator.deviceMemory <= 2;
+    const saveData = navigator.connection && navigator.connection.saveData === true;
+    const slowNet = navigator.connection
+      && navigator.connection.effectiveType
+      && ['slow-2g', '2g'].includes(navigator.connection.effectiveType);
+    if (lowCpu || lowRam || saveData || slowNet) {
+      document.body.classList.add('low-end');
+    }
+  } catch (_) {}
+})();
+
+/* ============================================================
+   TEMA CLARO/OSCURO (automático según el sistema del celular)
+   ============================================================ */
+(function initTheme() {
+  const mediaQuery = window.matchMedia('(prefers-color-scheme: light)');
+
+  const updateMeta = (isLight) => {
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.content = isLight ? '#f2ecdc' : '#3a4020';
+  };
+
+  const applyTheme = (isLight) => {
+    if (isLight) {
+      document.body.classList.add('theme-light');
+    } else {
+      document.body.classList.remove('theme-light');
+    }
+    updateMeta(isLight);
+  };
+
+  // Siempre sigue el modo del celular / sistema
+  applyTheme(mediaQuery.matches);
+
+  const onSystemThemeChange = (e) => applyTheme(e.matches);
+  if (typeof mediaQuery.addEventListener === 'function') {
+    mediaQuery.addEventListener('change', onSystemThemeChange);
+  } else if (typeof mediaQuery.addListener === 'function') {
+    mediaQuery.addListener(onSystemThemeChange);
+  }
+
+  // Limpiar override viejo del botón (si quedó guardado)
+  try { localStorage.removeItem(THEME_STORAGE_KEY); } catch (_) {}
+})();
+
+/* ============================================================
+   V-CARD (Guardar contacto)
+   ============================================================ */
+(function initVCard() {
+  const btn = document.getElementById('vcard-btn');
+  if (!btn) return;
+
+  const buildVCard = () => {
+    const v = CONFIG.vcard;
+    const lines = [
+      'BEGIN:VCARD',
+      'VERSION:3.0',
+      `FN:${v.firstName} ${v.lastName}`,
+      `N:${v.lastName};${v.firstName};;;`,
+      `ORG:${v.org}`,
+      `TEL;TYPE=CELL:+${CONFIG.phones.groom}`,
+      `TEL;TYPE=CELL:+${CONFIG.phones.bride}`,
+      `EMAIL;TYPE=INTERNET:${v.email}`,
+      `URL:${v.url}`,
+      `NOTE:${v.note}`,
+      'END:VCARD'
+    ];
+    return lines.join('\r\n');
+  };
+
+  btn.addEventListener('click', () => {
+    const vcard = buildVCard();
+    const blob = new Blob([vcard], { type: 'text/vcard;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'Boda-Maria-Hernan.vcf';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1200);
+    Toast.show('Contacto descargado 📇', 'success', 3200);
+  });
+})();
+
+/* ============================================================
+   AVISO DE PRIVACIDAD
+   ============================================================ */
+(function initPrivacy() {
+  const link = document.getElementById('privacy-link');
+  const modal = document.getElementById('privacy-modal');
+  const overlay = document.getElementById('privacy-overlay');
+  const closeBtn = document.getElementById('privacy-modal-close');
+  if (!link || !modal) return;
+
+  const open = () => {
+    modal.classList.add('is-open');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('modal-open');
+    setTimeout(() => closeBtn?.focus(), 50);
+  };
+  const close = () => {
+    modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('modal-open');
+  };
+
+  link.addEventListener('click', open);
+  closeBtn?.addEventListener('click', close);
+  overlay?.addEventListener('click', close);
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && modal.classList.contains('is-open')) close();
+  });
+})();
+
+/* ============================================================
    APP
    ============================================================ */
 document.addEventListener('DOMContentLoaded', () => {
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const loader = document.getElementById('page-loader');
 
-  /* ============================================================
-     🧪 MODO TEST (solo para desarrollo)
-     URL: ?test=event-day  o  ?test=post-boda
-     ============================================================ */
   const testMode = new URLSearchParams(window.location.search).get('test');
 
   if (testMode) {
     document.body.dataset.testMode = testMode;
   }
 
-  // Helper: HTML del banner del día de la boda
   const BANNER_HTML =
     '<div class="event-day-banner__glow" aria-hidden="true"></div>' +
     '<div class="event-day-banner__inner">' +
@@ -179,7 +305,6 @@ document.addEventListener('DOMContentLoaded', () => {
       '<span class="event-day-banner__subtitle">Los esperamos a las 19:00</span>' +
     '</div>';
 
-  // Helper: HTML del banner post-boda (agradecimiento)
   const POST_BANNER_HTML =
     '<div class="event-day-banner__glow" aria-hidden="true"></div>' +
     '<div class="event-day-banner__hearts" aria-hidden="true">' +
@@ -391,7 +516,6 @@ document.addEventListener('DOMContentLoaded', () => {
       && now.getMonth() === ev.getMonth()
       && now.getDate() === ev.getDate();
 
-    const isEventDay = sameDay && now >= ev && now <= endEv;
     const isSameDayAnyTime = sameDay && !document.body.classList.contains('post-boda');
     const banner = document.getElementById('event-day-banner');
 
@@ -691,9 +815,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  /* ============================================================
-     BOTÓN SALTAR ANIMACIÓN (solo post-boda)
-     ============================================================ */
   dateSkipBtn?.addEventListener('click', () => {
     dateBtn?.classList.add('is-hidden');
     dateSkipBtn?.classList.add('is-hidden');
@@ -767,7 +888,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* ============================================================
-     PLAYLIST — embebida desde Apps Script
+     PLAYLIST
      ============================================================ */
   const playlistBtn = document.getElementById('playlist-btn');
   const playlistModal = document.getElementById('playlist-modal');
@@ -793,11 +914,15 @@ document.addEventListener('DOMContentLoaded', () => {
     playlistModal.setAttribute('aria-hidden', 'false');
     document.body.classList.add('modal-open');
 
-    if (playlistFrame && !playlistFrame.src) {
+    // Siempre recargar el iframe para permitir enviar más canciones
+    if (playlistFrame) {
       const url = buildPlaylistUrl();
       if (url) {
         if (playlistLoader) playlistLoader.hidden = false;
-        playlistFrame.src = url;
+        playlistFrame.src = 'about:blank';
+        requestAnimationFrame(() => {
+          playlistFrame.src = url;
+        });
       }
     }
 
@@ -831,7 +956,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* ============================================================
-     ÁLBUM — embebido desde Apps Script (post-boda)
+     ÁLBUM
      ============================================================ */
   const albumBtn = document.getElementById('album-btn');
   const albumModal = document.getElementById('album-modal');
@@ -992,6 +1117,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const rsvpName = document.getElementById('rsvp-name');
   const rsvpGuests = document.getElementById('rsvp-guests');
   const rsvpGuestsField = document.getElementById('rsvp-guests-field');
+  const rsvpDiet = document.getElementById('rsvp-diet');
+  const rsvpDietField = document.getElementById('rsvp-diet-field');
   const rsvpMessage = document.getElementById('rsvp-message');
   const rsvpContact = document.getElementById('rsvp-contact');
   const rsvpSubmit = document.getElementById('rsvp-submit');
@@ -1036,7 +1163,6 @@ document.addEventListener('DOMContentLoaded', () => {
     return `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
   }
 
-  /* ----- persistencia ----- */
   function loadRsvp() {
     try {
       const raw = localStorage.getItem(RSVP_STORAGE_KEY);
@@ -1106,21 +1232,25 @@ document.addEventListener('DOMContentLoaded', () => {
       if (titleEl) titleEl.textContent = 'Confirmá tu asistencia';
       if (modalSummary) modalSummary.textContent = `Tu invitación es para ${totalGuests} ${totalGuests === 1 ? 'persona' : 'personas'}. Completá los datos para confirmar.`;
       rsvpGuestsField?.removeAttribute('hidden');
+      rsvpDietField?.removeAttribute('hidden');
       fillGuestsOptions(totalGuests);
     } else if (type === 'less') {
       if (titleEl) titleEl.textContent = '¿Cuántas personas asistirán?';
       if (modalSummary) modalSummary.textContent = `Tu invitación es para ${totalGuests} ${totalGuests === 1 ? 'persona' : 'personas'}. Indicá cuántas podrán venir.`;
       rsvpGuestsField?.removeAttribute('hidden');
+      rsvpDietField?.removeAttribute('hidden');
       fillGuestsOptions(Math.max(1, totalGuests - 1));
     } else {
       if (titleEl) titleEl.textContent = 'Nos avisás que no van a poder';
       if (modalSummary) modalSummary.textContent = 'Dejanos tu nombre y, si querés, un mensaje. Los vamos a extrañar.';
       rsvpGuestsField?.setAttribute('hidden', '');
+      rsvpDietField?.setAttribute('hidden', '');
     }
 
     if (rsvpName) rsvpName.value = (guestName && guestName !== CONFIG.guest.defaultName) ? guestName : '';
     if (rsvpMessage) rsvpMessage.value = '';
     if (rsvpContact) rsvpContact.value = '';
+    if (rsvpDiet) rsvpDiet.value = '';
 
     rsvpFormWrap?.removeAttribute('hidden');
     rsvpSuccess?.setAttribute('hidden', '');
@@ -1156,6 +1286,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const name = String(rsvpName?.value || '').trim();
     const message = String(rsvpMessage?.value || '').trim();
     const contact = String(rsvpContact?.value || '').trim();
+    const diet = String(rsvpDiet?.value || '').trim();
     const confirmedCount = action === 'none' ? 0 : Number(rsvpGuests?.value || totalGuests);
 
     if (!name) {
@@ -1174,6 +1305,7 @@ document.addEventListener('DOMContentLoaded', () => {
       action,
       name,
       contact,
+      diet,
       confirmedGuests: confirmedCount,
       message
     });
@@ -1186,6 +1318,7 @@ document.addEventListener('DOMContentLoaded', () => {
       type: 'rsvp',
       name,
       contact,
+      diet,
       guests: totalGuests,
       confirmedGuests: confirmedCount,
       status: statusText,
@@ -1225,10 +1358,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* ============================================================
-     GALERÍA — lightbox DESACTIVADO
-     El cliente pidió que solo se vean las miniaturas.
-     Las fotos en grande no se pueden abrir desde la galería.
-     Para reactivar el lightbox: descomentar la línea del forEach.
+     GALERÍA — lightbox desactivado (solo miniaturas)
      ============================================================ */
   const galleryItems = Array.from(document.querySelectorAll('.gallery-item'));
   const lightbox = document.getElementById('lightbox');
@@ -1271,7 +1401,7 @@ document.addEventListener('DOMContentLoaded', () => {
     lastFocused?.focus?.();
   }
 
-  // ⬇️ LIGHTBOX DESACTIVADO — solo miniaturas
+  // ⬇️ LIGHTBOX DESACTIVADO
   // galleryItems.forEach((item, i) => item.addEventListener('click', () => openLightbox(i)));
 
   document.getElementById('lightbox-close')?.addEventListener('click', closeLightbox);
@@ -1292,7 +1422,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }, { passive: true });
 
   /* ============================================================
-     MAPA — toggle satélite
+     MAPA
      ============================================================ */
   const mapIframe = document.getElementById('map-iframe');
   const mapToggle = document.getElementById('map-toggle');
@@ -1322,6 +1452,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const themeMeta = document.querySelector('meta[name="theme-color"]');
   function updateThemeColor() {
     if (!themeMeta) return;
+    const isLightTheme = document.body.classList.contains('theme-light');
+    if (isLightTheme) {
+      themeMeta.content = '#f2ecdc';
+      return;
+    }
     const isDark = window.scrollY > window.innerHeight * 0.5;
     themeMeta.content = isDark ? '#3a4020' : '#f1edd8';
   }
