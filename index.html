@@ -213,11 +213,14 @@
             </span>
             <span class="envelope-css__flap" aria-hidden="true"></span>
             <span class="envelope-css__seal" aria-hidden="true">
-              <span class="envelope-css__seal-inner">
-                <span class="envelope-css__seal-flourish">✦</span>
-                <span class="envelope-css__seal-text">M·H</span>
-                <span class="envelope-css__seal-flourish">✦</span>
-              </span>
+              <img
+                class="envelope-css__seal-img"
+                src="img/sello.png"
+                alt=""
+                width="256"
+                height="256"
+                decoding="async"
+              />
             </span>
           </button>
         </div>
@@ -594,7 +597,7 @@
                 decoding="async"
                 width="800"
                 height="1200"
-              /><span class="gallery-item__num">01</span>
+              />
             </div>
             <div class="gallery-item">
               <img
@@ -604,7 +607,7 @@
                 decoding="async"
                 width="800"
                 height="1200"
-              /><span class="gallery-item__num">02</span>
+              />
             </div>
             <div class="gallery-item">
               <img
@@ -614,7 +617,7 @@
                 decoding="async"
                 width="800"
                 height="1200"
-              /><span class="gallery-item__num">03</span>
+              />
             </div>
             
             <div class="gallery-item">
@@ -625,7 +628,7 @@
                 decoding="async"
                 width="800"
                 height="1200"
-              /><span class="gallery-item__num">05</span>
+              />
             </div>
             <div class="gallery-item gallery-item--tall">
               <img
@@ -635,7 +638,7 @@
                 decoding="async"
                 width="800"
                 height="1200"
-              /><span class="gallery-item__num">06</span>
+              />
             </div>
             <div class="gallery-item">
               <img
@@ -645,7 +648,7 @@
                 decoding="async"
                 width="800"
                 height="1200"
-              /><span class="gallery-item__num">07</span>
+              />
             </div>
             <div class="gallery-item">
               <img
@@ -655,7 +658,7 @@
                 decoding="async"
                 width="800"
                 height="1200"
-              /><span class="gallery-item__num">08</span>
+              />
             </div>
             <div class="gallery-item gallery-item--wide">
               <img
@@ -665,7 +668,7 @@
                 decoding="async"
                 width="1200"
                 height="800"
-              /><span class="gallery-item__num">09</span>
+              />
             </div>
             <div class="gallery-item">
               <img
@@ -675,7 +678,7 @@
                 decoding="async"
                 width="800"
                 height="1200"
-              /><span class="gallery-item__num">10</span>
+              />
             </div>
             <div class="gallery-item">
               <img
@@ -685,7 +688,7 @@
                 decoding="async"
                 width="800"
                 height="1200"
-              /><span class="gallery-item__num">11</span>
+              />
             </div>
             <div class="gallery-item">
               <img
@@ -695,7 +698,7 @@
                 decoding="async"
                 width="800"
                 height="1200"
-              /><span class="gallery-item__num">12</span>
+              />
             </div>
             <div class="gallery-item">
               <img
@@ -705,7 +708,7 @@
                 decoding="async"
                 width="800"
                 height="1200"
-              /><span class="gallery-item__num">13</span>
+              />
             </div>
 
           </div>
@@ -862,35 +865,36 @@
             <span></span><i>♡</i><span></span>
           </div>
           <p class="gifts-message">
-            El mejor regalo es compartir este día con ustedes. Pero si además
-            quieren hacernos un mimo para acompañarnos en esta nueva etapa, les
-            dejamos nuestros datos. ¡Gracias por tanto cariño! ♡
+            Nuestro mejor regalo es que nos acompañen en este día tan especial. Y si quieren sorprendernos con un detalle, aquí les dejamos nuestros datos
+‎ ¡Gracias por tanto cariño! ♡
           </p>
           <div class="bank-details">
             <div class="bank-detail">
-              <span>Banco</span><strong>Mercado Pago</strong>
+              <span class="bank-detail__label">Banco</span>
+              <strong class="bank-detail__value">Prex</strong>
             </div>
             <div class="bank-detail">
-              <span>Titular</span><strong>Maza Gabriel Hernán</strong>
+              <span class="bank-detail__label">Titular</span>
+              <strong class="bank-detail__value">Maza Gabriel Hernán</strong>
             </div>
             <div class="bank-detail bank-detail--copy">
-              <div>
-                <span>CBU</span
-                ><strong id="gift-cbu">0000003100096259769812</strong>
+              <div class="bank-detail__text">
+                <span class="bank-detail__label">CVU</span>
+                <strong class="bank-detail__value" id="gift-cbu">0000013000032155504788</strong>
               </div>
               <button
                 type="button"
                 class="copy-button"
                 data-copy-target="gift-cbu"
-                data-copy-label="CBU"
+                data-copy-label="CVU"
               >
                 Copiar
               </button>
             </div>
             <div class="bank-detail bank-detail--copy">
-              <div>
-                <span>Alias</span
-                ><strong id="gift-alias">hernan.maza.mp</strong>
+              <div class="bank-detail__text">
+                <span class="bank-detail__label">Alias</span>
+                <strong class="bank-detail__value" id="gift-alias">BODAMYH2027</strong>
               </div>
               <button
                 type="button"
@@ -903,8 +907,7 @@
             </div>
           </div>
           <p class="gifts-thanks">
-            Gracias por acompañarnos y ser parte de este momento tan especial.
-          </p>
+            
         </div>
       </section>
 
@@ -1488,73 +1491,6 @@
       </div>
     </div>
 
-    <!-- MODAL PRIVACIDAD -->
-    <div class="confirm-modal" id="privacy-modal" aria-hidden="true">
-      <div class="modal-overlay" id="privacy-overlay"></div>
-      <div
-        class="confirm-modal__card confirm-modal__card--privacy"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="privacy-modal-title"
-      >
-        <button
-          class="modal-close"
-          id="privacy-modal-close"
-          type="button"
-          aria-label="Cerrar"
-        >
-          ×
-        </button>
-        <span class="section-kicker">Transparencia</span>
-        <h3 id="privacy-modal-title">Aviso de privacidad</h3>
-        <div class="privacy-content">
-          <p>
-            Esta invitación es un proyecto personal de
-            <strong>María &amp; Hernán</strong> para compartir el día de su boda
-            con sus seres queridos.
-          </p>
-          <h4>Qué datos recolectamos</h4>
-          <ul>
-            <li>Nombre y apellido (para identificar tu confirmación).</li>
-            <li>Cantidad de personas asistentes.</li>
-            <li>Restricciones alimentarias (opcional, para el catering).</li>
-            <li>Contacto (opcional, para avisarte novedades del evento).</li>
-            <li>Mensaje (opcional).</li>
-            <li>Fotos (opcional, si las subís al álbum de la boda).</li>
-          </ul>
-          <h4>Para qué los usamos</h4>
-          <ul>
-            <li>Organizar la boda (confirmaciones, menú, seating).</li>
-            <li>Enviar avisos sobre el evento si es necesario.</li>
-            <li>Armar el álbum de recuerdos de la boda.</li>
-          </ul>
-          <h4>Dónde se guardan</h4>
-          <ul>
-            <li>
-              En una hoja de Google Sheets privada, accesible solo por los
-              novios.
-            </li>
-            <li>
-              Las fotos van a una carpeta de Google Drive privada de la cuenta
-              de la boda.
-            </li>
-          </ul>
-          <h4>Compartición</h4>
-          <ul>
-            <li>No compartimos tus datos con nadie.</li>
-            <li>No usamos cookies de terceros ni rastreo publicitario.</li>
-          </ul>
-          <h4>Eliminación</h4>
-          <p>
-            Si querés que eliminemos tus datos, escribinos a
-            <strong>bodamyh2027@gmail.com</strong>. Vamos a eliminarlos dentro
-            de los 7 días de recibido tu mail.
-          </p>
-          <p class="privacy-content__updated">Última actualización: 2027</p>
-        </div>
-      </div>
-    </div>
-
     <!-- FOOTER -->
     <footer class="closing-section">
       <div class="closing-content reveal-card">
@@ -1593,50 +1529,8 @@
             <span>Guardar contacto</span>
           </button>
         </div>
-        <button class="privacy-link" id="privacy-link" type="button">
-          Aviso de privacidad
-        </button>
       </div>
     </footer>
-
-    <!-- LIGHTBOX (desactivado por CSS) -->
-    <div
-      class="lightbox"
-      id="lightbox"
-      role="dialog"
-      aria-modal="true"
-      aria-label="Galería de fotos"
-      aria-hidden="true"
-    >
-      <button
-        class="lightbox__close"
-        id="lightbox-close"
-        type="button"
-        aria-label="Cerrar"
-      >
-        ×
-      </button>
-      <button
-        class="lightbox__nav lightbox__nav--prev"
-        id="lightbox-prev"
-        type="button"
-        aria-label="Foto anterior"
-      >
-        ‹
-      </button>
-      <figure class="lightbox__figure">
-        <img id="lightbox-img" src="" alt="" />
-        <figcaption id="lightbox-count" aria-live="polite"></figcaption>
-      </figure>
-      <button
-        class="lightbox__nav lightbox__nav--next"
-        id="lightbox-next"
-        type="button"
-        aria-label="Foto siguiente"
-      >
-        ›
-      </button>
-    </div>
 
     <div class="petals-layer" id="petals-layer" aria-hidden="true"></div>
 
