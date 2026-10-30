@@ -827,7 +827,6 @@ body.theme-light .theme-toggle{
 }
 body.theme-light .playlist-hint{color:#5a5a43}
 
-./* ============ GALERÍA (estilo collage desordenado) ============ */
 /* ============ GALERÍA (estilo collage desordenado limpio) ============ */
 .gallery-section {
   padding: clamp(80px, 12vw, 150px) 0;
