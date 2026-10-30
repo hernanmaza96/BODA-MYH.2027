@@ -67,7 +67,8 @@
       href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%233a4020'%3E%3Canimate attributeName='stop-color' values='%233a4020;%236d7743;%233a4020' dur='6s' repeatCount='indefinite'/%3E%3C/stop%3E%3Cstop offset='100%25' stop-color='%234c5429'%3E%3Canimate attributeName='stop-color' values='%234c5429;%238b9560;%234c5429' dur='6s' repeatCount='indefinite'/%3E%3C/stop%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='12' fill='url(%23g)'/%3E%3Ctext x='50%25' y='56%25' font-family='Georgia,serif' font-size='30' fill='%23d6b987' text-anchor='middle' dominant-baseline='middle'%3EM%C2%B7H%3C/text%3E%3C/svg%3E"
     />
 
-    <link rel="preload" as="image" href="img/cerrado.jpeg" />
+    <link rel="preload" as="image" href="img/Cerrado.png" />
+    <link rel="preload" as="image" href="img/abierto.png" />
     <link rel="preload" as="image" href="img/10.webp" />
     <link rel="preload" as="image" href="img/flores-izquierda.webp" />
     <link rel="preload" as="image" href="img/flores-derecha.webp" />
@@ -203,25 +204,26 @@
             type="button"
             aria-label="Abrir la invitación"
           >
-            <span class="envelope-css__photo" aria-hidden="true"
-              ><img src="img/10.webp" alt="" width="600" height="800"
-            /></span>
-            <span class="envelope-css__body" aria-hidden="true">
-              <span class="envelope-css__left"></span>
-              <span class="envelope-css__right"></span>
-              <span class="envelope-css__bottom"></span>
+            <span class="envelope-css__photo" aria-hidden="true">
+              <img src="img/10.webp" alt="" width="600" height="800" />
             </span>
-            <span class="envelope-css__flap" aria-hidden="true"></span>
-            <span class="envelope-css__seal" aria-hidden="true">
-              <img
-                class="envelope-css__seal-img"
-                src="img/sello.png"
-                alt=""
-                width="256"
-                height="256"
-                decoding="async"
-              />
-            </span>
+            <img
+              class="envelope-css__image envelope-css__image--closed"
+              src="img/Cerrado.png"
+              alt=""
+              width="1556"
+              height="1011"
+              decoding="async"
+            />
+            <img
+              class="envelope-css__image envelope-css__image--open"
+              src="img/abierto.png"
+              alt=""
+              width="1328"
+              height="1184"
+              decoding="async"
+              aria-hidden="true"
+            />
           </button>
         </div>
         <p class="opening-hint">Tocá el sello para abrir la invitación</p>
@@ -586,7 +588,7 @@
       <section class="gallery-section" id="galeria" data-ambient="tr">
         <div class="content-width">
           <header class="section-heading reveal-section">
-            <h2>Momentos del corazón</h2>
+            <h2>Galería</h2>
           </header>
           <div class="gallery-masonry reveal-section">
             <div class="gallery-item gallery-item--tall">
@@ -1049,21 +1051,6 @@
                     <span>· obligatorio</span></label
                   >
                   <select id="rsvp-guests" name="guests"></select>
-                </div>
-
-                <div class="rsvp-form__field" id="rsvp-diet-field">
-                  <label for="rsvp-diet"
-                    >Restricciones alimentarias <span>· opcional</span></label
-                  >
-                  <select id="rsvp-diet" name="diet">
-                    <option value="">Sin restricciones</option>
-                    <option value="Vegetariano">Vegetariano/a</option>
-                    <option value="Vegano">Vegano/a</option>
-                    <option value="Sin TACC">Sin TACC / Celíaco/a</option>
-                    <option value="Sin lactosa">Sin lactosa</option>
-                    <option value="Sin frutos secos">Sin frutos secos</option>
-                    <option value="Otro">Otro (detallar en mensaje)</option>
-                  </select>
                 </div>
 
                 <div class="rsvp-form__field">

@@ -3,7 +3,7 @@
 // Estrategia: precache de assets críticos + stale-while-revalidate
 // ============================================================
 
-const CACHE = 'myh-v13';
+const CACHE = 'myh-v14';
 const PRECACHE = [
   './',
   './index.html',
@@ -22,7 +22,8 @@ const PRECACHE = [
   './img/galeria-07.jpg',
   './img/galeria-08.jpg',
   './img/galeria-09.jpg',
-  './img/cerrado.jpeg'
+  './img/Cerrado.png',
+  './img/abierto.png'
 ];
 
 // Al instalar: precachear todos los assets críticos

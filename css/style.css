@@ -4,7 +4,6 @@
    + Contraste WCAG AA
    + Detección hardware lento
    + vCard descargable
-   + Restricciones dietarias
    + Aviso de privacidad
    + Modo claro/oscuro
    ================================================================ */
@@ -2799,6 +2798,42 @@ textarea:focus-visible{
 .envelope-intro::-webkit-scrollbar {
   display: none;
 }
+
+.envelope-css {
+  aspect-ratio: 1328 / 1184;
+}
+.envelope-css__image {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  transition:
+    opacity 0.8s ease,
+    transform 1.8s cubic-bezier(.6,.02,.4,1);
+  pointer-events: none;
+}
+.envelope-css__photo {
+  z-index: 2;
+}
+.envelope-css__image--open {
+  opacity: 0;
+}
+.envelope-css.is-opening .envelope-css__image--closed {
+  opacity: 0;
+}
+.envelope-css.is-opening .envelope-css__image--open {
+  opacity: 1;
+}
+.envelope-opening.is-zooming .envelope-css__image--open {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(3.8);
+}
+
 /* ================================================================
 V67 · DATE MESSAGE — ANIMACIONES ELEGANTES
 Shimmer dorado + fade-in escalonado + ornamento pulsante
