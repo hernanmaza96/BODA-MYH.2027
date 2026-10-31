@@ -600,7 +600,7 @@ body.theme-light .theme-toggle{
   font-size:clamp(1.5rem,3.4vw,2.3rem);
   font-weight:500;
   line-height:1.08;
-  margin:6px 0 20px;
+  margin:6px 0 12px;
   color:var(--ink-dark);
   letter-spacing:.005em;
 }
@@ -627,7 +627,7 @@ body.theme-light .theme-toggle{
 
 .dress-code-card__intro{
   max-width:340px;
-  margin:0 auto 24px;
+  margin:18px auto 0;
   color:var(--muted-dark);
   font-family:var(--serif);
   font-size:clamp(.82rem,2.2vw,.92rem);
@@ -640,11 +640,16 @@ body.theme-light .theme-toggle{
   display:flex;
   flex-direction:column;
   align-items:center;
-  gap:6px;
-  padding-top:20px;
-  border-top:1px solid rgba(109,119,67,.25);
+  gap:0;
   max-width:260px;
   margin:0 auto;
+}
+.dress-code-label::after{
+  content:"";
+  display:block;
+  width:min(100%,180px);
+  margin-top:clamp(14px,2vw,20px);
+  border-bottom:1px solid rgba(109,119,67,.32);
 }
 .dress-code-label strong{
   font-family:var(--serif);
@@ -672,8 +677,9 @@ body.theme-light .theme-toggle{
   background:linear-gradient(160deg,#5d6a3a 0%,#4c5429 55%,#3f4723 100%);
   border:7px solid #fffdf8;
   display:flex;
-  align-items:flex-end;
-  justify-content:center;
+  flex-direction:column;
+  align-items:stretch;
+  justify-content:flex-start;
   padding:26px 26px 26px;
   box-shadow:
     0 30px 60px rgba(0,0,0,.42),
@@ -695,14 +701,54 @@ body.theme-light .theme-toggle{
 .dress-code-image{
   position:relative;
   z-index:1;
+  flex:1 1 0;
+  min-height:0;
   width:100%;
-  height:100%;
+  height:auto;
   display:block;
   object-fit:contain;
   object-position:center center;
   filter:drop-shadow(0 3px 8px rgba(0,0,0,.28));
   opacity:1;
   transform:none;
+}
+.dress-code-recommendations{
+  position:relative;
+  z-index:2;
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  flex:0 0 auto;
+  width:100%;
+  padding-top:clamp(12px,2vw,18px);
+  border-top:1px solid rgba(214,185,135,.62);
+}
+.dress-code-recommendation{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  margin:0;
+  padding:2px 6px clamp(4px,1vw,8px);
+  color:var(--cream-soft);
+  text-align:center;
+}
+.dress-code-recommendation + .dress-code-recommendation{
+  border-left:1px solid rgba(214,185,135,.42);
+}
+.dress-code-recommendation strong{
+  font-family:var(--sans);
+  font-size:clamp(.5rem,1.15vw,.62rem);
+  font-weight:600;
+  letter-spacing:.2em;
+  text-transform:uppercase;
+  color:var(--gold-light);
+}
+.dress-code-recommendation span{
+  font-family:var(--serif);
+  font-size:clamp(.78rem,1.55vw,.96rem);
+  line-height:1.15;
+  color:var(--cream-soft);
 }
 .dress-code-stage.is-visible .dress-code-image,
 .dress-code-card--visual.is-visible .dress-code-image{
@@ -1869,7 +1915,7 @@ body.theme-light .toast__icon{color:#d6b987}
   .dress-code-card--text{width:76%;padding:22px 16px;border-width:6px}
   .dress-code-card--visual{width:70%;margin-top:clamp(-110px,-13vw,-90px);aspect-ratio:1 / 1.28;padding:12px;border-width:4px}
   .dress-code-card__intro{font-size:.82rem;line-height:1.65;margin-bottom:18px}
-  .dress-code-label{padding-top:14px}
+  .dress-code-label::after{margin-top:14px}
   .dress-code-label strong{font-size:1.22rem}
   .dress-code-label span{font-size:.48rem;letter-spacing:.16em}
   .dress-code-note{font-size:.9rem;padding:20px 14px}
