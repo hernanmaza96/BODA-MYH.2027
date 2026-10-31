@@ -22,8 +22,10 @@ const PRECACHE = [
   './img/galeria-07.jpg',
   './img/galeria-08.jpg',
   './img/galeria-09.jpg',
-  './img/Cerrado.png',
-  './img/abierto.png'
+  './img/cerrado.jpeg',
+  './img/sello-mh.webp',
+  './img/icon-192.png',
+  './img/icon-512.png'
 ];
 
 // Al instalar: precachear todos los assets críticos

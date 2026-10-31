@@ -287,8 +287,19 @@ const caption = document.querySelector('.countdown-caption');
 if (caption) caption.textContent = '¡Nos casamos! Gracias por ser parte 💛';
 }
 const hideLoader = () => loader?.classList.add('is-hidden');
-window.addEventListener('load', () => setTimeout(hideLoader, 200), { once: true });
-setTimeout(hideLoader, 800);
+// El loader se oculta cuando el sobre cerrado ya está listo (así no aparece vacío ni "de golpe").
+// Tope de seguridad de 4 s para no dejar la pantalla esperando si la conexión es muy lenta.
+const closedEnvelopeImg = document.querySelector('.envelope-css__image--closed');
+const envelopeReady = new Promise(resolve => {
+if (!closedEnvelopeImg || (closedEnvelopeImg.complete && closedEnvelopeImg.naturalWidth > 0)) { resolve(); return; }
+closedEnvelopeImg.addEventListener('load', resolve, { once: true });
+closedEnvelopeImg.addEventListener('error', resolve, { once: true });
+});
+const envelopeSettled = Promise.race([
+envelopeReady.then(() => (closedEnvelopeImg && closedEnvelopeImg.decode ? closedEnvelopeImg.decode().catch(() => {}) : null)),
+new Promise(resolve => setTimeout(resolve, 4000))
+]);
+envelopeSettled.then(() => setTimeout(hideLoader, 120));
 /* ============================================================
 REVEAL
 ============================================================ */
@@ -391,6 +402,18 @@ const HOLD_TIME = 6800;
 setTimeout(() => opening.classList.add('is-zooming'), HOLD_TIME);
 setTimeout(finishOpening, HOLD_TIME + 2000);
 };
+// La música se descarga DESPUÉS del sobre, para que no compita con las imágenes en la carga inicial.
+const deferredAudio = document.getElementById('wedding-audio');
+const loadAudioNow = () => {
+if (!deferredAudio || deferredAudio.dataset.loading) return;
+deferredAudio.dataset.loading = '1';
+deferredAudio.preload = 'auto';
+if (deferredAudio.paused && deferredAudio.readyState === 0) {
+try { deferredAudio.load(); } catch (_) {}
+}
+};
+envelopeSettled.then(() => setTimeout(loadAudioNow, 400));
+['pointerdown', 'touchstart', 'keydown'].forEach(ev => window.addEventListener(ev, loadAudioNow, { once: true, passive: true }));
 document.body.classList.add('invitation-locked');
 startMusic();
 envelope?.addEventListener('click', openInvitation);
@@ -459,7 +482,19 @@ const hours = Math.floor(diff / 3600000) % 24;
 const minutes = Math.floor(diff / 60000) % 60;
 const seconds = Math.floor(diff / 1000) % 60;
 [days, hours, minutes, seconds].forEach((value, i) => {
-if (ids[i]) ids[i].textContent = String(value).padStart(2, '0');
+const el = ids[i];
+if (!el) return;
+const text = String(value).padStart(2, '0');
+if (el.textContent === text && el.dataset.ready === '1') return;
+const hadValue = el.dataset.ready === '1';
+el.textContent = text;
+el.dataset.ready = '1';
+// Cambio suave al pasar cada número (no en la primera carga)
+if (hadValue && !reducedMotion) {
+el.classList.remove('is-tick');
+void el.offsetWidth;
+el.classList.add('is-tick');
+}
 });
 if (caption) {
 if (document.body.classList.contains('post-boda')) {
@@ -879,6 +914,34 @@ const nav = document.getElementById('floating-nav');
 const toggleNav = () => nav?.classList.toggle('is-visible', window.scrollY > window.innerHeight * 0.5);
 window.addEventListener('scroll', toggleNav, { passive: true });
 toggleNav();
+// Marca en dorado la sección donde estás
+const navLinks = nav ? Array.from(nav.querySelectorAll('a[href^="#"]')) : [];
+if (navLinks.length && 'IntersectionObserver' in window) {
+let navCurrent = null;
+const setNavActive = id => {
+if (id === navCurrent) return;
+navCurrent = id;
+navLinks.forEach(link => {
+const on = link.getAttribute('href') === `#${id}`;
+link.classList.toggle('is-active', on);
+if (on) {
+link.setAttribute('aria-current', 'true');
+if (nav.scrollWidth > nav.clientWidth) {
+nav.scrollTo({ left: link.offsetLeft - (nav.clientWidth - link.offsetWidth) / 2, behavior: reducedMotion ? 'auto' : 'smooth' });
+}
+} else {
+link.removeAttribute('aria-current');
+}
+});
+};
+const navObserver = new IntersectionObserver(entries => {
+entries.forEach(entry => { if (entry.isIntersecting) setNavActive(entry.target.id); });
+}, { rootMargin: '-45% 0px -50% 0px', threshold: 0 });
+navLinks.forEach(link => {
+const target = document.getElementById(link.getAttribute('href').slice(1));
+if (target) navObserver.observe(target);
+});
+}
 /* ============================================================
 MÚSICA (toggle)
 ============================================================ */
@@ -1199,6 +1262,73 @@ lastFocused?.focus?.();
 }
 // ⬇️ LIGHTBOX DESACTIVADO
 // galleryItems.forEach((item, i) => item.addEventListener('click', () => openLightbox(i)));
+// ===== Galería: aparición de a una, fundido al cargar y fotos que no se pueden abrir =====
+const galleryGrid = document.querySelector('.gallery-masonry');
+if (galleryGrid && galleryItems.length) {
+galleryGrid.classList.add('gallery-js');
+galleryItems.forEach(item => {
+// Sin menú de "abrir / descargar" al mantener presionado, ni arrastre
+item.addEventListener('contextmenu', e => e.preventDefault());
+item.addEventListener('dragstart', e => e.preventDefault());
+const photo = item.querySelector('img');
+if (!photo) return;
+photo.setAttribute('draggable', 'false');
+const markLoaded = () => photo.classList.add('is-loaded');
+if (photo.complete && photo.naturalWidth > 0) markLoaded();
+else {
+photo.addEventListener('load', markLoaded, { once: true });
+photo.addEventListener('error', markLoaded, { once: true });
+}
+});
+const showGalleryItem = item => item.classList.add('is-in');
+if (reducedMotion || !('IntersectionObserver' in window)) {
+galleryItems.forEach(showGalleryItem);
+} else {
+const galleryObserver = new IntersectionObserver(entries => {
+entries.forEach(entry => {
+if (!entry.isIntersecting) return;
+const item = entry.target;
+const galleryIdx = galleryItems.indexOf(item);
+// La foto principal entra sola; las demás, de a dos (la derecha un instante después)
+item.style.setProperty('--d', `${galleryIdx === 0 ? 0 : ((galleryIdx - 1) % 2) * 0.14}s`);
+showGalleryItem(item);
+galleryObserver.unobserve(item);
+});
+}, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
+galleryItems.forEach(item => galleryObserver.observe(item));
+}
+// Movimiento suave al scrollear: cada columna se desplaza apenas distinto (profundidad)
+if (!reducedMotion && galleryItems.length > 1 && window.CSS && CSS.supports && CSS.supports('translate', '0 1px')) {
+const PARALLAX_MAX = 26;
+const PARALLAX_FACTOR = [0.012, 0.04];
+let parallaxVisible = false;
+let parallaxFrame = 0;
+const updateParallax = () => {
+parallaxFrame = 0;
+if (document.body.classList.contains('low-end')) return;
+const gridTop = galleryGrid.getBoundingClientRect().top;
+const halfView = window.innerHeight / 2;
+galleryItems.forEach((item, i) => {
+if (i === 0) return;
+const centerY = gridTop + item.offsetTop + item.offsetHeight / 2;
+const shift = Math.max(-PARALLAX_MAX, Math.min(PARALLAX_MAX, (centerY - halfView) * PARALLAX_FACTOR[(i - 1) % 2]));
+item.style.setProperty('--py', `${shift.toFixed(1)}px`);
+});
+};
+const queueParallax = () => {
+if (!parallaxVisible || parallaxFrame) return;
+parallaxFrame = requestAnimationFrame(updateParallax);
+};
+if ('IntersectionObserver' in window) {
+new IntersectionObserver(entries => {
+parallaxVisible = entries.some(entry => entry.isIntersecting);
+if (parallaxVisible) queueParallax();
+}, { rootMargin: '200px 0px' }).observe(galleryGrid);
+window.addEventListener('scroll', queueParallax, { passive: true });
+window.addEventListener('resize', queueParallax, { passive: true });
+}
+}
+}
 document.getElementById('lightbox-close')?.addEventListener('click', closeLightbox);
 document.getElementById('lightbox-prev')?.addEventListener('click', () => showPhoto(lightboxIndex - 1));
 document.getElementById('lightbox-next')?.addEventListener('click', () => showPhoto(lightboxIndex + 1));

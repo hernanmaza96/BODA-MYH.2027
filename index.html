@@ -21,17 +21,17 @@
     />
     <meta
       property="og:url"
-      content="https://hernanmaza96.github.io/BODA-MYH.2027/"
+      content="https://bodamyh2027.vercel.app/"
     />
     <meta property="og:site_name" content="María &amp; Hernán" />
     <meta property="og:locale" content="es_AR" />
     <meta
       property="og:image"
-      content="https://hernanmaza96.github.io/BODA-MYH.2027/img/og-boda.jpg"
+      content="https://bodamyh2027.vercel.app/img/og-boda.jpg?v=2"
     />
     <meta
       property="og:image:secure_url"
-      content="https://hernanmaza96.github.io/BODA-MYH.2027/img/og-boda.jpg"
+      content="https://bodamyh2027.vercel.app/img/og-boda.jpg?v=2"
     />
     <meta property="og:image:type" content="image/jpeg" />
     <meta property="og:image:width" content="1200" />
@@ -47,7 +47,7 @@
     />
     <meta
       name="twitter:image"
-      content="https://hernanmaza96.github.io/BODA-MYH.2027/img/og-boda.jpg"
+      content="https://bodamyh2027.vercel.app/img/og-boda.jpg?v=2"
     />
     <meta
       name="twitter:image:alt"
@@ -61,17 +61,18 @@
     />
     <meta name="apple-mobile-web-app-title" content="María & Hernán" />
     <link rel="manifest" href="manifest.json" />
+    <link rel="apple-touch-icon" href="img/apple-touch-icon.png" />
 
     <link
       rel="icon"
       href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%233a4020'%3E%3Canimate attributeName='stop-color' values='%233a4020;%236d7743;%233a4020' dur='6s' repeatCount='indefinite'/%3E%3C/stop%3E%3Cstop offset='100%25' stop-color='%234c5429'%3E%3Canimate attributeName='stop-color' values='%234c5429;%238b9560;%234c5429' dur='6s' repeatCount='indefinite'/%3E%3C/stop%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='12' fill='url(%23g)'/%3E%3Ctext x='50%25' y='56%25' font-family='Georgia,serif' font-size='30' fill='%23d6b987' text-anchor='middle' dominant-baseline='middle'%3EM%C2%B7H%3C/text%3E%3C/svg%3E"
     />
 
-    <link rel="preload" as="image" href="img/Cerrado.png" />
-    <link rel="preload" as="image" href="img/abierto.png" />
+    <link rel="preload" as="image" href="img/Cerrado.png" fetchpriority="high" />
     <link rel="preload" as="image" href="img/10.webp" />
     <link rel="preload" as="image" href="img/flores-izquierda.webp" />
     <link rel="preload" as="image" href="img/flores-derecha.webp" />
+    <link rel="preload" as="image" href="img/abierto.png" fetchpriority="low" />
 
     <style>
       html,
@@ -126,7 +127,15 @@
     <link
       href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Allura&family=Caveat:wght@500&display=swap"
       rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
     />
+    <noscript>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Allura&family=Caveat:wght@500&display=swap"
+        rel="stylesheet"
+      />
+    </noscript>
 
     <script type="application/ld+json">
       {
@@ -154,7 +163,7 @@
           "hasMap": "https://www.google.com/maps?q=-37.8745289,-58.289135"
         },
         "image": [
-          "https://hernanmaza96.github.io/BODA-MYH.2027/img/og-boda.jpg"
+          "https://bodamyh2027.vercel.app/img/og-boda.jpg?v=2"
         ],
         "description": "Ceremonia y recepción en Urbana Lounge. ¡Te esperamos para celebrar juntos!",
         "organizer": { "@type": "Person", "name": "María & Hernán" }
@@ -165,6 +174,34 @@
     <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+      <defs>
+        <linearGradient id="mh-div-fade" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="currentColor" stop-opacity=".95" />
+          <stop offset="1" stop-color="currentColor" stop-opacity="0" />
+        </linearGradient>
+        <symbol id="mh-divider" viewBox="0 0 400 60">
+          <g id="mh-divider-half">
+            <path d="M210 30 Q238 21 274 27" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" />
+            <g fill="currentColor" opacity=".75">
+              <ellipse cx="224" cy="23.5" rx="8" ry="2.6" transform="rotate(-32 224 23.5)" />
+              <ellipse cx="229" cy="31.5" rx="8" ry="2.6" transform="rotate(26 229 31.5)" />
+              <ellipse cx="245" cy="21" rx="8" ry="2.6" transform="rotate(-30 245 21)" />
+              <ellipse cx="250" cy="29" rx="8" ry="2.6" transform="rotate(24 250 29)" />
+              <ellipse cx="263" cy="22" rx="7.5" ry="2.4" transform="rotate(-26 263 22)" />
+              <ellipse cx="267" cy="30" rx="7.5" ry="2.4" transform="rotate(22 267 30)" />
+              <ellipse cx="283" cy="26.5" rx="9" ry="2.6" transform="rotate(-8 283 26.5)" />
+            </g>
+            <path d="M238 24.5 L236 33" stroke="currentColor" stroke-width=".7" opacity=".7" />
+            <ellipse cx="235.5" cy="36" rx="3.1" ry="4.2" transform="rotate(-12 235.5 36)" fill="currentColor" opacity=".6" />
+            <rect x="296" y="29.5" width="96" height="1" fill="url(#mh-div-fade)" />
+          </g>
+          <use href="#mh-divider-half" transform="translate(400 0) scale(-1 1)" />
+          <path d="M200 24.5 L205.5 30 L200 35.5 L194.5 30 Z" fill="none" stroke="currentColor" stroke-width="1" />
+          <circle cx="200" cy="30" r="1.3" fill="currentColor" />
+        </symbol>
+      </defs>
+    </svg>
     <div class="grain" aria-hidden="true"></div>
     <div
       class="toast-container"
@@ -214,6 +251,7 @@
               width="1556"
               height="1011"
               decoding="async"
+              fetchpriority="high"
             />
             <img
               class="envelope-css__image envelope-css__image--open"
@@ -222,6 +260,7 @@
               width="1328"
               height="1184"
               decoding="async"
+              fetchpriority="low"
               aria-hidden="true"
             />
           </button>
@@ -256,7 +295,7 @@
     >
       <audio
         id="wedding-audio"
-        preload="auto"
+        preload="none"
         loop
         src="audio/bailando-bachata.mp3"
       ></audio>
@@ -323,39 +362,14 @@
       </section>
 
       <div class="olive-divider" aria-hidden="true">
-        <svg
-          viewBox="0 0 800 60"
-          preserveAspectRatio="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M0 30 C 150 5, 300 55, 400 30 S 650 5, 800 30"
-            stroke="currentColor"
-            fill="none"
-            stroke-width="1"
-          />
-          <path
-            d="M60 30 C 150 18, 200 42, 260 30"
-            stroke="currentColor"
-            fill="none"
-            stroke-width=".6"
-            opacity=".5"
-          />
-          <path
-            d="M540 30 C 600 18, 650 42, 740 30"
-            stroke="currentColor"
-            fill="none"
-            stroke-width=".6"
-            opacity=".5"
-          />
-        </svg>
+        <svg viewBox="0 0 400 60" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg"><use href="#mh-divider" /></svg>
       </div>
 
       <!-- CRONOGRAMA -->
       <section class="grand-day-section" id="gran-dia" data-ambient="tr">
         <div class="content-width">
           <header class="section-heading reveal-section">
-            <h2>Nuestra celebración</h2>
+            <h2>Nuestra <em class="title-script">celebración</em></h2>
             <p>
               Una noche para celebrar el amor, brindar y disfrutar cada instante
               juntos.
@@ -435,18 +449,7 @@
       </section>
 
       <div class="olive-divider" aria-hidden="true">
-        <svg
-          viewBox="0 0 800 60"
-          preserveAspectRatio="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M0 30 C 150 5, 300 55, 400 30 S 650 5, 800 30"
-            stroke="currentColor"
-            fill="none"
-            stroke-width="1"
-          />
-        </svg>
+        <svg viewBox="0 0 400 60" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg"><use href="#mh-divider" /></svg>
       </div>
 
       <!-- VESTIMENTA -->
@@ -488,25 +491,14 @@
       </section>
 
       <div class="olive-divider" aria-hidden="true">
-        <svg
-          viewBox="0 0 800 60"
-          preserveAspectRatio="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M0 30 C 150 5, 300 55, 400 30 S 650 5, 800 30"
-            stroke="currentColor"
-            fill="none"
-            stroke-width="1"
-          />
-        </svg>
+        <svg viewBox="0 0 400 60" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg"><use href="#mh-divider" /></svg>
       </div>
 
       <!-- PLAYLIST -->
       <section class="playlist-section" id="playlist" data-ambient="tl">
         <div class="playlist-card reveal-card">
           <span class="section-kicker">La música también cuenta</span>
-          <h2>Armemos juntos nuestra playlist</h2>
+          <h2>Armemos <em class="title-script">juntos</em> nuestra playlist</h2>
           <p class="playlist-intro">
             Ya tenemos una canción que nos acompaña en este momento, pero
             queremos que la fiesta también tenga un poquito de cada uno de
@@ -570,28 +562,17 @@
       </section>
 
       <div class="olive-divider" aria-hidden="true">
-        <svg
-          viewBox="0 0 800 60"
-          preserveAspectRatio="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M0 30 C 150 5, 300 55, 400 30 S 650 5, 800 30"
-            stroke="currentColor"
-            fill="none"
-            stroke-width="1"
-          />
-        </svg>
+        <svg viewBox="0 0 400 60" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg"><use href="#mh-divider" /></svg>
       </div>
 
       <!-- GALERÍA -->
       <section class="gallery-section" id="galeria" data-ambient="tr">
         <div class="content-width">
           <header class="section-heading reveal-section">
-            <h2>Galería</h2>
+            <h2>El primer capítulo de un <em class="title-script">para siempre</em></h2>
           </header>
           <div class="gallery-masonry reveal-section">
-            <div class="gallery-item">
+            <div class="gallery-item gallery-item--lead">
               <img
                 src="img/2.jpeg"
                 alt="María y Hernán besandose en un bosque verde"
@@ -682,25 +663,14 @@
       </section>
 
       <div class="olive-divider" aria-hidden="true">
-        <svg
-          viewBox="0 0 800 60"
-          preserveAspectRatio="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M0 30 C 150 5, 300 55, 400 30 S 650 5, 800 30"
-            stroke="currentColor"
-            fill="none"
-            stroke-width="1"
-          />
-        </svg>
+        <svg viewBox="0 0 400 60" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg"><use href="#mh-divider" /></svg>
       </div>
 
       <!-- UBICACIÓN -->
       <section class="location-section" id="ubicacion" data-ambient="bl">
         <div class="location-inner content-width">
           <header class="location-heading reveal-section">
-            <h2>El lugar donde todo sucederá</h2>
+            <h2>El lugar donde todo <em class="title-script">sucederá</em></h2>
           </header>
           <div class="location-feature reveal-card">
             <div class="location-feature__info">
@@ -784,24 +754,13 @@
       </section>
 
       <div class="olive-divider" aria-hidden="true">
-        <svg
-          viewBox="0 0 800 60"
-          preserveAspectRatio="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M0 30 C 150 5, 300 55, 400 30 S 650 5, 800 30"
-            stroke="currentColor"
-            fill="none"
-            stroke-width="1"
-          />
-        </svg>
+        <svg viewBox="0 0 400 60" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg"><use href="#mh-divider" /></svg>
       </div>
 
       <!-- REGALOS -->
       <section class="gifts-section" id="regalos" data-ambient="tl">
         <div class="gifts-card reveal-card">
-          <h2>Un detalle de amor</h2>
+          <h2>Un detalle de <em class="title-script">amor</em></h2>
           <div class="ornament" aria-hidden="true">
             <span></span><i>♡</i><span></span>
           </div>
@@ -853,18 +812,7 @@
       </section>
 
       <div class="olive-divider" aria-hidden="true">
-        <svg
-          viewBox="0 0 800 60"
-          preserveAspectRatio="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M0 30 C 150 5, 300 55, 400 30 S 650 5, 800 30"
-            stroke="currentColor"
-            fill="none"
-            stroke-width="1"
-          />
-        </svg>
+        <svg viewBox="0 0 400 60" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg"><use href="#mh-divider" /></svg>
       </div>
 
       <!-- CONFIRMACIÓN -->
@@ -872,7 +820,7 @@
         <div class="confirm-card reveal-card">
           <span class="section-kicker">Queremos contar con vos</span>
           <div class="confirm-symbol">♡</div>
-          <h2>¿Nos acompañás?</h2>
+          <h2>¿Nos <em class="title-script">acompañás</em>?</h2>
           <p>
             Tu presencia, tus abrazos y tu alegría harán que esta noche sea
             todavía más especial para nosotros.
@@ -908,24 +856,7 @@
           </div>
           <div class="confirm-done" id="confirm-done" hidden>
             <div class="confirm-done__check" aria-hidden="true">
-              <svg viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg">
-                <circle
-                  cx="26"
-                  cy="26"
-                  r="24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.5"
-                />
-                <path
-                  d="M15 27l7.5 7.5L38 20"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-              </svg>
+              <img class="wax-stamp" src="img/sello-mh.webp" alt="" width="96" height="96" decoding="async" />
             </div>
             <p class="confirm-done__text" id="confirm-done-text"></p>
             <button
@@ -1033,25 +964,8 @@
             <div class="rsvp-success" id="rsvp-success" hidden>
               <span class="section-kicker">¡Gracias!</span>
               <div class="rsvp-success__check" aria-hidden="true">
-                <svg viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg">
-                  <circle
-                    cx="26"
-                    cy="26"
-                    r="24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.5"
-                  />
-                  <path
-                    d="M15 27l7.5 7.5L38 20"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                </svg>
-              </div>
+              <img class="wax-stamp" src="img/sello-mh.webp" alt="" width="96" height="96" decoding="async" />
+            </div>
               <p class="rsvp-success__text" id="rsvp-success-text"></p>
 
               <div class="rsvp-success__whatsapp">
@@ -1095,18 +1009,7 @@
       </section>
 
       <div class="olive-divider" aria-hidden="true">
-        <svg
-          viewBox="0 0 800 60"
-          preserveAspectRatio="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M0 30 C 150 5, 300 55, 400 30 S 650 5, 800 30"
-            stroke="currentColor"
-            fill="none"
-            stroke-width="1"
-          />
-        </svg>
+        <svg viewBox="0 0 400 60" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg"><use href="#mh-divider" /></svg>
       </div>
 
       <!-- DESCUBRIR LA FECHA -->
@@ -1124,7 +1027,7 @@
             loading="lazy"
           />
           <span class="section-kicker">Guardá esta fecha</span>
-          <h2>El día que todo comienza</h2>
+          <h2>El día que todo <em class="title-script">comienza</em></h2>
           <p class="reveal-date-intro">
             Un momento único para compartir con ustedes. Tocá el botón para
             descubrir cuándo.
@@ -1316,18 +1219,7 @@
       </section>
 
       <div class="olive-divider" aria-hidden="true">
-        <svg
-          viewBox="0 0 800 60"
-          preserveAspectRatio="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M0 30 C 150 5, 300 55, 400 30 S 650 5, 800 30"
-            stroke="currentColor"
-            fill="none"
-            stroke-width="1"
-          />
-        </svg>
+        <svg viewBox="0 0 400 60" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg"><use href="#mh-divider" /></svg>
       </div>
     </main>
 
@@ -1420,13 +1312,15 @@
     <!-- FOOTER -->
     <footer class="closing-section">
       <div class="closing-content reveal-card">
+        <img class="closing-seal" src="img/sello-mh.webp" alt="Sello M·H" width="96" height="96" loading="lazy" decoding="async" />
         <span class="closing-monogram">M <i>&amp;</i> H</span>
         <span class="section-kicker">Con amor</span>
-        <h2>Gracias por ser parte</h2>
+        <h2>Gracias por ser <em class="title-script">parte</em></h2>
         <p>
           Nos vemos para celebrar una noche que queremos guardar para siempre.
         </p>
         <p class="handwritten-note">¡Los queremos!</p>
+        <p class="closing-signature" aria-label="María y Hernán"><span aria-hidden="true">María &amp; Hernán</span></p>
         <div class="closing-actions">
           <a class="closing-button" href="#confirmacion"
             >Confirmar asistencia <span>♡</span></a

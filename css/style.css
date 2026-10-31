@@ -3023,3 +3023,353 @@ text-shadow:
 0 0 16px rgba(184,148,100,.3);
 }
 }
+
+/* ============================================================
+   GALERÍA — proporción real de cada foto, orden de lectura natural,
+   aparición de a una y sin forma de abrirlas
+   ============================================================ */
+.gallery-masonry{
+  --gallery-shift:clamp(20px,7vw,40px);
+  position:relative;
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  align-items:start;
+  gap:clamp(8px,2.2vw,14px);
+  width:min(760px,100%);
+  padding-bottom:var(--gallery-shift);
+}
+/* En celular la galería usa casi todo el ancho de la pantalla (fotos más grandes) */
+@media (max-width:776px){
+  .gallery-masonry{
+    width:calc(100vw - 16px);
+    margin-left:calc(50% - 50vw + 8px);
+    margin-right:0;
+  }
+}
+@media (min-width:901px){
+  .gallery-masonry{
+    --gallery-shift:44px;
+    gap:22px;
+  }
+}
+
+/* Cada foto con su forma real (sin recortes) y sin margen extra */
+.gallery-masonry > .gallery-item:nth-child(n){
+  margin:0;
+  aspect-ratio:auto;
+}
+.gallery-masonry > .gallery-item{
+  --rot:0deg;
+  --shift:0px;
+  transform:translateY(var(--shift)) rotate(var(--rot));
+  cursor:default;
+  -webkit-touch-callout:none;
+  -webkit-user-select:none;
+  user-select:none;
+  -webkit-tap-highlight-color:transparent;
+}
+/* Inclinaciones de siempre */
+.gallery-masonry > .gallery-item:nth-child(odd){--rot:-1.5deg}
+.gallery-masonry > .gallery-item:nth-child(even){--rot:1.5deg}
+.gallery-masonry > .gallery-item:nth-child(3n){--rot:2deg}
+.gallery-masonry > .gallery-item:nth-child(4n){--rot:-2deg}
+/* Las demás van de a dos y la columna derecha baja un poco (efecto álbum) */
+.gallery-masonry > .gallery-item:nth-child(n+2):nth-child(odd){--shift:var(--gallery-shift)}
+.gallery-masonry > .gallery-item:nth-child(n+2):nth-child(even){--shift:0px}
+
+/* Foto principal: ocupa todo el ancho */
+.gallery-masonry > .gallery-item--lead{
+  grid-column:1 / -1;
+  --rot:-.8deg;
+  --shift:0px;
+  margin-bottom:clamp(6px,2vw,14px);
+}
+@media (min-width:901px){
+  .gallery-masonry > .gallery-item--lead{
+    width:min(100%,500px);
+    justify-self:center;
+  }
+}
+
+/* Movimiento suave al scrollear (lo calcula el JS; cada columna con distinta velocidad) */
+.gallery-masonry > .gallery-item{translate:0 var(--py,0px)}
+
+/* La foto no se puede abrir, arrastrar ni "guardar" con el toque largo */
+.gallery-masonry .gallery-item img{
+  height:auto;
+  pointer-events:none;
+  -webkit-user-select:none;
+  user-select:none;
+  -webkit-touch-callout:none;
+  -webkit-user-drag:none;
+}
+
+/* Aparición de a una (solo si el JS está activo) */
+.gallery-masonry.gallery-js > .gallery-item{
+  opacity:0;
+  transform:translateY(calc(var(--shift) + 28px)) rotate(calc(var(--rot) * 2)) scale(.97);
+  transition:
+    opacity .9s cubic-bezier(.16,1,.3,1) var(--d,0s),
+    transform 1.1s cubic-bezier(.16,1,.3,1) var(--d,0s),
+    box-shadow .4s ease;
+}
+.gallery-masonry.gallery-js > .gallery-item.is-in{
+  opacity:1;
+  transform:translateY(var(--shift)) rotate(var(--rot));
+}
+/* Fundido al cargar la imagen (sin saltos) */
+.gallery-masonry.gallery-js .gallery-item img{
+  opacity:0;
+  transition:opacity .9s ease;
+}
+.gallery-masonry.gallery-js .gallery-item img.is-loaded{opacity:1}
+
+@media (prefers-reduced-motion:reduce){
+  .gallery-masonry.gallery-js > .gallery-item{transition:none}
+}
+
+/* ============================================================
+   GALERÍA — encabezado, foto que se "revela" y cinta dorada
+   ============================================================ */
+.gallery-section .section-heading .section-kicker{margin-bottom:14px}
+
+/* Foto que se "revela": arranca sepia y algo borrosa y se aclara a color */
+.gallery-masonry.gallery-js .gallery-item img{
+  filter:sepia(.9) blur(5px) saturate(.75) brightness(1.1) contrast(.88);
+  transition:
+    opacity .9s ease,
+    filter 2.8s cubic-bezier(.3,.1,.2,1) .35s;
+}
+.gallery-masonry.gallery-js .gallery-item.is-in img.is-loaded{
+  filter:sepia(.05) blur(0px) saturate(.94) brightness(.99) contrast(1.03);
+}
+.gallery-masonry.gallery-js .gallery-item.is-in:hover img.is-loaded{
+  filter:sepia(0) blur(0px) saturate(1) brightness(1.02) contrast(1.04);
+  transition:filter .4s ease;
+}
+/* Celulares lentos: sin desenfoque (solo el tono sepia) */
+body.low-end .gallery-masonry.gallery-js .gallery-item img{
+  filter:sepia(.9) blur(0px) saturate(.75) brightness(1.1) contrast(.88);
+}
+
+/* Cinta dorada translúcida sobre cada foto (muy sutil) */
+.gallery-masonry > .gallery-item::before{
+  content:"";
+  position:absolute;
+  top:-8px;
+  left:50%;
+  width:clamp(40px,24%,62px);
+  height:16px;
+  transform:translateX(-50%) rotate(var(--tape-rot,-3deg));
+  background:
+    linear-gradient(105deg,transparent 30%,rgba(255,244,214,.22) 48%,transparent 66%),
+    linear-gradient(180deg,rgba(226,196,138,.40),rgba(196,160,100,.30));
+  -webkit-clip-path: polygon(0 0,4% 25%,0 50%,4% 75%,0 100%,100% 100%,96% 75%,100% 50%,96% 25%,100% 0);
+  clip-path:polygon(0 0,4% 25%,0 50%,4% 75%,0 100%,100% 100%,96% 75%,100% 50%,96% 25%,100% 0);
+  opacity:.8;
+  pointer-events:none;
+  z-index:2;
+}
+.gallery-masonry > .gallery-item:nth-child(even)::before{--tape-rot:2.5deg}
+.gallery-masonry > .gallery-item:nth-child(3n)::before{--tape-rot:-1.5deg}
+.gallery-masonry > .gallery-item--lead::before{
+  width:clamp(56px,16%,84px);
+  --tape-rot:-2deg;
+}
+
+@media (prefers-reduced-motion:reduce){
+  .gallery-masonry.gallery-js .gallery-item img{
+    filter:sepia(.05) blur(0px) saturate(.94) brightness(.99) contrast(1.03);
+    transition:opacity .01s;
+  }
+}
+
+/* ============================================================
+   MEJORAS ESTÉTICAS · sello M·H, divisores, títulos, cuenta
+   regresiva, firma, portada y menú
+   ============================================================ */
+
+/* ---------- 1 · Sello M·H ---------- */
+.closing-seal{
+  display:block;
+  width:clamp(72px,20vw,92px);
+  height:auto;
+  margin:0 auto 16px;
+  filter:drop-shadow(0 8px 14px rgba(0,0,0,.45)) drop-shadow(0 1px 2px rgba(0,0,0,.35));
+  -webkit-user-select:none;user-select:none;
+  pointer-events:none;
+}
+.closing-content.is-visible .closing-seal{animation:sealStamp 1s cubic-bezier(.2,.8,.2,1) .2s both}
+/* Marca de agua sutil en el pie */
+.closing-section::after{
+  content:"";
+  position:absolute;
+  left:50%;
+  bottom:-70px;
+  width:clamp(220px,52vw,320px);
+  aspect-ratio:1;
+  transform:translateX(-50%) rotate(-8deg);
+  background:url("../img/sello-mh.webp") center / contain no-repeat;
+  opacity:.07;
+  pointer-events:none;
+  z-index:0;
+}
+
+/* ---------- 2 · Confirmación con sello de cera ---------- */
+.confirm-done__check,
+.rsvp-success__check{
+  position:relative;
+  display:grid;
+  place-items:center;
+  width:clamp(76px,22vw,92px);
+  height:clamp(76px,22vw,92px);
+  margin-inline:auto;
+}
+.wax-stamp{
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  filter:drop-shadow(0 6px 10px rgba(40,25,5,.45)) drop-shadow(0 1px 2px rgba(40,25,5,.4));
+  animation:sealStamp .95s cubic-bezier(.2,.8,.2,1) .15s both;
+  -webkit-user-select:none;user-select:none;
+}
+.confirm-done__check::after,
+.rsvp-success__check::after{
+  content:"";
+  position:absolute;
+  inset:8%;
+  border-radius:50%;
+  border:2px solid rgba(214,185,135,.75);
+  opacity:0;
+  animation:sealRipple .9s ease-out .55s both;
+  pointer-events:none;
+}
+@keyframes sealStamp{
+  0%{opacity:0;transform:scale(1.9) rotate(-16deg)}
+  45%{opacity:1;transform:scale(.9) rotate(3deg)}
+  68%{transform:scale(1.06) rotate(-1.5deg)}
+  100%{opacity:1;transform:scale(1) rotate(0)}
+}
+@keyframes sealRipple{
+  0%{opacity:.7;transform:scale(.9)}
+  100%{opacity:0;transform:scale(1.6)}
+}
+
+/* ---------- 3 · Divisores: rama de olivo con línea dorada ---------- */
+.olive-divider{
+  height:64px;
+  margin:-14px 0;
+  opacity:.9;
+  color:var(--gold-light);
+}
+.olive-divider svg{filter:none;overflow:visible}
+body.theme-light .olive-divider{color:#b08f5a;opacity:.85}
+
+/* ---------- 4 · Títulos: palabra en cursiva + línea dorada que se traza ---------- */
+.title-script{
+  font-family:var(--script);
+  font-style:normal;
+  font-weight:400;
+  font-size:1.14em;
+  letter-spacing:0;
+  color:var(--gold-light);
+}
+body.theme-light .title-script{color:#9a7544}
+main h2:not(.display-title):not(.dress-code-card__title),
+.closing-content h2{
+  padding-bottom:.46em;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent) no-repeat 50% 100% / 0 1px;
+  transition:background-size 1.7s cubic-bezier(.2,.7,.2,1) .5s;
+}
+main .is-visible h2:not(.display-title):not(.dress-code-card__title),
+.closing-content.is-visible h2{
+  background-size:min(150px,55%) 1px;
+}
+
+/* ---------- 5 · Cuenta regresiva con marco dorado ---------- */
+.countdown__item{
+  border-color:rgba(184,148,100,.55);
+  box-shadow:0 10px 28px rgba(60,66,32,.08),inset 0 1px 0 rgba(255,255,255,.9),0 0 0 3px rgba(184,148,100,.07);
+}
+.countdown__item + .countdown__item{border-left-color:rgba(184,148,100,.55)}
+.countdown__item::after{border-color:rgba(184,148,100,.26)}
+.countdown__item strong{display:inline-block}
+.countdown__item strong.is-tick{animation:cdTick .6s cubic-bezier(.2,.8,.2,1)}
+@keyframes cdTick{
+  0%{opacity:0;transform:translateY(-38%);filter:blur(2px)}
+  100%{opacity:1;transform:none;filter:none}
+}
+
+/* ---------- 7 · Firma que se escribe sola ---------- */
+.closing-signature{
+  margin:12px auto 0!important;
+  line-height:1.1!important;
+}
+.closing-signature span{
+  display:inline-block;
+  padding:.1em .25em .2em;
+  font-family:var(--script);
+  font-size:clamp(2.6rem,10vw,3.9rem);
+  color:var(--gold-light);
+  text-shadow:0 2px 12px rgba(0,0,0,.25);
+  -webkit-mask-image:linear-gradient(90deg,#000 0%,#000 33.3%,transparent 40%);
+  mask-image:linear-gradient(90deg,#000 0%,#000 33.3%,transparent 40%);
+  -webkit-mask-size:300% 100%;
+  mask-size:300% 100%;
+  -webkit-mask-repeat:no-repeat;
+  mask-repeat:no-repeat;
+  -webkit-mask-position:100% 0;
+  mask-position:100% 0;
+  transition:-webkit-mask-position 2.8s cubic-bezier(.45,.1,.3,1) .9s,mask-position 2.8s cubic-bezier(.45,.1,.3,1) .9s;
+}
+.closing-content.is-visible .closing-signature span{
+  -webkit-mask-position:0 0;
+  mask-position:0 0;
+}
+body.theme-light .closing-signature span{color:#8a6a3f;text-shadow:none}
+
+/* ---------- 8 · Portada: luz dorada que se mueve muy despacio (no hay foto de portada) ---------- */
+.cover-section{position:relative;overflow:hidden}
+.cover-section::before{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:42%;
+  width:min(900px,150vw);
+  aspect-ratio:1;
+  margin:calc(min(900px,150vw) / -2) 0 0 calc(min(900px,150vw) / -2);
+  background:radial-gradient(circle,rgba(214,185,135,.20) 0%,rgba(214,185,135,.07) 38%,transparent 66%);
+  animation:coverGlow 26s ease-in-out infinite alternate;
+  pointer-events:none;
+  will-change:transform;
+}
+.cover-section > .section-frame{z-index:1}
+@keyframes coverGlow{
+  0%{transform:translate3d(-9%,-5%,0) scale(.95)}
+  100%{transform:translate3d(9%,6%,0) scale(1.1)}
+}
+
+/* ---------- 9 · Menú: sección actual en dorado ---------- */
+body .floating-nav a.is-active,
+body.theme-light .floating-nav a.is-active{
+  color:var(--gold-light);
+  background:rgba(214,185,135,.16);
+  box-shadow:inset 0 0 0 1px rgba(214,185,135,.32);
+}
+
+/* ---------- Equipos lentos / movimiento reducido ---------- */
+body.low-end .cover-section::before{animation:none}
+@media (prefers-reduced-motion:reduce){
+  .cover-section::before,
+  .wax-stamp,
+  .closing-content.is-visible .closing-seal,
+  .confirm-done__check::after,
+  .rsvp-success__check::after,
+  .countdown__item strong.is-tick{animation:none!important}
+  .closing-signature span{
+    -webkit-mask-image:none;mask-image:none;transition:none;
+  }
+  main h2:not(.display-title):not(.dress-code-card__title),
+  .closing-content h2{background-size:min(150px,55%) 1px;transition:none}
+}
