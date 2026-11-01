@@ -91,6 +91,14 @@ url: 'https://script.google.com/macros/s/AKfycbxe9DXL1m3cpvFdjk2MlwbC7QRvTSlmIo1
 },
 albumApp: {
 url: 'https://script.google.com/macros/s/AKfycbxgI8da3FxHj3_4MjxPrbfEEEpMOzkhLDOOS6ua6xEVCMhlCSbIZDIgjiIDJClKrqLaaQ/exec'
+},
+vcard: {
+org: 'María & Hernán',
+firstName: 'Boda María',
+lastName: ' & Hernán',
+email: 'bodamyh2027@gmail.com',
+url: 'https://hernanmaza96.github.io/BODA-MYH.2027/',
+note: 'Boda de María & Hernán · 20 de febrero de 2027 a las 19:00 hs · Urbana Lounge, Mar del Plata'
 }
 };
 const RSVP_STORAGE_KEY = 'mh-rsvp-v2';
@@ -177,6 +185,43 @@ mediaQuery.addListener(onSystemThemeChange);
 try { localStorage.removeItem(THEME_STORAGE_KEY); } catch (_) {}
 })();
 /* ============================================================
+V-CARD (Guardar contacto)
+============================================================ */
+(function initVCard() {
+const btn = document.getElementById('vcard-btn');
+if (!btn) return;
+const buildVCard = () => {
+const v = CONFIG.vcard;
+const lines = [
+'BEGIN:VCARD',
+'VERSION:3.0',
+`FN:${v.firstName} ${v.lastName}`,
+`N:${v.lastName};${v.firstName};;;`,
+`ORG:${v.org}`,
+`TEL;TYPE=CELL:+${CONFIG.phones.groom}`,
+`TEL;TYPE=CELL:+${CONFIG.phones.bride}`,
+`EMAIL;TYPE=INTERNET:${v.email}`,
+`URL:${v.url}`,
+`NOTE:${v.note}`,
+'END:VCARD'
+];
+return lines.join('\r\n');
+};
+btn.addEventListener('click', () => {
+const vcard = buildVCard();
+const blob = new Blob([vcard], { type: 'text/vcard;charset=utf-8' });
+const url = URL.createObjectURL(blob);
+const a = document.createElement('a');
+a.href = url;
+a.download = 'Boda-Maria-Hernan.vcf';
+document.body.appendChild(a);
+a.click();
+document.body.removeChild(a);
+setTimeout(() => URL.revokeObjectURL(url), 1200);
+Toast.show('Contacto descargado 📇', 'success', 3200);
+});
+})();
+/* ============================================================
 APP
 ============================================================ */
 document.addEventListener('DOMContentLoaded', () => {
@@ -244,7 +289,7 @@ if (caption) caption.textContent = '¡Nos casamos! Gracias por ser parte 💛';
 const hideLoader = () => loader?.classList.add('is-hidden');
 // El loader se oculta cuando el sobre cerrado ya está listo (así no aparece vacío ni "de golpe").
 // Tope de seguridad de 4 s para no dejar la pantalla esperando si la conexión es muy lenta.
-const closedEnvelopeImgs = Array.from(document.querySelectorAll('.env-front, .env-seal__half'));
+const closedEnvelopeImgs = Array.from(document.querySelectorAll('.env-front, .env-flap__seal-img'));
 const imgReady = img => new Promise(resolve => {
 if (img.complete && img.naturalWidth > 0) { resolve(); return; }
 img.addEventListener('load', resolve, { once: true });
@@ -259,8 +304,7 @@ envelopeSettled.then(() => setTimeout(hideLoader, 120));
 /* ============================================================
 REVEAL
 ============================================================ */
-const closingCard = document.querySelector('.closing-content');
-const reveal = Array.from(document.querySelectorAll('.reveal-card, .reveal-section')).filter(el => el !== closingCard);
+const reveal = document.querySelectorAll('.reveal-card, .reveal-section');
 if ('IntersectionObserver' in window && !reducedMotion) {
 const observer = new IntersectionObserver(entries => {
 entries.forEach(entry => {
@@ -273,60 +317,6 @@ observer.unobserve(entry.target);
 reveal.forEach(el => observer.observe(el));
 } else {
 reveal.forEach(el => el.classList.add('is-visible'));
-}
-/* ============================================================
-ÚLTIMA PÁGINA — la animación se repite cada vez que se llega
-y se desarma en orden inverso al irse (firma, texto, título, sello)
-============================================================ */
-if (closingCard) {
-if (reducedMotion || !('IntersectionObserver' in window)) {
-closingCard.classList.add('is-visible');
-} else {
-const ENTER_AT = 0.12;
-const LEAVE_AT = 0.5;
-const UNWIND_MS = 2400;
-const FADE_MS = 1200;
-let state = 'idle';
-let prevRatio = 0;
-let lastRatio = 0;
-let timers = [];
-const clearTimers = () => { timers.forEach(clearTimeout); timers = []; };
-const enter = () => {
-clearTimers();
-if (state === 'out') {
-closingCard.classList.remove('is-visible', 'is-leaving');
-void closingCard.offsetWidth;
-}
-state = 'in';
-closingCard.classList.add('is-visible');
-};
-const leave = () => {
-clearTimers();
-state = 'out';
-closingCard.classList.add('is-leaving');
-timers.push(setTimeout(() => {
-closingCard.classList.remove('is-visible');
-timers.push(setTimeout(() => {
-closingCard.classList.remove('is-leaving');
-state = 'idle';
-if (lastRatio >= ENTER_AT) enter();
-}, FADE_MS));
-}, UNWIND_MS));
-};
-new IntersectionObserver(entries => {
-const entry = entries[entries.length - 1];
-const r = entry.isIntersecting ? entry.intersectionRatio : 0;
-const prev = prevRatio;
-prevRatio = lastRatio = r;
-if (state === 'in') {
-if (r < ENTER_AT || (r < LEAVE_AT && prev >= LEAVE_AT)) leave();
-} else if (state === 'out') {
-if (r >= LEAVE_AT) enter();
-} else if (r >= ENTER_AT) {
-enter();
-}
-}, { threshold: [0, ENTER_AT, LEAVE_AT], rootMargin: '0px 0px -7% 0px' }).observe(closingCard);
-}
 }
 /* ============================================================
 SOBRE
@@ -404,8 +394,8 @@ if (!opening || !envelope || envelope.dataset.opening === '1') return;
 envelope.dataset.opening = '1';
 try { localStorage.setItem(ENVELOPE_STORAGE_KEY, '1'); } catch (_) {}
 startMusic();
-// Vibración corta cuando se rompe el sello (si el celular lo permite)
-try { if (navigator.vibrate && !reducedMotion) navigator.vibrate([18, 45, 12]); } catch (_) {}
+// Vibración suave al tocar el sello (si el celular lo permite)
+try { if (navigator.vibrate && !reducedMotion) navigator.vibrate(18); } catch (_) {}
 const beginOpening = () => {
 envelope.classList.add('is-opening');
 if (reducedMotion) {
@@ -607,7 +597,6 @@ DESCUBRIR LA FECHA (con fade-in escalonado, sin typewriter)
 const dateBtn = document.getElementById('date-reveal-btn');
 const dateSkipBtn = document.getElementById('date-skip-btn');
 const dateContent = document.getElementById('date-reveal-content');
-const datePre = document.getElementById('date-pre');
 const preCounter = document.getElementById('date-precounter');
 const preCounterNum = document.getElementById('date-precounter-num');
 const preCounterHint = document.getElementById('date-precounter-hint');
@@ -750,21 +739,15 @@ dateBtn.addEventListener('click', () => {
 if (dateBtn.classList.contains('is-hidden')) return;
 dateBtn.classList.add('is-hidden');
 dateBtn.setAttribute('aria-expanded', 'true');
-// El texto de arriba y el botón se pliegan: quedan solo el título y la cuenta regresiva
-if (datePre) {
-datePre.classList.add('is-gone');
-datePre.setAttribute('aria-hidden', 'true');
-}
 setTimeout(() => {
 runFullReveal().catch(err => console.error('[reveal date]', err));
-}, datePre ? 900 : 420);
+}, 420);
 });
 }
 dateSkipBtn?.addEventListener('click', () => {
 dateBtn?.classList.add('is-hidden');
 dateSkipBtn?.classList.add('is-hidden');
 dateSkipBtn?.setAttribute('hidden', '');
-if (datePre) { datePre.classList.add('is-gone'); datePre.setAttribute('aria-hidden', 'true'); }
 revealDateContent();
 const caption = document.querySelector('.countdown-caption');
 if (caption) caption.textContent = '¡Nos casamos! Gracias por ser parte 💛';
@@ -941,51 +924,11 @@ Toast.show(`¡Gracias! Recibimos ${c} ${c === 1 ? 'foto' : 'fotos'} 📸`, 'hear
 NAV FLOTANTE
 ============================================================ */
 const nav = document.getElementById('floating-nav');
-let navIdleTimer = null;
-const wakeNav = () => {
-if (!nav) return;
-nav.classList.remove('is-idle');
-clearTimeout(navIdleTimer);
-navIdleTimer = setTimeout(() => nav.classList.add('is-idle'), 3500);
-};
-const toggleNav = () => {
-if (!nav) return;
-const show = window.scrollY > window.innerHeight * 0.5;
-nav.classList.toggle('is-visible', show);
-if (show) wakeNav();
-else { clearTimeout(navIdleTimer); nav.classList.remove('is-idle'); }
-};
+const toggleNav = () => nav?.classList.toggle('is-visible', window.scrollY > window.innerHeight * 0.5);
 window.addEventListener('scroll', toggleNav, { passive: true });
-// Un toque o tecla en cualquier lado lo vuelve a mostrar
-['touchstart', 'pointerdown', 'keydown'].forEach(ev =>
-window.addEventListener(ev, () => { if (nav?.classList.contains('is-visible')) wakeNav(); }, { passive: true })
-);
 toggleNav();
 // Marca en dorado la sección donde estás
 const navLinks = nav ? Array.from(nav.querySelectorAll('a[href^="#"]')) : [];
-nav?.addEventListener('click', event => {
-const link = event.target.closest('a[href^="#"]');
-if (!link || !nav.contains(link)) return;
-const target = document.getElementById(link.hash.slice(1));
-if (!target) return;
-event.preventDefault();
-history.pushState(null, '', link.hash);
-const navRect = nav.getBoundingClientRect();
-const topInset = 20;
-const bottomInset = Math.max(topInset, window.innerHeight - navRect.top + 16);
-const availableCenter = (topInset + window.innerHeight - bottomInset) / 2;
-const targetRect = target.getBoundingClientRect();
-const focus = targetRect.height <= window.innerHeight - topInset - bottomInset
-? target
-: target.querySelector('h1, h2') || target;
-const focusRect = focus.getBoundingClientRect();
-const targetY = window.scrollY + focusRect.top + focusRect.height / 2 - availableCenter;
-const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-window.scrollTo({
-top: Math.max(0, Math.min(targetY, maxScroll)),
-behavior: reducedMotion ? 'auto' : 'smooth'
-});
-});
 if (navLinks.length && 'IntersectionObserver' in window) {
 let navCurrent = null;
 const setNavActive = id => {
@@ -1025,15 +968,6 @@ musicToggle?.setAttribute('aria-label', playing ? 'Pausar música' : 'Reproducir
 }
 music?.addEventListener('play', () => setMusicState(true));
 music?.addEventListener('pause', () => setMusicState(false));
-// Se esconde mientras scrolleás y vuelve cuando frenás
-if (musicPlayer) {
-let musicAwayTimer = null;
-window.addEventListener('scroll', () => {
-musicPlayer.classList.add('is-away');
-clearTimeout(musicAwayTimer);
-musicAwayTimer = setTimeout(() => musicPlayer.classList.remove('is-away'), 1200);
-}, { passive: true });
-}
 musicToggle?.addEventListener('click', async () => {
 if (!music) return;
 try {
@@ -1103,8 +1037,6 @@ const rsvpForm = document.getElementById('rsvp-form');
 const rsvpName = document.getElementById('rsvp-name');
 const rsvpGuests = document.getElementById('rsvp-guests');
 const rsvpGuestsField = document.getElementById('rsvp-guests-field');
-const rsvpAdditionalGuestsField = document.getElementById('rsvp-additional-guests-field');
-const rsvpAdditionalGuests = document.getElementById('rsvp-additional-guests');
 const rsvpMessage = document.getElementById('rsvp-message');
 const rsvpContact = document.getElementById('rsvp-contact');
 const rsvpSubmit = document.getElementById('rsvp-submit');
@@ -1128,50 +1060,19 @@ rsvpGuests.appendChild(opt);
 }
 rsvpGuests.value = max;
 }
-function updateAdditionalGuestFields() {
-if (!rsvpAdditionalGuests || !rsvpAdditionalGuestsField) return;
-const confirmedCount = action === 'none' ? 0 : Number(rsvpGuests?.value || 0);
-const extraCount = totalGuests > 1 ? Math.max(0, confirmedCount - 1) : 0;
-const currentFields = Array.from(rsvpAdditionalGuests.querySelectorAll('input'));
-const currentValues = currentFields.map(input => input.value);
-rsvpAdditionalGuestsField.hidden = extraCount === 0;
-if (currentFields.length === extraCount) return;
-rsvpAdditionalGuests.replaceChildren();
-for (let index = 0; index < extraCount; index++) {
-const field = document.createElement('div');
-field.className = 'rsvp-additional-guests__field';
-const inputId = `rsvp-additional-guest-${index + 1}`;
-const label = document.createElement('label');
-label.htmlFor = inputId;
-label.textContent = `Acompañante ${index + 1}`;
-const input = document.createElement('input');
-input.type = 'text';
-input.id = inputId;
-input.name = 'additionalGuests[]';
-input.placeholder = 'Nombre y apellido';
-input.autocomplete = 'off';
-input.required = true;
-input.maxLength = 120;
-input.value = currentValues[index] || '';
-field.append(label, input);
-rsvpAdditionalGuests.appendChild(field);
-}
-}
-function buildMessageForRsvp(name, confirmedCount, additionalGuestNames = []) {
+function buildMessageForRsvp(name, confirmedCount, extraMessage) {
 const safeName = name || guestName;
-const attendeeNames = [safeName, ...additionalGuestNames].filter(Boolean).join(', ');
-const attendeeLine = additionalGuestNames.length ? `\nNombres: ${attendeeNames}` : '';
 if (action === 'all') {
-return `¡Hola! Confirmo mi asistencia a la boda. 💍✨\n\nNombre: ${safeName}\nAsistentes: ${confirmedCount} ${confirmedCount === 1 ? 'persona' : 'personas'}${attendeeLine}\nLugar: ${EVENT_PLACE}\nUbicación: ${MAP_LINK}\n\n¡Nos vemos muy pronto!`;
+return `¡Hola! Confirmo mi asistencia a la boda. 💍✨\n\nNombre: ${safeName}\nAsistentes: ${confirmedCount} ${confirmedCount === 1 ? 'persona' : 'personas'}\nLugar: ${EVENT_PLACE}\nUbicación: ${MAP_LINK}\n\n¡Nos vemos muy pronto!`;
 }
 if (action === 'less') {
-return `¡Hola! Confirmo asistencia parcial a la boda. 💍✨\n\nNombre: ${safeName}\nAsistentes confirmados: ${confirmedCount} de ${totalGuests}${attendeeLine}\nLugar: ${EVENT_PLACE}\nUbicación: ${MAP_LINK}\n\n¡Muchas gracias!`;
+return `¡Hola! Confirmo asistencia parcial a la boda. 💍✨\n\nNombre: ${safeName}\nAsistentes confirmados: ${confirmedCount} de ${totalGuests}\nLugar: ${EVENT_PLACE}\nUbicación: ${MAP_LINK}\n\n¡Muchas gracias!`;
 }
 return `¡Hola! Lamentablemente no podremos acompañarlos en la boda. ❤️\n\nNombre: ${safeName}\nLugar: ${EVENT_PLACE}\n\nLes deseamos lo mejor en este día tan especial.`;
 }
-function buildWhatsAppUrl(recipient, name, confirmedCount, additionalGuestNames) {
+function buildWhatsAppUrl(recipient, name, confirmedCount, extraMessage) {
 const phone = recipient === 'María' ? PHONE_BRIDE : PHONE_GROOM;
-const msg = buildMessageForRsvp(name, confirmedCount, additionalGuestNames);
+const msg = buildMessageForRsvp(name, confirmedCount, extraMessage);
 return `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
 }
 function loadRsvp() {
@@ -1196,13 +1097,11 @@ try { localStorage.removeItem(RSVP_STORAGE_KEY); } catch (_) {}
 function getRsvpMessage(saved) {
 if (!saved) return '';
 const name = saved.name ? `, ${saved.name}` : '';
-const additionalNames = Array.isArray(saved.additionalGuests) ? saved.additionalGuests.filter(Boolean) : [];
-const attendeeNames = additionalNames.length ? ` Acompañantes: ${additionalNames.join(', ')}.` : '';
 if (saved.action === 'all') {
-return `¡Gracias${name}! Confirmamos tu asistencia para ${saved.confirmedGuests} ${saved.confirmedGuests === 1 ? 'persona' : 'personas'}.${attendeeNames} ¡Nos vemos pronto! ✨`;
+return `¡Gracias${name}! Confirmamos tu asistencia para ${saved.confirmedGuests} ${saved.confirmedGuests === 1 ? 'persona' : 'personas'}. ¡Nos vemos pronto! ✨`;
 }
 if (saved.action === 'less') {
-return `¡Gracias${name}! Confirmamos que asistirán ${saved.confirmedGuests} de ${saved.totalGuests} personas.${attendeeNames} ¡Gracias por avisarnos! ✨`;
+return `¡Gracias${name}! Confirmamos que asistirán ${saved.confirmedGuests} de ${saved.totalGuests} personas. ¡Gracias por avisarnos! ✨`;
 }
 return `Gracias${name} por avisarnos. Los vamos a extrañar. ❤️`;
 }
@@ -1247,8 +1146,6 @@ if (titleEl) titleEl.textContent = 'Nos avisás que no van a poder';
 if (modalSummary) modalSummary.textContent = 'Dejanos tu nombre y, si querés, un mensaje. Los vamos a extrañar.';
 rsvpGuestsField?.setAttribute('hidden', '');
 }
-rsvpAdditionalGuests?.replaceChildren();
-updateAdditionalGuestFields();
 if (rsvpName) rsvpName.value = (guestName && guestName !== CONFIG.guest.defaultName) ? guestName : '';
 if (rsvpMessage) rsvpMessage.value = '';
 if (rsvpContact) rsvpContact.value = '';
@@ -1268,7 +1165,6 @@ document.body.classList.remove('modal-open');
 document.getElementById('btn-confirm-all')?.addEventListener('click', () => openModal('all'));
 document.getElementById('btn-confirm-less')?.addEventListener('click', () => openModal('less'));
 document.getElementById('btn-decline')?.addEventListener('click', () => openModal('none'));
-rsvpGuests?.addEventListener('change', updateAdditionalGuestFields);
 modalClose?.addEventListener('click', closeModal);
 modalOverlay?.addEventListener('click', closeModal);
 document.addEventListener('keydown', e => {
@@ -1283,17 +1179,9 @@ const name = String(rsvpName?.value || '').trim();
 const message = String(rsvpMessage?.value || '').trim();
 const contact = String(rsvpContact?.value || '').trim();
 const confirmedCount = action === 'none' ? 0 : Number(rsvpGuests?.value || totalGuests);
-const additionalGuestNames = Array.from(rsvpAdditionalGuests?.querySelectorAll('input') || [])
-  .map(input => input.value.trim());
 if (!name) {
 Toast.show('Completá tu nombre para confirmar', 'info');
 rsvpName?.focus();
-return;
-}
-if (additionalGuestNames.some(guest => !guest)) {
-Toast.show('Completá el nombre de cada persona que te acompaña', 'info');
-Array.from(rsvpAdditionalGuests?.querySelectorAll('input') || [])
-  .find(input => !input.value.trim())?.focus();
 return;
 }
 if (rsvpSubmit) {
@@ -1306,7 +1194,6 @@ action,
 name,
 contact,
 confirmedGuests: confirmedCount,
-additionalGuests: additionalGuestNames,
 message
 });
 let statusText = 'confirmado';
@@ -1318,7 +1205,6 @@ name,
 contact,
 guests: totalGuests,
 confirmedGuests: confirmedCount,
-additionalGuests: additionalGuestNames,
 status: statusText,
 action,
 message
@@ -1333,8 +1219,8 @@ rsvpSuccess?.removeAttribute('hidden');
 rsvpSuccess?.setAttribute('aria-hidden', 'false');
 const saved = loadRsvp();
 if (rsvpSuccessText) rsvpSuccessText.textContent = getRsvpMessage(saved);
-if (waOptionalGroom) waOptionalGroom.href = buildWhatsAppUrl('Hernán', name, confirmedCount, additionalGuestNames);
-if (waOptionalBride) waOptionalBride.href = buildWhatsAppUrl('María', name, confirmedCount, additionalGuestNames);
+if (waOptionalGroom) waOptionalGroom.href = buildWhatsAppUrl('Hernán', name, confirmedCount, message);
+if (waOptionalBride) waOptionalBride.href = buildWhatsAppUrl('María', name, confirmedCount, message);
 renderRsvpDone(saved);
 if (res.ok) {
 Toast.show('¡Listo! Guardamos tu respuesta 💛', 'heart', 3200);

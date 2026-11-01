@@ -3,6 +3,7 @@
    + Font subsetting (menos variantes)
    + Contraste WCAG AA
    + Detección hardware lento
+   + vCard descargable
    + Aviso de privacidad
    + Modo claro/oscuro
    ================================================================ */
@@ -1257,6 +1258,8 @@ body.post-boda .gallery-album-cta{
 .closing-actions{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:12px;margin-top:28px}
 .closing-button{display:inline-flex;align-items:center;gap:10px;padding:13px 22px;border:1px solid rgba(214,185,135,.55);border-radius:999px;font-size:.62rem;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-light);transition:.25s;background:transparent;cursor:pointer;font-family:var(--sans)}
 .closing-button:hover{background:var(--gold-light);color:var(--olive-deep);border-color:var(--gold-light)}
+.closing-button--vcard{border-style:dashed}
+.closing-button--vcard svg{width:14px;height:14px;flex:none}
 .privacy-link{display:inline-block;margin:28px auto 0;padding:6px 0;background:transparent;border:0;color:var(--muted);font-family:var(--sans);font-size:.62rem;font-weight:400;letter-spacing:.16em;text-transform:uppercase;cursor:pointer;border-bottom:1px dotted rgba(232,235,213,.35);transition:color .25s ease,border-color .25s ease}
 .privacy-link:hover{color:var(--gold-light);border-bottom-color:var(--gold-light)}
 .deco-flowers{position:absolute;z-index:0;aspect-ratio:1;object-fit:contain;pointer-events:none;-webkit-user-select: none; user-select:none;opacity:.95}
@@ -1375,10 +1378,7 @@ body.post-boda .gallery-album-cta{
 }
 .rsvp-form { display: flex; flex-direction: column; gap: 16px; margin-top: 8px; }
 .rsvp-form__field { display: flex; flex-direction: column; gap: 6px; }
-.rsvp-additional-guests { display: flex; flex-direction: column; gap: 12px; }
-.rsvp-additional-guests__field { display: flex; flex-direction: column; gap: 6px; }
-.rsvp-form__field label,
-.rsvp-form__label {
+.rsvp-form__field label {
   font-family: var(--sans);
   font-size: .6rem;
   font-weight: 500;
@@ -1386,8 +1386,7 @@ body.post-boda .gallery-album-cta{
   text-transform: uppercase;
   color: var(--olive-dark);
 }
-.rsvp-form__field label span,
-.rsvp-form__label span {
+.rsvp-form__field label span {
   color: var(--muted-dark);
   font-weight: 400;
   letter-spacing: .06em;
@@ -1395,7 +1394,6 @@ body.post-boda .gallery-album-cta{
   font-size: .62rem;
   opacity: .7;
 }
-.rsvp-form__label { margin: 0; }
 .rsvp-form__field input,
 .rsvp-form__field select,
 .rsvp-form__field textarea {
@@ -1669,6 +1667,7 @@ body.low-end .playlist-now__vinyl,
 body.low-end .event-day-banner__heart,
 body.low-end .event-day-banner__star,
 body.low-end .event-day-banner__glow,
+body.low-end .calendar__heart,
 body.low-end .reveal-date-btn__heart,
 body.low-end .opening-hint,
 body.low-end .date-precounter__hint,
@@ -2721,6 +2720,12 @@ body{
     0 12px 28px rgba(0,0,0,.45);
 }
 
+/* ---------- 24. vCard button refinado ---------- */
+.closing-button--vcard:hover svg{
+  transform:translateY(-2px) rotate(-4deg);
+  transition:transform .4s cubic-bezier(.16,1,.3,1);
+}
+
 /* ---------- 25. Privacy modal refinado ---------- */
 .confirm-modal__card--privacy{
   box-shadow:
@@ -2802,7 +2807,8 @@ textarea:focus-visible{
   }
   .calendar__heart,
   .theme-toggle,
-  .gallery-item img{
+  .gallery-item img,
+  .closing-button--vcard svg{
     animation:none !important;
     transition:none !important;
   }
@@ -3456,12 +3462,15 @@ body.low-end .cover-section::before{animation:none}
 .env-flap img{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;-webkit-backface-visibility:hidden;backface-visibility:hidden}
 .env-flap__back{transform:rotateX(180deg)}
 
-/* Sello: dos mitades + migas de cera */
-.env-seal{position:absolute;left:39.396%;top:40.158%;width:20.823%;aspect-ratio:324/323;z-index:8}
-.env-seal{filter:drop-shadow(0 3px 4px rgba(18,22,6,.42))}
-.env-seal__half{position:absolute;inset:0;width:100%;height:100%;transform-origin:50% 60%}
-.env-crumb{position:absolute;left:50%;top:52%;width:5%;aspect-ratio:1.15;border-radius:48% 52% 45% 55%;
-  background:radial-gradient(circle at 35% 30%,#f0cf86,#b98a3a 55%,#7d5a22);opacity:0}
+/* Sello entero (no se rompe): va pegado a la punta de la solapa y se levanta con ella.
+   Posición = la misma que tenía antes, expresada en % de la solapa. */
+.env-flap__seal{
+  position:absolute;left:39.23%;top:57.31%;width:21.29%;aspect-ratio:1;
+  transform:translateZ(1px);
+  -webkit-backface-visibility:hidden;backface-visibility:hidden;
+  pointer-events:none;
+}
+.env-flap__seal-img{filter:brightness(1) drop-shadow(0 3px 4px rgba(18,22,6,.42))}
 
 /* ---------- animaciones (al tocar el sello) ---------- */
 .envelope-css.is-opening{animation:none;filter:none}
@@ -3470,9 +3479,8 @@ body.low-end .cover-section::before{animation:none}
 .envelope-css.is-opening .env-flap{animation:envFlap 1.75s linear .42s forwards}
 .envelope-css.is-opening .env-flap__front{animation:envShadeFront 1.75s linear .42s forwards}
 .envelope-css.is-opening .env-flap__back{animation:envShadeBack 1.75s linear .42s forwards}
-.envelope-css.is-opening .env-seal__half--l{animation:envSealL 1.2s linear .1s forwards}
-.envelope-css.is-opening .env-seal__half--r{animation:envSealR 1.2s linear .1s forwards}
-.envelope-css.is-opening .env-crumb{animation:envCrumb 1.1s cubic-bezier(.2,.6,.4,1) .16s forwards}
+.envelope-css.is-opening .env-flap__seal{animation:envSealPress .4s ease .05s both}
+.envelope-css.is-opening .env-flap__seal-img{animation:envShadeSeal 1.75s linear .42s forwards}
 .envelope-css.is-opening .env-card-clip{animation:envCardLayer 5s linear 1.7s forwards}
 .envelope-css.is-opening .env-rig .envelope-css__photo{animation:envCard 5s linear 1.7s forwards}
 
@@ -3487,25 +3495,16 @@ body.low-end .cover-section::before{animation:none}
 @keyframes envShadeFront{0%{filter:brightness(1)}45%{filter:brightness(.7)}100%{filter:brightness(.7)}}
 @keyframes envShadeBack{0%{filter:brightness(.62)}45%{filter:brightness(.66)}100%{filter:brightness(1.04)}}
 
-@keyframes envSealL{
-  0%{transform:translate(0,0) rotate(0) scale(1);opacity:1}
-  7%{transform:translate(0,0) rotate(0) scale(.965);animation-timing-function:cubic-bezier(.2,.8,.3,1)}
-  16%{transform:translate(-5%,-1%) rotate(-5deg) scale(1);animation-timing-function:cubic-bezier(.55,0,.9,.6)}
-  86%{opacity:1}
-  100%{transform:translate(-38%,215%) rotate(-52deg) scale(.96);opacity:0}
+/* El sello se hunde apenas al tocarlo y enseguida sube con la solapa */
+@keyframes envSealPress{
+  0%{transform:translateZ(1px) scale(1)}
+  45%{transform:translateZ(1px) scale(.95)}
+  100%{transform:translateZ(1px) scale(1)}
 }
-@keyframes envSealR{
-  0%{transform:translate(0,0) rotate(0) scale(1);opacity:1}
-  7%{transform:translate(0,0) rotate(0) scale(.965);animation-timing-function:cubic-bezier(.2,.8,.3,1)}
-  16%{transform:translate(5%,-1%) rotate(4deg) scale(1);animation-timing-function:cubic-bezier(.55,0,.9,.6)}
-  86%{opacity:1}
-  100%{transform:translate(30%,235%) rotate(41deg) scale(.96);opacity:0}
-}
-@keyframes envCrumb{
-  0%{transform:translate(0,0) rotate(0) scale(.4);opacity:0}
-  10%{opacity:1}
-  38%{transform:translate(calc(var(--x) * .75),calc(var(--up) * -1)) rotate(calc(var(--r) * .5)) scale(1)}
-  100%{transform:translate(var(--x),var(--fall)) rotate(var(--r)) scale(.8);opacity:0}
+@keyframes envShadeSeal{
+  0%{filter:brightness(1) drop-shadow(0 3px 4px rgba(18,22,6,.42))}
+  45%{filter:brightness(.74) drop-shadow(0 3px 4px rgba(18,22,6,.42))}
+  100%{filter:brightness(.74) drop-shadow(0 3px 4px rgba(18,22,6,.42))}
 }
 @keyframes envCardLayer{
   0%{z-index:2}
@@ -3522,8 +3521,7 @@ body.low-end .cover-section::before{animation:none}
 
 /* ---------- zoom final hacia la invitación ---------- */
 .envelope-opening.is-zooming .env-layer,
-.envelope-opening.is-zooming .env-flap,
-.envelope-opening.is-zooming .env-seal{opacity:0;transition:opacity 1s ease}
+.envelope-opening.is-zooming .env-flap{opacity:0;transition:opacity 1s ease}
 .envelope-opening.is-zooming .env-rig .envelope-css__photo{animation:envCardZoom 1.8s cubic-bezier(.6,.02,.4,1) forwards}
 @keyframes envCardZoom{
   0%{transform:translate(-50%,-50%) translateY(-32.1%) scale(1) rotate(-.9deg);opacity:1}
@@ -3533,8 +3531,8 @@ body.low-end .cover-section::before{animation:none}
 @media (prefers-reduced-motion:reduce){
   .envelope-css.is-opening .env-front,
   .envelope-css.is-opening .env-flap,
-  .envelope-css.is-opening .env-seal__half,
-  .envelope-css.is-opening .env-crumb,
+  .envelope-css.is-opening .env-flap__seal,
+  .envelope-css.is-opening .env-flap__seal-img,
   .envelope-css.is-opening .env-rig .envelope-css__photo,
   .envelope-css.is-opening .env-card-clip{animation-duration:.01s;animation-delay:0s}
 }
@@ -3566,304 +3564,4 @@ body.low-end .cover-section::before{animation:none}
 }
 @media(max-width:340px){
   .dress-code-card--visual .dress-code-image{padding-top:calc(clamp(60px,9vw,80px) - 3px - 10px)}
-}
-
-/* ============================================================
-   ÚLTIMA PÁGINA — espacio para el menú + animación que se repite
-   ============================================================ */
-@media(max-width:800px){
-  .closing-section{padding-bottom:calc(150px + env(safe-area-inset-bottom,0px))}
-}
-.closing-seal{opacity:0}
-.closing-content.is-leaving .closing-signature span{
-  -webkit-mask-position:100% 0;
-  mask-position:100% 0;
-  transition:-webkit-mask-position 1.2s cubic-bezier(.5,0,.6,.9) 0s,mask-position 1.2s cubic-bezier(.5,0,.6,.9) 0s;
-}
-.closing-content.is-leaving .handwritten-note,
-.closing-content.is-leaving .closing-actions{
-  opacity:0;translate:0 8px;
-  transition:opacity .4s ease .9s,translate .4s ease .9s;
-}
-.closing-content.is-leaving > p:not(.handwritten-note):not(.closing-signature){
-  opacity:0;translate:0 8px;
-  transition:opacity .4s ease 1.1s,translate .4s ease 1.1s;
-}
-.closing-content.is-leaving h2{
-  opacity:0;translate:0 8px;
-  background-size:0 1px;
-  transition:opacity .4s ease 1.3s,translate .4s ease 1.3s,background-size .5s ease 1.2s;
-}
-.closing-content.is-leaving .section-kicker,
-.closing-content.is-leaving .closing-monogram{
-  opacity:0;translate:0 8px;
-  transition:opacity .4s ease 1.5s,translate .4s ease 1.5s;
-}
-.closing-content.is-leaving .closing-seal{
-  animation:sealUnstamp .75s cubic-bezier(.5,0,.8,.4) 1.55s both;
-}
-@keyframes sealUnstamp{
-  0%{opacity:1;transform:scale(1) rotate(0)}
-  32%{opacity:1;transform:scale(1.06) rotate(-1.5deg)}
-  55%{opacity:1;transform:scale(.9) rotate(3deg)}
-  100%{opacity:0;transform:scale(1.9) rotate(-16deg)}
-}
-@media (prefers-reduced-motion:reduce){
-  .closing-seal{opacity:1}
-  .closing-content.is-leaving .closing-seal{animation:none!important}
-}
-
-/* ============================================================
-   DESCUBRIR LA FECHA — al tocar el botón, el texto y el botón se pliegan
-   ============================================================ */
-.reveal-date-pre{
-  display:grid;
-  grid-template-rows:1fr;
-  transition:grid-template-rows .8s cubic-bezier(.16,1,.3,1),opacity .5s ease;
-}
-.reveal-date-pre__inner{
-  min-height:0;
-  overflow:hidden;
-  padding:30px;
-  margin:-30px;
-}
-.reveal-date-pre.is-gone{
-  grid-template-rows:0fr;
-  opacity:0;
-  pointer-events:none;
-}
-@media (prefers-reduced-motion:reduce){
-  .reveal-date-pre{transition:none}
-}
-
-/* ============================================================
-   CELULAR — reproductor discreto, menú que se oculta solo y
-   letras más legibles
-   ============================================================ */
-
-/* ---------- Reproductor: más chico, translúcido y se esconde al scrollear ---------- */
-.music-player{transition:transform .3s ease,box-shadow .3s ease,opacity .35s ease}
-@media(max-width:800px){
-  .music-player{padding:6px;border-radius:12px;opacity:.6}
-  .music-player__button{width:42px;height:42px}
-  .music-player__vinyl{width:40px;height:40px}
-  .music-player__vinyl-initials{font-size:.5rem}
-  .music-player__eq{height:11px;right:-3px}
-  .music-player.is-playing{opacity:.75}
-  .music-player:hover,
-  .music-player:active,
-  .music-player:focus-within{opacity:1}
-  .music-player.is-away{
-    opacity:0;
-    transform:translateY(-10px);
-    pointer-events:none;
-  }
-}
-
-/* ---------- Menú flotante: se oculta solo si no lo usás ---------- */
-.floating-nav.is-visible.is-idle{
-  opacity:0;
-  transform:translate(-50%,12px);
-  pointer-events:none;
-}
-.floating-nav a{font-size:clamp(.62rem,2.6vw,.68rem)}
-@media(max-width:480px){
-  .floating-nav a{padding:8px 9px;letter-spacing:.07em}
-}
-@media(max-height:520px) and (orientation:landscape){
-  .floating-nav.is-visible.is-idle{transform:none}
-}
-
-/* ---------- Botón "Ver la fecha directo": siempre visible ---------- */
-.reveal-date-skip{font-size:.66rem}
-.reveal-date-skip.is-hidden{display:none}
-
-/* ---------- Letras más legibles (antes llegaban a .32–.5rem) ---------- */
-.countdown__item span{font-size:clamp(.54rem,2.6vw,.62rem);letter-spacing:.1em}
-.calendar__weekdays span{font-size:.6rem;letter-spacing:.1em}
-.calendar__caption span{font-size:.64rem}
-.confirm-btn{font-size:clamp(.6rem,2.7vw,.66rem);letter-spacing:.1em}
-.confirm-deadline{font-size:.62rem;letter-spacing:.14em}
-.copy-button{font-size:.62rem}
-.bank-detail__label,.bank-detail>span,.bank-detail div>span{font-size:.62rem}
-.map-toggle{font-size:.6rem;letter-spacing:.16em}
-.map-label span{font-size:.58rem}
-.dress-code-recommendation strong{font-size:clamp(.58rem,1.8vw,.66rem)}
-.location-map-button{font-size:.62rem}
-.location-actions .location-map-button{font-size:.62rem;letter-spacing:.14em}
-.playlist-btn,.album-btn,.calendar-btn{font-size:.62rem}
-.playlist-add{font-size:.6rem}
-.reveal-date-btn{font-size:.66rem}
-.event-day-banner__kicker,.event-day-banner__subtitle{font-size:.58rem}
-
-/* ============================================================
-   BOTÓN "TOCÁ PARA DESCUBRIR LA FECHA"
-   Relleno verde con borde dorado, brillo que lo recorre, aro de luz
-   que late, corazón que late y destellos alrededor.
-   ============================================================ */
-.reveal-date-btn{
-  --btn-ring:214,185,135;
-  position:relative;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  gap:14px;
-  max-width:100%;
-  padding:19px 34px;
-  border:1px solid var(--gold-light);
-  border-radius:999px;
-  overflow:visible;
-  color:var(--cream-soft);
-  font-size:clamp(.66rem,3vw,.74rem);
-  letter-spacing:.18em;
-  text-shadow:0 1px 2px rgba(20,25,10,.45);
-  /* 1ª capa: destello que se mueve · 2ª capa: relleno */
-  background:
-    linear-gradient(115deg,transparent 38%,rgba(255,244,214,.42) 50%,transparent 62%) 160% 0 / 260% 100% no-repeat,
-    linear-gradient(135deg,var(--olive-dark) 0%,var(--olive) 55%,var(--olive-dark) 100%);
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.22),
-    inset 0 0 0 3px rgba(214,185,135,.14),
-    0 10px 26px rgba(60,66,32,.35),
-    0 0 0 0 rgba(var(--btn-ring),.55);
-  animation:
-    dateBtnRing 2.6s ease-out infinite,
-    dateBtnShine 4s ease-in-out 1s infinite,
-    dateBtnFloat 3.4s ease-in-out infinite;
-  transition:filter .3s ease,border-color .3s ease;
-}
-.reveal-date-btn::before{content:none}
-.reveal-date-btn__text,
-.reveal-date-btn__heart{position:relative;z-index:1}
-.reveal-date-btn__heart{
-  font-size:1.3rem;
-  line-height:1;
-  color:var(--rose-heart);
-  text-shadow:0 0 12px rgba(217,159,146,.7);
-  animation:dateBtnHeart 1.3s ease-in-out infinite;
-}
-.reveal-date-btn:hover,
-.reveal-date-btn:focus-visible{
-  color:#fff;
-  filter:brightness(1.12);
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.3),
-    inset 0 0 0 3px rgba(214,185,135,.2),
-    0 14px 34px rgba(60,66,32,.45),
-    0 0 0 0 rgba(var(--btn-ring),.55);
-}
-.reveal-date-btn:hover .reveal-date-btn__heart{color:var(--rose-heart);animation:dateBtnHeart 1.3s ease-in-out infinite}
-.reveal-date-btn:active{filter:brightness(.96)}
-
-/* Destellos ✦ alrededor del botón */
-.reveal-date-btn__spark{
-  position:absolute;
-  z-index:2;
-  color:var(--gold-light);
-  font-size:.8rem;
-  line-height:1;
-  opacity:0;
-  pointer-events:none;
-  text-shadow:0 0 8px rgba(214,185,135,.9);
-  animation:dateBtnSpark 2.8s ease-in-out infinite;
-}
-.reveal-date-btn__spark--1{top:-9px;left:14%;animation-delay:0s}
-.reveal-date-btn__spark--2{top:-7px;right:11%;font-size:.62rem;animation-delay:.9s}
-.reveal-date-btn__spark--3{bottom:-9px;left:46%;font-size:.7rem;animation-delay:1.7s}
-
-@keyframes dateBtnRing{
-  0%{box-shadow:inset 0 1px 0 rgba(255,255,255,.22),inset 0 0 0 3px rgba(214,185,135,.14),0 10px 26px rgba(60,66,32,.35),0 0 0 0 rgba(var(--btn-ring),.55)}
-  70%,100%{box-shadow:inset 0 1px 0 rgba(255,255,255,.22),inset 0 0 0 3px rgba(214,185,135,.14),0 10px 26px rgba(60,66,32,.35),0 0 0 20px rgba(var(--btn-ring),0)}
-}
-@keyframes dateBtnShine{
-  0%,35%{background-position:160% 0,0 0}
-  75%,100%{background-position:-60% 0,0 0}
-}
-@keyframes dateBtnFloat{
-  0%,100%{translate:0 0}
-  50%{translate:0 -4px}
-}
-@keyframes dateBtnHeart{
-  0%,100%{transform:scale(1)}
-  14%{transform:scale(1.28)}
-  28%{transform:scale(1)}
-  42%{transform:scale(1.18)}
-  70%{transform:scale(1)}
-}
-@keyframes dateBtnSpark{
-  0%,100%{opacity:0;transform:scale(.4) rotate(0deg)}
-  40%{opacity:1;transform:scale(1.2) rotate(35deg)}
-  70%{opacity:.2;transform:scale(.7) rotate(70deg)}
-}
-
-/* Al tocarlo desaparece sin seguir animándose */
-.reveal-date-btn.is-hidden{animation:none}
-.reveal-date-btn.is-hidden .reveal-date-btn__spark,
-.reveal-date-btn.is-hidden .reveal-date-btn__heart{animation:none}
-
-@media(max-width:600px){
-  .reveal-date-btn{padding:17px 24px;gap:12px;letter-spacing:.14em}
-}
-@media(max-width:380px){
-  .reveal-date-btn{padding:15px 18px;gap:10px;letter-spacing:.1em}
-}
-
-/* Equipos lentos y movimiento reducido: botón quieto */
-body.low-end .reveal-date-btn,
-body.low-end .reveal-date-btn__spark{animation:none!important}
-body.low-end .reveal-date-btn__spark{opacity:.8}
-@media (prefers-reduced-motion:reduce){
-  .reveal-date-btn,
-  .reveal-date-btn__heart,
-  .reveal-date-btn__spark{animation:none!important}
-  .reveal-date-btn__spark{opacity:.8}
-}
-
-/* ============================================================
-   MENÚ — con todas las secciones (se desliza de costado y
-   la sección actual se centra sola)
-   ============================================================ */
-.floating-nav{scroll-behavior:smooth;-webkit-overflow-scrolling:touch}
-.floating-nav a{flex:none}
-@media(max-width:480px){
-  .floating-nav a{padding:8px 8px;letter-spacing:.06em}
-}
-/* Después de la boda se oculta "Confirmar" (esa sección ya no se muestra) */
-body.post-boda .floating-nav a[href="#confirmacion"]{display:none}
-
-/* ============================================================
-   CALENDARIO — el corazón late sobre el 20 (lub-dub) con un halo
-   rosado suave que se expande
-   ============================================================ */
-.calendar__heart{
-  animation:calHeartBeat 1.6s ease-in-out infinite;
-  transform-origin:50% 55%;
-  will-change:transform;
-}
-.calendar__day--heart::before{
-  content:"";
-  position:absolute;
-  inset:-6%;
-  border-radius:50%;
-  background:radial-gradient(circle,rgba(217,159,146,.6) 0%,rgba(217,159,146,0) 68%);
-  opacity:0;
-  animation:calHeartHalo 1.6s ease-out infinite;
-  pointer-events:none;
-}
-@keyframes calHeartBeat{
-  0%,52%,100%{transform:scale(1);filter:drop-shadow(0 2px 5px rgba(200,120,110,.4))}
-  10%{transform:scale(1.22);filter:drop-shadow(0 0 11px rgba(217,130,120,.82))}
-  22%{transform:scale(1.02)}
-  34%{transform:scale(1.15);filter:drop-shadow(0 0 8px rgba(217,130,120,.68))}
-  46%{transform:scale(1)}
-}
-@keyframes calHeartHalo{
-  0%{opacity:0;transform:scale(.8)}
-  10%{opacity:.9;transform:scale(1)}
-  60%,100%{opacity:0;transform:scale(1.7)}
-}
-body.low-end .calendar__day--heart::before{animation:none!important;opacity:0}
-@media (prefers-reduced-motion:reduce){
-  .calendar__heart{animation:none!important}
-  .calendar__day--heart::before{animation:none!important;opacity:0}
 }
