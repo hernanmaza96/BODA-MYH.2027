@@ -91,14 +91,6 @@ url: 'https://script.google.com/macros/s/AKfycbxe9DXL1m3cpvFdjk2MlwbC7QRvTSlmIo1
 },
 albumApp: {
 url: 'https://script.google.com/macros/s/AKfycbxgI8da3FxHj3_4MjxPrbfEEEpMOzkhLDOOS6ua6xEVCMhlCSbIZDIgjiIDJClKrqLaaQ/exec'
-},
-vcard: {
-org: 'María & Hernán',
-firstName: 'Boda María',
-lastName: ' & Hernán',
-email: 'bodamyh2027@gmail.com',
-url: 'https://hernanmaza96.github.io/BODA-MYH.2027/',
-note: 'Boda de María & Hernán · 20 de febrero de 2027 a las 19:00 hs · Urbana Lounge, Mar del Plata'
 }
 };
 const RSVP_STORAGE_KEY = 'mh-rsvp-v2';
@@ -185,43 +177,6 @@ mediaQuery.addListener(onSystemThemeChange);
 try { localStorage.removeItem(THEME_STORAGE_KEY); } catch (_) {}
 })();
 /* ============================================================
-V-CARD (Guardar contacto)
-============================================================ */
-(function initVCard() {
-const btn = document.getElementById('vcard-btn');
-if (!btn) return;
-const buildVCard = () => {
-const v = CONFIG.vcard;
-const lines = [
-'BEGIN:VCARD',
-'VERSION:3.0',
-`FN:${v.firstName} ${v.lastName}`,
-`N:${v.lastName};${v.firstName};;;`,
-`ORG:${v.org}`,
-`TEL;TYPE=CELL:+${CONFIG.phones.groom}`,
-`TEL;TYPE=CELL:+${CONFIG.phones.bride}`,
-`EMAIL;TYPE=INTERNET:${v.email}`,
-`URL:${v.url}`,
-`NOTE:${v.note}`,
-'END:VCARD'
-];
-return lines.join('\r\n');
-};
-btn.addEventListener('click', () => {
-const vcard = buildVCard();
-const blob = new Blob([vcard], { type: 'text/vcard;charset=utf-8' });
-const url = URL.createObjectURL(blob);
-const a = document.createElement('a');
-a.href = url;
-a.download = 'Boda-Maria-Hernan.vcf';
-document.body.appendChild(a);
-a.click();
-document.body.removeChild(a);
-setTimeout(() => URL.revokeObjectURL(url), 1200);
-Toast.show('Contacto descargado 📇', 'success', 3200);
-});
-})();
-/* ============================================================
 APP
 ============================================================ */
 document.addEventListener('DOMContentLoaded', () => {
@@ -289,21 +244,23 @@ if (caption) caption.textContent = '¡Nos casamos! Gracias por ser parte 💛';
 const hideLoader = () => loader?.classList.add('is-hidden');
 // El loader se oculta cuando el sobre cerrado ya está listo (así no aparece vacío ni "de golpe").
 // Tope de seguridad de 4 s para no dejar la pantalla esperando si la conexión es muy lenta.
-const closedEnvelopeImg = document.querySelector('.envelope-css__image--closed');
-const envelopeReady = new Promise(resolve => {
-if (!closedEnvelopeImg || (closedEnvelopeImg.complete && closedEnvelopeImg.naturalWidth > 0)) { resolve(); return; }
-closedEnvelopeImg.addEventListener('load', resolve, { once: true });
-closedEnvelopeImg.addEventListener('error', resolve, { once: true });
+const closedEnvelopeImgs = Array.from(document.querySelectorAll('.env-front, .env-seal__half'));
+const imgReady = img => new Promise(resolve => {
+if (img.complete && img.naturalWidth > 0) { resolve(); return; }
+img.addEventListener('load', resolve, { once: true });
+img.addEventListener('error', resolve, { once: true });
 });
+const envelopeReady = Promise.all(closedEnvelopeImgs.map(imgReady));
 const envelopeSettled = Promise.race([
-envelopeReady.then(() => (closedEnvelopeImg && closedEnvelopeImg.decode ? closedEnvelopeImg.decode().catch(() => {}) : null)),
+envelopeReady.then(() => Promise.all(closedEnvelopeImgs.map(img => (img.decode ? img.decode().catch(() => {}) : null)))),
 new Promise(resolve => setTimeout(resolve, 4000))
 ]);
 envelopeSettled.then(() => setTimeout(hideLoader, 120));
 /* ============================================================
 REVEAL
 ============================================================ */
-const reveal = document.querySelectorAll('.reveal-card, .reveal-section');
+const closingCard = document.querySelector('.closing-content');
+const reveal = Array.from(document.querySelectorAll('.reveal-card, .reveal-section')).filter(el => el !== closingCard);
 if ('IntersectionObserver' in window && !reducedMotion) {
 const observer = new IntersectionObserver(entries => {
 entries.forEach(entry => {
@@ -316,6 +273,60 @@ observer.unobserve(entry.target);
 reveal.forEach(el => observer.observe(el));
 } else {
 reveal.forEach(el => el.classList.add('is-visible'));
+}
+/* ============================================================
+ÚLTIMA PÁGINA — la animación se repite cada vez que se llega
+y se desarma en orden inverso al irse (firma, texto, título, sello)
+============================================================ */
+if (closingCard) {
+if (reducedMotion || !('IntersectionObserver' in window)) {
+closingCard.classList.add('is-visible');
+} else {
+const ENTER_AT = 0.12;
+const LEAVE_AT = 0.5;
+const UNWIND_MS = 2400;
+const FADE_MS = 1200;
+let state = 'idle';
+let prevRatio = 0;
+let lastRatio = 0;
+let timers = [];
+const clearTimers = () => { timers.forEach(clearTimeout); timers = []; };
+const enter = () => {
+clearTimers();
+if (state === 'out') {
+closingCard.classList.remove('is-visible', 'is-leaving');
+void closingCard.offsetWidth;
+}
+state = 'in';
+closingCard.classList.add('is-visible');
+};
+const leave = () => {
+clearTimers();
+state = 'out';
+closingCard.classList.add('is-leaving');
+timers.push(setTimeout(() => {
+closingCard.classList.remove('is-visible');
+timers.push(setTimeout(() => {
+closingCard.classList.remove('is-leaving');
+state = 'idle';
+if (lastRatio >= ENTER_AT) enter();
+}, FADE_MS));
+}, UNWIND_MS));
+};
+new IntersectionObserver(entries => {
+const entry = entries[entries.length - 1];
+const r = entry.isIntersecting ? entry.intersectionRatio : 0;
+const prev = prevRatio;
+prevRatio = lastRatio = r;
+if (state === 'in') {
+if (r < ENTER_AT || (r < LEAVE_AT && prev >= LEAVE_AT)) leave();
+} else if (state === 'out') {
+if (r >= LEAVE_AT) enter();
+} else if (r >= ENTER_AT) {
+enter();
+}
+}, { threshold: [0, ENTER_AT, LEAVE_AT], rootMargin: '0px 0px -7% 0px' }).observe(closingCard);
+}
 }
 /* ============================================================
 SOBRE
@@ -389,10 +400,14 @@ const p = audio.play();
 if (p && typeof p.catch === 'function') p.catch(() => armMusicRetry());
 });
 const openInvitation = () => {
-if (!opening || !envelope || envelope.classList.contains('is-opening')) return;
-envelope.classList.add('is-opening');
+if (!opening || !envelope || envelope.dataset.opening === '1') return;
+envelope.dataset.opening = '1';
 try { localStorage.setItem(ENVELOPE_STORAGE_KEY, '1'); } catch (_) {}
 startMusic();
+// Vibración corta cuando se rompe el sello (si el celular lo permite)
+try { if (navigator.vibrate && !reducedMotion) navigator.vibrate([18, 45, 12]); } catch (_) {}
+const beginOpening = () => {
+envelope.classList.add('is-opening');
 if (reducedMotion) {
 opening.classList.add('is-instant');
 setTimeout(finishOpening, 250);
@@ -401,6 +416,14 @@ return;
 const HOLD_TIME = 6800;
 setTimeout(() => opening.classList.add('is-zooming'), HOLD_TIME);
 setTimeout(finishOpening, HOLD_TIME + 2000);
+};
+// Si alguna capa del sobre todavía no cargó, espera un instante (máx. 1,8 s) para que la apertura salga completa
+const pendingImgs = Array.from(envelope.querySelectorAll('img')).filter(img => !(img.complete && img.naturalWidth > 0));
+if (!pendingImgs.length) { beginOpening(); return; }
+Promise.race([
+Promise.all(pendingImgs.map(imgReady)),
+new Promise(resolve => setTimeout(resolve, 1800))
+]).then(beginOpening);
 };
 // La música se descarga DESPUÉS del sobre, para que no compita con las imágenes en la carga inicial.
 const deferredAudio = document.getElementById('wedding-audio');
@@ -584,6 +607,7 @@ DESCUBRIR LA FECHA (con fade-in escalonado, sin typewriter)
 const dateBtn = document.getElementById('date-reveal-btn');
 const dateSkipBtn = document.getElementById('date-skip-btn');
 const dateContent = document.getElementById('date-reveal-content');
+const datePre = document.getElementById('date-pre');
 const preCounter = document.getElementById('date-precounter');
 const preCounterNum = document.getElementById('date-precounter-num');
 const preCounterHint = document.getElementById('date-precounter-hint');
@@ -726,15 +750,21 @@ dateBtn.addEventListener('click', () => {
 if (dateBtn.classList.contains('is-hidden')) return;
 dateBtn.classList.add('is-hidden');
 dateBtn.setAttribute('aria-expanded', 'true');
+// El texto de arriba y el botón se pliegan: quedan solo el título y la cuenta regresiva
+if (datePre) {
+datePre.classList.add('is-gone');
+datePre.setAttribute('aria-hidden', 'true');
+}
 setTimeout(() => {
 runFullReveal().catch(err => console.error('[reveal date]', err));
-}, 420);
+}, datePre ? 900 : 420);
 });
 }
 dateSkipBtn?.addEventListener('click', () => {
 dateBtn?.classList.add('is-hidden');
 dateSkipBtn?.classList.add('is-hidden');
 dateSkipBtn?.setAttribute('hidden', '');
+if (datePre) { datePre.classList.add('is-gone'); datePre.setAttribute('aria-hidden', 'true'); }
 revealDateContent();
 const caption = document.querySelector('.countdown-caption');
 if (caption) caption.textContent = '¡Nos casamos! Gracias por ser parte 💛';
@@ -911,8 +941,25 @@ Toast.show(`¡Gracias! Recibimos ${c} ${c === 1 ? 'foto' : 'fotos'} 📸`, 'hear
 NAV FLOTANTE
 ============================================================ */
 const nav = document.getElementById('floating-nav');
-const toggleNav = () => nav?.classList.toggle('is-visible', window.scrollY > window.innerHeight * 0.5);
+let navIdleTimer = null;
+const wakeNav = () => {
+if (!nav) return;
+nav.classList.remove('is-idle');
+clearTimeout(navIdleTimer);
+navIdleTimer = setTimeout(() => nav.classList.add('is-idle'), 3500);
+};
+const toggleNav = () => {
+if (!nav) return;
+const show = window.scrollY > window.innerHeight * 0.5;
+nav.classList.toggle('is-visible', show);
+if (show) wakeNav();
+else { clearTimeout(navIdleTimer); nav.classList.remove('is-idle'); }
+};
 window.addEventListener('scroll', toggleNav, { passive: true });
+// Un toque o tecla en cualquier lado lo vuelve a mostrar
+['touchstart', 'pointerdown', 'keydown'].forEach(ev =>
+window.addEventListener(ev, () => { if (nav?.classList.contains('is-visible')) wakeNav(); }, { passive: true })
+);
 toggleNav();
 // Marca en dorado la sección donde estás
 const navLinks = nav ? Array.from(nav.querySelectorAll('a[href^="#"]')) : [];
@@ -955,6 +1002,15 @@ musicToggle?.setAttribute('aria-label', playing ? 'Pausar música' : 'Reproducir
 }
 music?.addEventListener('play', () => setMusicState(true));
 music?.addEventListener('pause', () => setMusicState(false));
+// Se esconde mientras scrolleás y vuelve cuando frenás
+if (musicPlayer) {
+let musicAwayTimer = null;
+window.addEventListener('scroll', () => {
+musicPlayer.classList.add('is-away');
+clearTimeout(musicAwayTimer);
+musicAwayTimer = setTimeout(() => musicPlayer.classList.remove('is-away'), 1200);
+}, { passive: true });
+}
 musicToggle?.addEventListener('click', async () => {
 if (!music) return;
 try {

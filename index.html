@@ -68,11 +68,15 @@
       href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%233a4020'%3E%3Canimate attributeName='stop-color' values='%233a4020;%236d7743;%233a4020' dur='6s' repeatCount='indefinite'/%3E%3C/stop%3E%3Cstop offset='100%25' stop-color='%234c5429'%3E%3Canimate attributeName='stop-color' values='%234c5429;%238b9560;%234c5429' dur='6s' repeatCount='indefinite'/%3E%3C/stop%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='12' fill='url(%23g)'/%3E%3Ctext x='50%25' y='56%25' font-family='Georgia,serif' font-size='30' fill='%23d6b987' text-anchor='middle' dominant-baseline='middle'%3EM%C2%B7H%3C/text%3E%3C/svg%3E"
     />
 
-    <link rel="preload" as="image" href="img/Cerrado.png" fetchpriority="high" />
+    <link rel="preload" as="image" href="img/sobre-frente.webp" fetchpriority="high" />
+    <link rel="preload" as="image" href="img/sello-izq.webp" fetchpriority="high" />
+    <link rel="preload" as="image" href="img/sello-der.webp" fetchpriority="high" />
+    <link rel="preload" as="image" href="img/sobre-solapa.webp" />
     <link rel="preload" as="image" href="img/10.webp" />
     <link rel="preload" as="image" href="img/flores-izquierda.webp" />
     <link rel="preload" as="image" href="img/flores-derecha.webp" />
-    <link rel="preload" as="image" href="img/abierto.png" fetchpriority="low" />
+    <link rel="preload" as="image" href="img/sobre-interior.webp" fetchpriority="low" />
+    <link rel="preload" as="image" href="img/sobre-solapa-interior.webp" fetchpriority="low" />
 
     <style>
       html,
@@ -241,28 +245,33 @@
             type="button"
             aria-label="Abrir la invitación"
           >
-            <span class="envelope-css__photo" aria-hidden="true">
-              <img src="img/10.webp" alt="" width="600" height="800" />
+            <span class="env-rig" aria-hidden="true">
+              <img class="env-layer env-inside" src="img/sobre-interior.webp" alt="" width="1000" height="650" decoding="async" />
+              <span class="env-card-clip">
+                <span class="envelope-css__photo">
+                  <img src="img/10.webp" alt="" width="600" height="800" />
+                </span>
+              </span>
+              <img class="env-layer env-pocket" src="img/sobre-interior.webp" alt="" width="1000" height="650" decoding="async" />
+              <img class="env-layer env-front" src="img/sobre-frente.webp" alt="" width="1000" height="650" decoding="async" fetchpriority="high" />
+              <span class="env-flap">
+                <img class="env-flap__front" src="img/sobre-solapa.webp" alt="" width="970" height="437" decoding="async" />
+                <img class="env-flap__back" src="img/sobre-solapa-interior.webp" alt="" width="970" height="432" decoding="async" />
+              </span>
+              <span class="env-seal">
+                <img class="env-seal__half env-seal__half--l" src="img/sello-izq.webp" alt="" width="249" height="249" />
+                <img class="env-seal__half env-seal__half--r" src="img/sello-der.webp" alt="" width="249" height="249" />
+              <i class="env-crumb" style="--x:-34px;--up:16px;--fall:70px;--r:-140deg;width:5.5%"></i>
+              <i class="env-crumb" style="--x:-18px;--up:24px;--fall:82px;--r:90deg;width:4%"></i>
+              <i class="env-crumb" style="--x:-8px;--up:28px;--fall:64px;--r:-60deg;width:6.5%"></i>
+              <i class="env-crumb" style="--x:6px;--up:30px;--fall:90px;--r:120deg;width:3.8%"></i>
+              <i class="env-crumb" style="--x:20px;--up:22px;--fall:76px;--r:-110deg;width:5%"></i>
+              <i class="env-crumb" style="--x:34px;--up:14px;--fall:66px;--r:160deg;width:6%"></i>
+              <i class="env-crumb" style="--x:-44px;--up:8px;--fall:58px;--r:70deg;width:3.5%"></i>
+              <i class="env-crumb" style="--x:44px;--up:10px;--fall:72px;--r:-80deg;width:4.5%"></i>
+              <i class="env-crumb" style="--x:0px;--up:34px;--fall:96px;--r:200deg;width:5.2%"></i>
+              </span>
             </span>
-            <img
-              class="envelope-css__image envelope-css__image--closed"
-              src="img/Cerrado.png"
-              alt=""
-              width="1556"
-              height="1011"
-              decoding="async"
-              fetchpriority="high"
-            />
-            <img
-              class="envelope-css__image envelope-css__image--open"
-              src="img/abierto.png"
-              alt=""
-              width="1328"
-              height="1184"
-              decoding="async"
-              fetchpriority="low"
-              aria-hidden="true"
-            />
           </button>
         </div>
         <p class="opening-hint">Tocá el sello para abrir la invitación</p>
@@ -1035,6 +1044,7 @@
           />
           <span class="section-kicker">Guardá esta fecha</span>
           <h2>El día que todo <em class="title-script">comienza</em></h2>
+          <div class="reveal-date-pre" id="date-pre"><div class="reveal-date-pre__inner">
           <p class="reveal-date-intro">
             Un momento único para compartir con ustedes. Tocá el botón para
             descubrir cuándo.
@@ -1060,6 +1070,7 @@
             <span>Ver la fecha directo</span>
             <span aria-hidden="true">→</span>
           </button>
+          </div></div>
           <div
             class="date-precounter"
             id="date-precounter"
@@ -1163,7 +1174,7 @@
               </div>
             </div>
             <p class="countdown-caption" id="countdown-caption">
-              Faltan apenas unos días para celebrar juntos.
+              Faltan apenas unos días para nuestro gran día
             </p>
             <div class="calendar-cta">
               <span class="calendar-cta__kicker">No te lo pierdas</span>
@@ -1320,7 +1331,7 @@
     <footer class="closing-section">
       <div class="closing-content reveal-card">
         <img class="closing-seal" src="img/sello-mh.webp" alt="Sello M·H" width="96" height="96" loading="lazy" decoding="async" />
-        <span class="closing-monogram">M <i>&amp;</i> H</span>
+     
         <span class="section-kicker">Con amor</span>
         <h2>Gracias por ser <em class="title-script">parte</em></h2>
         <p>
@@ -1332,29 +1343,6 @@
           <a class="closing-button" href="#confirmacion"
             >Confirmar asistencia <span>♡</span></a
           >
-          <button
-            class="closing-button closing-button--vcard"
-            id="vcard-btn"
-            type="button"
-          >
-            <svg
-              viewBox="0 0 24 24"
-              width="14"
-              height="14"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.8"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              aria-hidden="true"
-            >
-              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-              <circle cx="9" cy="7" r="4" />
-              <line x1="19" y1="8" x2="19" y2="14" />
-              <line x1="22" y1="11" x2="16" y2="11" />
-            </svg>
-            <span>Guardar contacto</span>
-          </button>
         </div>
       </div>
     </footer>

@@ -3,27 +3,23 @@
 // Estrategia: precache de assets críticos + stale-while-revalidate
 // ============================================================
 
-const CACHE = 'myh-v14';
+const CACHE = 'myh-v19';
+// Solo lo que necesita la primera pantalla (sobre). El resto se guarda solo la primera vez que se usa.
 const PRECACHE = [
   './',
   './index.html',
   './css/style.css',
   './js/script.js',
   './manifest.json',
-  './img/WhatsApp.png',
+  './img/sobre-frente.webp',
+  './img/sello-izq.webp',
+  './img/sello-der.webp',
+  './img/sobre-solapa.webp',
+  './img/sobre-solapa-interior.webp',
+  './img/sobre-interior.webp',
+  './img/10.webp',
   './img/flores-izquierda.webp',
   './img/flores-derecha.webp',
-  './img/galeria-01.jpg',
-  './img/galeria-02.jpg',
-  './img/galeria-03.jpg',
-  './img/galeria-04.jpg',
-  './img/galeria-05.jpg',
-  './img/galeria-06.jpg',
-  './img/galeria-07.jpg',
-  './img/galeria-08.jpg',
-  './img/galeria-09.jpg',
-  './img/cerrado.jpeg',
-  './img/sello-mh.webp',
   './img/icon-192.png',
   './img/icon-512.png'
 ];
@@ -32,7 +28,8 @@ const PRECACHE = [
 self.addEventListener('install', (e) => {
   e.waitUntil(
     caches.open(CACHE)
-      .then(c => c.addAll(PRECACHE))
+      // Archivo por archivo: si uno falla, los demás igual se guardan
+      .then(c => Promise.allSettled(PRECACHE.map(u => c.add(u))))
       .catch(err => console.warn('[SW] precache parcial:', err))
   );
   self.skipWaiting();
