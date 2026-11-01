@@ -658,7 +658,7 @@ preCounter.classList.remove('is-hidden');
 const MESSAGE_LINES = [
 '¡La ansiedad es parte del plan! 😂',
 'Si ustedes están ansiosos por saber la fecha, imagínense cómo estamos nosotros.',
-'Aunque, entre nosotros… ¡nos encanta tenerlos así de curiosos! ❤️',
+'Aunque, entre nosotros… ¡nos encanta tenerlos así de curiosos! ♡',
 '¿Están listos?'
 ];
 async function showMessageAsync() {
@@ -1166,8 +1166,8 @@ if (modalSummary) modalSummary.textContent = `Tu invitación es para ${totalGues
 rsvpGuestsField?.removeAttribute('hidden');
 fillGuestsOptions(Math.max(1, totalGuests - 1));
 } else {
-if (titleEl) titleEl.textContent = 'Nos avisás que no van a poder';
-if (modalSummary) modalSummary.textContent = 'Dejanos tu nombre y, si querés, un mensaje. Los vamos a extrañar.';
+if (titleEl) titleEl.textContent = 'Nos avisa que no vas a poder asistir';
+if (modalSummary) modalSummary.textContent = '';
 rsvpGuestsField?.setAttribute('hidden', '');
 }
 if (rsvpName) rsvpName.value = (guestName && guestName !== CONFIG.guest.defaultName) ? guestName : '';
