@@ -3565,3 +3565,85 @@ body.low-end .cover-section::before{animation:none}
 @media(max-width:340px){
   .dress-code-card--visual .dress-code-image{padding-top:calc(clamp(60px,9vw,80px) - 3px - 10px)}
 }
+
+/* Galería editorial con marcos marfil y acentos dorados */
+.gallery-section .gallery-masonry{
+  --gallery-shift:0px;
+  width:min(920px,calc(100% - 36px));
+  margin:0 auto;
+  padding:0;
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  align-items:start;
+  gap:clamp(10px,2vw,18px);
+  border:0;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+}
+.gallery-section .gallery-masonry > .gallery-item{
+  --rot:0deg;
+  --shift:0px;
+  width:100%;
+  height:auto;
+  margin:0;
+  padding:5px;
+  overflow:hidden;
+  border:0;
+  border-radius:11px;
+  background:linear-gradient(145deg,#fffdf8,#eee8da);
+  box-shadow:0 10px 24px -12px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.9);
+  translate:none !important;
+  transform:translateY(var(--shift));
+  transition:transform .4s cubic-bezier(.16,1,.3,1),box-shadow .4s ease;
+}
+.gallery-section .gallery-masonry > .gallery-item::before,
+.gallery-section .gallery-masonry > .gallery-item::after{
+  content:none;
+}
+.gallery-section .gallery-masonry > .gallery-item--lead{
+  grid-column:1 / -1;
+  width:min(100%,760px);
+  justify-self:center;
+  margin:0;
+}
+.gallery-section .gallery-masonry .gallery-item img{
+  display:block;
+  width:100%;
+  height:auto;
+  border-radius:6px;
+  object-fit:contain;
+  object-position:center;
+}
+.gallery-section .gallery-masonry.gallery-js > .gallery-item{
+  transform:translateY(calc(var(--shift) + 18px));
+}
+.gallery-section .gallery-masonry.gallery-js > .gallery-item.is-in{
+  transform:translateY(var(--shift));
+}
+.gallery-section .gallery-masonry > .gallery-item:hover{
+  transform:translateY(-2px);
+  box-shadow:0 14px 28px -12px rgba(0,0,0,.62),inset 0 1px 0 rgba(255,255,255,.9);
+}
+@media(max-width:480px){
+  .gallery-section .gallery-masonry{
+    width:calc(100% - 28px);
+    padding:0;
+    gap:clamp(6px,2vw,9px);
+  }
+  .gallery-section .gallery-masonry > .gallery-item{
+    padding:4px;
+    border-radius:9px;
+  }
+  .gallery-section .gallery-masonry .gallery-item img{
+    border-radius:5px;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .gallery-section .gallery-masonry.gallery-js > .gallery-item{
+    transform:none;
+  }
+  .gallery-section .gallery-masonry > .gallery-item{
+    transition:none;
+  }
+}
