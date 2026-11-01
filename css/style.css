@@ -3647,3 +3647,308 @@ body.low-end .cover-section::before{animation:none}
     transition:none;
   }
 }
+/* ============================================================
+   CELULAR — reproductor discreto, menú que se oculta solo y
+   letras más legibles
+   ============================================================ */
+
+/* ---------- Reproductor: más chico, translúcido y se esconde al scrollear ---------- */
+.music-player{transition:transform .3s ease,box-shadow .3s ease,opacity .35s ease}
+@media(max-width:800px){
+  .music-player{padding:6px;border-radius:12px;opacity:.6}
+  .music-player__button{width:42px;height:42px}
+  .music-player__vinyl{width:40px;height:40px}
+  .music-player__vinyl-initials{font-size:.5rem}
+  .music-player__eq{height:11px;right:-3px}
+  .music-player.is-playing{opacity:.75}
+  .music-player:hover,
+  .music-player:active,
+  .music-player:focus-within{opacity:1}
+  .music-player.is-away{
+    opacity:0;
+    transform:translateY(-10px);
+    pointer-events:none;
+  }
+}
+
+/* ---------- Menú flotante: 5 links y se oculta solo si no lo usás ---------- */
+.floating-nav.is-visible.is-idle{
+  opacity:0;
+  transform:translate(-50%,12px);
+  pointer-events:none;
+}
+.floating-nav a{font-size:clamp(.62rem,2.6vw,.68rem)}
+@media(max-width:480px){
+  .floating-nav a{padding:8px 9px;letter-spacing:.07em}
+}
+@media(max-height:520px) and (orientation:landscape){
+  .floating-nav.is-visible.is-idle{transform:none}
+}
+
+/* ---------- Botón "Ver la fecha directo": siempre visible ---------- */
+.reveal-date-skip{font-size:.66rem}
+.reveal-date-skip.is-hidden{display:none}
+
+/* ---------- Letras más legibles (antes llegaban a .32–.5rem) ---------- */
+.countdown__item span{font-size:clamp(.54rem,2.6vw,.62rem);letter-spacing:.1em}
+.calendar__weekdays span{font-size:.6rem;letter-spacing:.1em}
+.calendar__caption span{font-size:.64rem}
+.confirm-btn{font-size:clamp(.6rem,2.7vw,.66rem);letter-spacing:.1em}
+.confirm-deadline{font-size:.62rem;letter-spacing:.14em}
+.copy-button{font-size:.62rem}
+.bank-detail__label,.bank-detail>span,.bank-detail div>span{font-size:.62rem}
+.map-toggle{font-size:.6rem;letter-spacing:.16em}
+.map-label span{font-size:.58rem}
+.dress-code-recommendation strong{font-size:clamp(.58rem,1.8vw,.66rem)}
+.location-map-button{font-size:.62rem}
+.location-actions .location-map-button{font-size:.62rem;letter-spacing:.14em}
+.playlist-btn,.album-btn,.calendar-btn{font-size:.62rem}
+.playlist-add{font-size:.6rem}
+.reveal-date-btn{font-size:.66rem}
+.event-day-banner__kicker,.event-day-banner__subtitle{font-size:.58rem}
+
+/* ============================================================
+   BOTÓN "TOCÁ PARA DESCUBRIR LA FECHA"
+   Relleno verde con borde dorado, brillo que lo recorre, aro de luz
+   que late, corazón que late y destellos alrededor.
+   ============================================================ */
+.reveal-date-btn{
+  --btn-ring:214,185,135;
+  position:relative;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:14px;
+  max-width:100%;
+  padding:19px 34px;
+  border:1px solid var(--gold-light);
+  border-radius:999px;
+  overflow:visible;
+  color:var(--cream-soft);
+  font-size:clamp(.66rem,3vw,.74rem);
+  letter-spacing:.18em;
+  text-shadow:0 1px 2px rgba(20,25,10,.45);
+  /* 1ª capa: destello que se mueve · 2ª capa: relleno */
+  background:
+    linear-gradient(115deg,transparent 38%,rgba(255,244,214,.42) 50%,transparent 62%) 160% 0 / 260% 100% no-repeat,
+    linear-gradient(135deg,var(--olive-dark) 0%,var(--olive) 55%,var(--olive-dark) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.22),
+    inset 0 0 0 3px rgba(214,185,135,.14),
+    0 10px 26px rgba(60,66,32,.35),
+    0 0 0 0 rgba(var(--btn-ring),.55);
+  animation:
+    dateBtnRing 2.6s ease-out infinite,
+    dateBtnShine 4s ease-in-out 1s infinite,
+    dateBtnFloat 3.4s ease-in-out infinite;
+  transition:filter .3s ease,border-color .3s ease;
+}
+.reveal-date-btn::before{content:none}
+.reveal-date-btn__text,
+.reveal-date-btn__heart{position:relative;z-index:1}
+.reveal-date-btn__heart{
+  font-size:1.3rem;
+  line-height:1;
+  color:var(--rose-heart);
+  text-shadow:0 0 12px rgba(217,159,146,.7);
+  animation:dateBtnHeart 1.3s ease-in-out infinite;
+}
+.reveal-date-btn:hover,
+.reveal-date-btn:focus-visible{
+  color:#fff;
+  filter:brightness(1.12);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.3),
+    inset 0 0 0 3px rgba(214,185,135,.2),
+    0 14px 34px rgba(60,66,32,.45),
+    0 0 0 0 rgba(var(--btn-ring),.55);
+}
+.reveal-date-btn:hover .reveal-date-btn__heart{color:var(--rose-heart);animation:dateBtnHeart 1.3s ease-in-out infinite}
+.reveal-date-btn:active{filter:brightness(.96)}
+
+/* Destellos ✦ alrededor del botón */
+.reveal-date-btn__spark{
+  position:absolute;
+  z-index:2;
+  color:var(--gold-light);
+  font-size:.8rem;
+  line-height:1;
+  opacity:0;
+  pointer-events:none;
+  text-shadow:0 0 8px rgba(214,185,135,.9);
+  animation:dateBtnSpark 2.8s ease-in-out infinite;
+}
+.reveal-date-btn__spark--1{top:-9px;left:14%;animation-delay:0s}
+.reveal-date-btn__spark--2{top:-7px;right:11%;font-size:.62rem;animation-delay:.9s}
+.reveal-date-btn__spark--3{bottom:-9px;left:46%;font-size:.7rem;animation-delay:1.7s}
+
+@keyframes dateBtnRing{
+  0%{box-shadow:inset 0 1px 0 rgba(255,255,255,.22),inset 0 0 0 3px rgba(214,185,135,.14),0 10px 26px rgba(60,66,32,.35),0 0 0 0 rgba(var(--btn-ring),.55)}
+  70%,100%{box-shadow:inset 0 1px 0 rgba(255,255,255,.22),inset 0 0 0 3px rgba(214,185,135,.14),0 10px 26px rgba(60,66,32,.35),0 0 0 20px rgba(var(--btn-ring),0)}
+}
+@keyframes dateBtnShine{
+  0%,35%{background-position:160% 0,0 0}
+  75%,100%{background-position:-60% 0,0 0}
+}
+@keyframes dateBtnFloat{
+  0%,100%{translate:0 0}
+  50%{translate:0 -4px}
+}
+@keyframes dateBtnHeart{
+  0%,100%{transform:scale(1)}
+  14%{transform:scale(1.28)}
+  28%{transform:scale(1)}
+  42%{transform:scale(1.18)}
+  70%{transform:scale(1)}
+}
+@keyframes dateBtnSpark{
+  0%,100%{opacity:0;transform:scale(.4) rotate(0deg)}
+  40%{opacity:1;transform:scale(1.2) rotate(35deg)}
+  70%{opacity:.2;transform:scale(.7) rotate(70deg)}
+}
+
+/* Al tocarlo desaparece sin seguir animándose */
+.reveal-date-btn.is-hidden{animation:none}
+.reveal-date-btn.is-hidden .reveal-date-btn__spark,
+.reveal-date-btn.is-hidden .reveal-date-btn__heart{animation:none}
+
+@media(max-width:600px){
+  .reveal-date-btn{padding:17px 24px;gap:12px;letter-spacing:.14em}
+}
+@media(max-width:380px){
+  .reveal-date-btn{padding:15px 18px;gap:10px;letter-spacing:.1em}
+}
+
+/* Equipos lentos y movimiento reducido: botón quieto */
+body.low-end .reveal-date-btn,
+body.low-end .reveal-date-btn__spark{animation:none!important}
+body.low-end .reveal-date-btn__spark{opacity:.8}
+@media (prefers-reduced-motion:reduce){
+  .reveal-date-btn,
+  .reveal-date-btn__heart,
+  .reveal-date-btn__spark{animation:none!important}
+  .reveal-date-btn__spark{opacity:.8}
+}
+
+/* ============================================================
+   MENÚ — ahora con todas las secciones (se desliza de costado y
+   la sección actual se centra sola)
+   ============================================================ */
+.floating-nav{scroll-behavior:smooth;-webkit-overflow-scrolling:touch}
+.floating-nav a{flex:none}
+@media(max-width:480px){
+  .floating-nav a{padding:8px 8px;letter-spacing:.06em}
+}
+/* Después de la boda se oculta "Confirmar" (esa sección ya no se muestra) */
+body.post-boda .floating-nav a[href="#confirmacion"]{display:none}
+
+/* ============================================================
+   DESCUBRIR LA FECHA — al tocar el botón, el texto y el botón se
+   pliegan y queda todo centrado: título + cuenta, luego el cuadro,
+   la segunda cuenta y por último el calendario
+   ============================================================ */
+.reveal-date-pre{
+  display:grid;
+  grid-template-rows:1fr;
+  transition:grid-template-rows .8s cubic-bezier(.16,1,.3,1),opacity .5s ease;
+}
+/* El relleno + margen negativo deja ver el aro y los destellos del botón sin que se corten */
+.reveal-date-pre__inner{
+  min-height:0;
+  overflow:hidden;
+  padding:30px;
+  margin:-30px;
+}
+.reveal-date-pre.is-gone{
+  grid-template-rows:0fr;
+  opacity:0;
+  pointer-events:none;
+}
+.reveal-date-section .date-precounter,
+.reveal-date-section .date-message{margin-left:auto;margin-right:auto}
+
+/* ============================================================
+   CALENDARIO — el corazón late sobre el 20 (lub-dub) con un halo
+   rosado suave que se expande
+   ============================================================ */
+.calendar__heart{
+  animation:calHeartBeat 1.6s ease-in-out infinite;
+  transform-origin:50% 55%;
+  will-change:transform;
+}
+.calendar__day--heart::before{
+  content:"";
+  position:absolute;
+  inset:-6%;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(217,159,146,.6) 0%,rgba(217,159,146,0) 68%);
+  opacity:0;
+  animation:calHeartHalo 1.6s ease-out infinite;
+  pointer-events:none;
+}
+@keyframes calHeartBeat{
+  0%,52%,100%{transform:scale(1);filter:drop-shadow(0 2px 5px rgba(200,120,110,.4))}
+  10%{transform:scale(1.2);filter:drop-shadow(0 0 10px rgba(217,130,120,.8))}
+  22%{transform:scale(1.03)}
+  34%{transform:scale(1.14);filter:drop-shadow(0 0 8px rgba(217,130,120,.65))}
+  46%{transform:scale(1)}
+}
+@keyframes calHeartHalo{
+  0%{opacity:0;transform:scale(.8)}
+  10%{opacity:.9;transform:scale(1)}
+  60%,100%{opacity:0;transform:scale(1.7)}
+}
+body.low-end .calendar__day--heart::before{animation:none!important;opacity:0}
+@media (prefers-reduced-motion:reduce){
+  .calendar__heart{animation:none!important}
+  .calendar__day--heart::before{animation:none!important;opacity:0}
+  .reveal-date-pre{transition:none}
+}
+
+/* ============================================================
+   ÚLTIMA PÁGINA — la animación se repite cada vez que se llega y,
+   al irse hacia arriba, se desarma en orden inverso
+   (el JS pone .is-visible al llegar y .is-leaving al irse)
+   ============================================================ */
+
+/* Sello: al irse hace el "estampado" al revés (se despega y se va) */
+.closing-content.is-leaving .closing-seal{
+  animation:sealUnstamp .7s cubic-bezier(.5,0,.8,.4) both;
+}
+@keyframes sealUnstamp{
+  0%{opacity:1;transform:scale(1) rotate(0)}
+  32%{opacity:1;transform:scale(1.06) rotate(-1.5deg)}
+  55%{opacity:1;transform:scale(.9) rotate(3deg)}
+  100%{opacity:0;transform:scale(1.9) rotate(-16deg)}
+}
+
+/* Cuadro general: se va más rápido de lo que entra */
+.closing-content.reveal-card:not(.is-visible){
+  transition-duration:.7s,.7s;
+}
+
+/* Raya dorada bajo el título: se recoge enseguida */
+.closing-content:not(.is-visible) h2{
+  transition-duration:.5s;
+  transition-delay:0s;
+}
+
+/* Firma: se "des-escribe" de derecha a izquierda */
+.closing-content:not(.is-visible) .closing-signature span{
+  transition:
+    -webkit-mask-position 1.3s cubic-bezier(.45,.1,.3,1) 0s,
+    mask-position 1.3s cubic-bezier(.45,.1,.3,1) 0s;
+}
+
+@media (prefers-reduced-motion:reduce){
+  .closing-content.is-leaving .closing-seal{animation:none!important}
+}
+
+/* ============================================================
+   ÚLTIMA PÁGINA — el botón "Confirmar asistencia" queda por encima
+   del menú inferior al llegar al final de la página
+   ============================================================ */
+.closing-section{
+  padding-bottom:calc(150px + env(safe-area-inset-bottom,0px));
+}
+.closing-seal{margin-bottom:26px}

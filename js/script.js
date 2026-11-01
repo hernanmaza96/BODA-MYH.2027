@@ -91,14 +91,6 @@ url: 'https://script.google.com/macros/s/AKfycbxe9DXL1m3cpvFdjk2MlwbC7QRvTSlmIo1
 },
 albumApp: {
 url: 'https://script.google.com/macros/s/AKfycbxgI8da3FxHj3_4MjxPrbfEEEpMOzkhLDOOS6ua6xEVCMhlCSbIZDIgjiIDJClKrqLaaQ/exec'
-},
-vcard: {
-org: 'María & Hernán',
-firstName: 'Boda María',
-lastName: ' & Hernán',
-email: 'bodamyh2027@gmail.com',
-url: 'https://hernanmaza96.github.io/BODA-MYH.2027/',
-note: 'Boda de María & Hernán · 20 de febrero de 2027 a las 19:00 hs · Urbana Lounge, Mar del Plata'
 }
 };
 const RSVP_STORAGE_KEY = 'mh-rsvp-v2';
@@ -185,43 +177,6 @@ mediaQuery.addListener(onSystemThemeChange);
 try { localStorage.removeItem(THEME_STORAGE_KEY); } catch (_) {}
 })();
 /* ============================================================
-V-CARD (Guardar contacto)
-============================================================ */
-(function initVCard() {
-const btn = document.getElementById('vcard-btn');
-if (!btn) return;
-const buildVCard = () => {
-const v = CONFIG.vcard;
-const lines = [
-'BEGIN:VCARD',
-'VERSION:3.0',
-`FN:${v.firstName} ${v.lastName}`,
-`N:${v.lastName};${v.firstName};;;`,
-`ORG:${v.org}`,
-`TEL;TYPE=CELL:+${CONFIG.phones.groom}`,
-`TEL;TYPE=CELL:+${CONFIG.phones.bride}`,
-`EMAIL;TYPE=INTERNET:${v.email}`,
-`URL:${v.url}`,
-`NOTE:${v.note}`,
-'END:VCARD'
-];
-return lines.join('\r\n');
-};
-btn.addEventListener('click', () => {
-const vcard = buildVCard();
-const blob = new Blob([vcard], { type: 'text/vcard;charset=utf-8' });
-const url = URL.createObjectURL(blob);
-const a = document.createElement('a');
-a.href = url;
-a.download = 'Boda-Maria-Hernan.vcf';
-document.body.appendChild(a);
-a.click();
-document.body.removeChild(a);
-setTimeout(() => URL.revokeObjectURL(url), 1200);
-Toast.show('Contacto descargado 📇', 'success', 3200);
-});
-})();
-/* ============================================================
 APP
 ============================================================ */
 document.addEventListener('DOMContentLoaded', () => {
@@ -304,7 +259,7 @@ envelopeSettled.then(() => setTimeout(hideLoader, 120));
 /* ============================================================
 REVEAL
 ============================================================ */
-const reveal = document.querySelectorAll('.reveal-card, .reveal-section');
+const reveal = document.querySelectorAll('.reveal-card:not(.closing-content), .reveal-section');
 if ('IntersectionObserver' in window && !reducedMotion) {
 const observer = new IntersectionObserver(entries => {
 entries.forEach(entry => {
@@ -317,6 +272,29 @@ observer.unobserve(entry.target);
 reveal.forEach(el => observer.observe(el));
 } else {
 reveal.forEach(el => el.classList.add('is-visible'));
+}
+/* Última página (agradecimiento): aparece de a poco cada vez que se llega y,
+   al irse hacia arriba, se desarma en orden inverso para repetirse al volver */
+const closingContent = document.querySelector('.closing-content');
+if (closingContent) {
+if ('IntersectionObserver' in window && !reducedMotion) {
+let closingShown = false;
+const closingThresholds = Array.from({ length: 21 }, (_, i) => i / 20);
+new IntersectionObserver(entries => {
+const ratio = entries[entries.length - 1].intersectionRatio;
+if (!closingShown && ratio >= 0.3) {
+closingShown = true;
+closingContent.classList.remove('is-leaving');
+closingContent.classList.add('is-visible');
+} else if (closingShown && ratio <= 0.15) {
+closingShown = false;
+closingContent.classList.remove('is-visible');
+closingContent.classList.add('is-leaving');
+}
+}, { threshold: closingThresholds }).observe(closingContent);
+} else {
+closingContent.classList.add('is-visible');
+}
 }
 /* ============================================================
 SOBRE
@@ -595,8 +573,8 @@ deadlineEl.innerHTML = diffDays <= 0
 DESCUBRIR LA FECHA (con fade-in escalonado, sin typewriter)
 ============================================================ */
 const dateBtn = document.getElementById('date-reveal-btn');
-const dateSkipBtn = document.getElementById('date-skip-btn');
 const dateContent = document.getElementById('date-reveal-content');
+const datePre = document.getElementById('date-pre');
 const preCounter = document.getElementById('date-precounter');
 const preCounterNum = document.getElementById('date-precounter-num');
 const preCounterHint = document.getElementById('date-precounter-hint');
@@ -641,29 +619,37 @@ petalsLayer.classList.remove('is-active');
 petalsLayer.innerHTML = '';
 }, totalTime);
 }
+// Cada vez que se salta la animación este número cambia y los pasos en curso se detienen
+let revealRun = 0;
 async function runPreCountdownAsync() {
 if (!preCounter || !preCounterNum) return;
+const run = revealRun;
 preCounter.removeAttribute('hidden');
 preCounter.setAttribute('aria-hidden', 'false');
 preCounter.classList.remove('is-hidden');
 await wait(80);
+if (run !== revealRun) return;
 scrollToElCentered(preCounter, 0.22);
 let n = 10;
 preCounterNum.textContent = String(n);
 restartTickAnim(preCounterNum);
 await wait(TICK_MS);
+if (run !== revealRun) return;
 while (n > 0) {
 n--;
 preCounterNum.textContent = String(n);
 restartTickAnim(preCounterNum);
 await wait(TICK_MS);
+if (run !== revealRun) return;
 }
 await wait(700);
 }
 async function hidePreCounterAsync() {
 if (!preCounter) return;
+const run = revealRun;
 preCounter.classList.add('is-hidden');
 await wait(600);
+if (run !== revealRun) return;
 preCounter.setAttribute('hidden', '');
 preCounter.setAttribute('aria-hidden', 'true');
 preCounter.classList.remove('is-hidden');
@@ -677,30 +663,36 @@ const MESSAGE_LINES = [
 ];
 async function showMessageAsync() {
 if (!dateMessage) return;
+const run = revealRun;
 dateMessage.removeAttribute('hidden');
 dateMessage.setAttribute('aria-hidden', 'false');
 await wait(80);
+if (run !== revealRun) return;
 dateMessage.classList.add('is-visible');
 // Activar shimmer dorado en el borde
 dateMessage.classList.add('is-shimmering');
 scrollToElCentered(dateMessage, 0.18);
 await wait(500);
+if (run !== revealRun) return;
 const lines = Array.from(dateMessage.querySelectorAll('[data-type-line]'));
 // Aparición escalonada de cada línea (350ms entre cada una)
 for (let i = 0; i < lines.length; i++) {
 lines[i].textContent = MESSAGE_LINES[i] || '';
 lines[i].classList.add('is-revealed');
 await wait(380);
+if (run !== revealRun) return;
 }
 // ⬇️ TIEMPO DE LECTURA AUMENTADO: 7.5 segundos (antes 3.2s)
 await wait(7500);
 }
 async function hideMessageAsync() {
 if (!dateMessage) return;
+const run = revealRun;
 // Quitar shimmer antes del fade-out
 dateMessage.classList.remove('is-shimmering');
 dateMessage.classList.add('is-hidden');
 await wait(600);
+if (run !== revealRun) return;
 dateMessage.classList.remove('is-visible');
 dateMessage.classList.remove('is-hidden');
 dateMessage.setAttribute('hidden', '');
@@ -723,15 +715,24 @@ smoothScrollTo(calendar, isMobile ? 12 : 40);
 }
 async function runFullReveal() {
 if (reducedMotion) { revealDateContent(); return; }
+const run = ++revealRun;
+const cancelled = () => run !== revealRun;
 await runPreCountdownAsync();
+if (cancelled()) return;
 await hidePreCounterAsync();
+if (cancelled()) return;
 await showMessageAsync();
+if (cancelled()) return;
 await hideMessageAsync();
+if (cancelled()) return;
 if (preCounterHint) preCounterHint.textContent = 'Ahora sí…';
 await runPreCountdownAsync();
+if (cancelled()) return;
 launchPetals();
 await wait(700);
+if (cancelled()) return;
 await hidePreCounterAsync();
+if (cancelled()) return;
 revealDateContent();
 }
 if (dateBtn && dateContent) {
@@ -739,19 +740,16 @@ dateBtn.addEventListener('click', () => {
 if (dateBtn.classList.contains('is-hidden')) return;
 dateBtn.classList.add('is-hidden');
 dateBtn.setAttribute('aria-expanded', 'true');
+// El texto de arriba y el botón se pliegan: quedan solo el título y la cuenta regresiva
+if (datePre) {
+datePre.classList.add('is-gone');
+datePre.setAttribute('aria-hidden', 'true');
+}
 setTimeout(() => {
 runFullReveal().catch(err => console.error('[reveal date]', err));
-}, 420);
+}, datePre ? 900 : 420);
 });
 }
-dateSkipBtn?.addEventListener('click', () => {
-dateBtn?.classList.add('is-hidden');
-dateSkipBtn?.classList.add('is-hidden');
-dateSkipBtn?.setAttribute('hidden', '');
-revealDateContent();
-const caption = document.querySelector('.countdown-caption');
-if (caption) caption.textContent = '¡Nos casamos! Gracias por ser parte 💛';
-});
 /* ============================================================
 CALENDARIO (Google + ICS)
 ============================================================ */
@@ -924,8 +922,25 @@ Toast.show(`¡Gracias! Recibimos ${c} ${c === 1 ? 'foto' : 'fotos'} 📸`, 'hear
 NAV FLOTANTE
 ============================================================ */
 const nav = document.getElementById('floating-nav');
-const toggleNav = () => nav?.classList.toggle('is-visible', window.scrollY > window.innerHeight * 0.5);
+let navIdleTimer = null;
+const wakeNav = () => {
+if (!nav) return;
+nav.classList.remove('is-idle');
+clearTimeout(navIdleTimer);
+navIdleTimer = setTimeout(() => nav.classList.add('is-idle'), 3500);
+};
+const toggleNav = () => {
+if (!nav) return;
+const show = window.scrollY > window.innerHeight * 0.5;
+nav.classList.toggle('is-visible', show);
+if (show) wakeNav();
+else { clearTimeout(navIdleTimer); nav.classList.remove('is-idle'); }
+};
 window.addEventListener('scroll', toggleNav, { passive: true });
+// Un toque o tecla en cualquier lado lo vuelve a mostrar
+['touchstart', 'pointerdown', 'keydown'].forEach(ev =>
+window.addEventListener(ev, () => { if (nav?.classList.contains('is-visible')) wakeNav(); }, { passive: true })
+);
 toggleNav();
 // Marca en dorado la sección donde estás
 const navLinks = nav ? Array.from(nav.querySelectorAll('a[href^="#"]')) : [];
@@ -968,6 +983,15 @@ musicToggle?.setAttribute('aria-label', playing ? 'Pausar música' : 'Reproducir
 }
 music?.addEventListener('play', () => setMusicState(true));
 music?.addEventListener('pause', () => setMusicState(false));
+// Se esconde mientras scrolleás y vuelve cuando frenás
+if (musicPlayer) {
+let musicAwayTimer = null;
+window.addEventListener('scroll', () => {
+musicPlayer.classList.add('is-away');
+clearTimeout(musicAwayTimer);
+musicAwayTimer = setTimeout(() => musicPlayer.classList.remove('is-away'), 1200);
+}, { passive: true });
+}
 musicToggle?.addEventListener('click', async () => {
 if (!music) return;
 try {

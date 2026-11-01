@@ -274,7 +274,7 @@
       aria-label="Navegación de la invitación"
     >
       <a href="#portada">Inicio</a>
-      <a href="#gran-dia">Nuestra celebración</a>
+      <a href="#gran-dia">Celebración</a>
       <a href="#vestimenta">Vestimenta</a>
       <a href="#playlist">Playlist</a>
       <a href="#galeria">Fotos</a>
@@ -282,6 +282,7 @@
       <a href="#regalos">Regalos</a>
       <a href="#confirmacion">Confirmar</a>
       <a href="#descubrir-fecha">La fecha</a>
+      <a href="#agradecimiento">Gracias</a>
     </nav>
 
     <!-- MUSIC PLAYER -->
@@ -598,9 +599,6 @@
                 height="842"
               />
             </div>
-           
-            </div>
-
           </div>
 
           <div class="gallery-album-cta" id="gallery-album-cta" hidden>
@@ -773,8 +771,6 @@
               </button>
             </div>
           </div>
-          <p class="gifts-thanks">
-            
         </div>
       </section>
 
@@ -990,6 +986,8 @@
           />
          
           <h2>El día que todo <em class="title-script">comienza</em></h2>
+          <div class="reveal-date-pre" id="date-pre">
+          <div class="reveal-date-pre__inner">
           <p class="reveal-date-intro">
             Un momento único para compartir con ustedes. Tocá el botón para
             descubrir cuándo.
@@ -1005,16 +1003,12 @@
               >Tocá para descubrir la fecha</span
             >
             <span class="reveal-date-btn__heart" aria-hidden="true">♡</span>
+            <span class="reveal-date-btn__spark reveal-date-btn__spark--1" aria-hidden="true">✦</span>
+            <span class="reveal-date-btn__spark reveal-date-btn__spark--2" aria-hidden="true">✦</span>
+            <span class="reveal-date-btn__spark reveal-date-btn__spark--3" aria-hidden="true">✦</span>
           </button>
-          <button
-            class="reveal-date-skip"
-            id="date-skip-btn"
-            type="button"
-            hidden
-          >
-            <span>Ver la fecha directo</span>
-            <span aria-hidden="true">→</span>
-          </button>
+          </div>
+          </div>
           <div
             class="date-precounter"
             id="date-precounter"
@@ -1270,10 +1264,9 @@
     </div>
 
     <!-- FOOTER -->
-    <footer class="closing-section">
+    <footer class="closing-section" id="agradecimiento">
       <div class="closing-content reveal-card">
         <img class="closing-seal" src="img/sello-mh.webp" alt="Sello M·H" width="96" height="96" loading="lazy" decoding="async" />
-        <span class="closing-monogram">M <i>&amp;</i> H</span>
         <span class="section-kicker">Con amor</span>
         <h2>Gracias por ser <em class="title-script">parte</em></h2>
         <p>
@@ -1285,29 +1278,6 @@
           <a class="closing-button" href="#confirmacion"
             >Confirmar asistencia <span>♡</span></a
           >
-          <button
-            class="closing-button closing-button--vcard"
-            id="vcard-btn"
-            type="button"
-          >
-            <svg
-              viewBox="0 0 24 24"
-              width="14"
-              height="14"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.8"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              aria-hidden="true"
-            >
-              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-              <circle cx="9" cy="7" r="4" />
-              <line x1="19" y1="8" x2="19" y2="14" />
-              <line x1="22" y1="11" x2="16" y2="11" />
-            </svg>
-            <span>Guardar contacto</span>
-          </button>
         </div>
       </div>
     </footer>
