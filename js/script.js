@@ -1080,6 +1080,8 @@ const rsvpForm = document.getElementById('rsvp-form');
 const rsvpName = document.getElementById('rsvp-name');
 const rsvpGuests = document.getElementById('rsvp-guests');
 const rsvpGuestsField = document.getElementById('rsvp-guests-field');
+const rsvpAdditionalGuestsField = document.getElementById('rsvp-additional-guests-field');
+const rsvpAdditionalGuests = document.getElementById('rsvp-additional-guests');
 const rsvpMessage = document.getElementById('rsvp-message');
 const rsvpContact = document.getElementById('rsvp-contact');
 const rsvpSubmit = document.getElementById('rsvp-submit');
@@ -1103,19 +1105,50 @@ rsvpGuests.appendChild(opt);
 }
 rsvpGuests.value = max;
 }
-function buildMessageForRsvp(name, confirmedCount, extraMessage) {
+function updateAdditionalGuestFields() {
+if (!rsvpAdditionalGuests || !rsvpAdditionalGuestsField) return;
+const confirmedCount = action === 'none' ? 0 : Number(rsvpGuests?.value || 0);
+const extraCount = totalGuests > 1 ? Math.max(0, confirmedCount - 1) : 0;
+const currentFields = Array.from(rsvpAdditionalGuests.querySelectorAll('input'));
+const currentValues = currentFields.map(input => input.value);
+rsvpAdditionalGuestsField.hidden = extraCount === 0;
+if (currentFields.length === extraCount) return;
+rsvpAdditionalGuests.replaceChildren();
+for (let index = 0; index < extraCount; index++) {
+const field = document.createElement('div');
+field.className = 'rsvp-additional-guests__field';
+const inputId = `rsvp-additional-guest-${index + 1}`;
+const label = document.createElement('label');
+label.htmlFor = inputId;
+label.textContent = `Acompañante ${index + 1}`;
+const input = document.createElement('input');
+input.type = 'text';
+input.id = inputId;
+input.name = 'additionalGuests[]';
+input.placeholder = 'Nombre y apellido';
+input.autocomplete = 'off';
+input.required = true;
+input.maxLength = 120;
+input.value = currentValues[index] || '';
+field.append(label, input);
+rsvpAdditionalGuests.appendChild(field);
+}
+}
+function buildMessageForRsvp(name, confirmedCount, additionalGuestNames = []) {
 const safeName = name || guestName;
+const attendeeNames = [safeName, ...additionalGuestNames].filter(Boolean).join(', ');
+const attendeeLine = additionalGuestNames.length ? `\nNombres: ${attendeeNames}` : '';
 if (action === 'all') {
-return `¡Hola! Confirmo mi asistencia a la boda. 💍✨\n\nNombre: ${safeName}\nAsistentes: ${confirmedCount} ${confirmedCount === 1 ? 'persona' : 'personas'}\nLugar: ${EVENT_PLACE}\nUbicación: ${MAP_LINK}\n\n¡Nos vemos muy pronto!`;
+return `¡Hola! Confirmo mi asistencia a la boda. 💍✨\n\nNombre: ${safeName}\nAsistentes: ${confirmedCount} ${confirmedCount === 1 ? 'persona' : 'personas'}${attendeeLine}\nLugar: ${EVENT_PLACE}\nUbicación: ${MAP_LINK}\n\n¡Nos vemos muy pronto!`;
 }
 if (action === 'less') {
-return `¡Hola! Confirmo asistencia parcial a la boda. 💍✨\n\nNombre: ${safeName}\nAsistentes confirmados: ${confirmedCount} de ${totalGuests}\nLugar: ${EVENT_PLACE}\nUbicación: ${MAP_LINK}\n\n¡Muchas gracias!`;
+return `¡Hola! Confirmo asistencia parcial a la boda. 💍✨\n\nNombre: ${safeName}\nAsistentes confirmados: ${confirmedCount} de ${totalGuests}${attendeeLine}\nLugar: ${EVENT_PLACE}\nUbicación: ${MAP_LINK}\n\n¡Muchas gracias!`;
 }
 return `¡Hola! Lamentablemente no podremos acompañarlos en la boda. ❤️\n\nNombre: ${safeName}\nLugar: ${EVENT_PLACE}\n\nLes deseamos lo mejor en este día tan especial.`;
 }
-function buildWhatsAppUrl(recipient, name, confirmedCount, extraMessage) {
+function buildWhatsAppUrl(recipient, name, confirmedCount, additionalGuestNames) {
 const phone = recipient === 'María' ? PHONE_BRIDE : PHONE_GROOM;
-const msg = buildMessageForRsvp(name, confirmedCount, extraMessage);
+const msg = buildMessageForRsvp(name, confirmedCount, additionalGuestNames);
 return `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
 }
 function loadRsvp() {
@@ -1140,11 +1173,13 @@ try { localStorage.removeItem(RSVP_STORAGE_KEY); } catch (_) {}
 function getRsvpMessage(saved) {
 if (!saved) return '';
 const name = saved.name ? `, ${saved.name}` : '';
+const additionalNames = Array.isArray(saved.additionalGuests) ? saved.additionalGuests.filter(Boolean) : [];
+const attendeeNames = additionalNames.length ? ` Acompañantes: ${additionalNames.join(', ')}.` : '';
 if (saved.action === 'all') {
-return `¡Gracias${name}! Confirmamos tu asistencia para ${saved.confirmedGuests} ${saved.confirmedGuests === 1 ? 'persona' : 'personas'}. ¡Nos vemos pronto! ✨`;
+return `¡Gracias${name}! Confirmamos tu asistencia para ${saved.confirmedGuests} ${saved.confirmedGuests === 1 ? 'persona' : 'personas'}.${attendeeNames} ¡Nos vemos pronto! ✨`;
 }
 if (saved.action === 'less') {
-return `¡Gracias${name}! Confirmamos que asistirán ${saved.confirmedGuests} de ${saved.totalGuests} personas. ¡Gracias por avisarnos! ✨`;
+return `¡Gracias${name}! Confirmamos que asistirán ${saved.confirmedGuests} de ${saved.totalGuests} personas.${attendeeNames} ¡Gracias por avisarnos! ✨`;
 }
 return `Gracias${name} por avisarnos. Los vamos a extrañar. ❤️`;
 }
@@ -1189,6 +1224,8 @@ if (titleEl) titleEl.textContent = 'Nos avisás que no van a poder';
 if (modalSummary) modalSummary.textContent = 'Dejanos tu nombre y, si querés, un mensaje. Los vamos a extrañar.';
 rsvpGuestsField?.setAttribute('hidden', '');
 }
+rsvpAdditionalGuests?.replaceChildren();
+updateAdditionalGuestFields();
 if (rsvpName) rsvpName.value = (guestName && guestName !== CONFIG.guest.defaultName) ? guestName : '';
 if (rsvpMessage) rsvpMessage.value = '';
 if (rsvpContact) rsvpContact.value = '';
@@ -1208,6 +1245,7 @@ document.body.classList.remove('modal-open');
 document.getElementById('btn-confirm-all')?.addEventListener('click', () => openModal('all'));
 document.getElementById('btn-confirm-less')?.addEventListener('click', () => openModal('less'));
 document.getElementById('btn-decline')?.addEventListener('click', () => openModal('none'));
+rsvpGuests?.addEventListener('change', updateAdditionalGuestFields);
 modalClose?.addEventListener('click', closeModal);
 modalOverlay?.addEventListener('click', closeModal);
 document.addEventListener('keydown', e => {
@@ -1222,9 +1260,17 @@ const name = String(rsvpName?.value || '').trim();
 const message = String(rsvpMessage?.value || '').trim();
 const contact = String(rsvpContact?.value || '').trim();
 const confirmedCount = action === 'none' ? 0 : Number(rsvpGuests?.value || totalGuests);
+const additionalGuestNames = Array.from(rsvpAdditionalGuests?.querySelectorAll('input') || [])
+  .map(input => input.value.trim());
 if (!name) {
 Toast.show('Completá tu nombre para confirmar', 'info');
 rsvpName?.focus();
+return;
+}
+if (additionalGuestNames.some(guest => !guest)) {
+Toast.show('Completá el nombre de cada persona que te acompaña', 'info');
+Array.from(rsvpAdditionalGuests?.querySelectorAll('input') || [])
+  .find(input => !input.value.trim())?.focus();
 return;
 }
 if (rsvpSubmit) {
@@ -1237,6 +1283,7 @@ action,
 name,
 contact,
 confirmedGuests: confirmedCount,
+additionalGuests: additionalGuestNames,
 message
 });
 let statusText = 'confirmado';
@@ -1248,6 +1295,7 @@ name,
 contact,
 guests: totalGuests,
 confirmedGuests: confirmedCount,
+additionalGuests: additionalGuestNames,
 status: statusText,
 action,
 message
@@ -1262,8 +1310,8 @@ rsvpSuccess?.removeAttribute('hidden');
 rsvpSuccess?.setAttribute('aria-hidden', 'false');
 const saved = loadRsvp();
 if (rsvpSuccessText) rsvpSuccessText.textContent = getRsvpMessage(saved);
-if (waOptionalGroom) waOptionalGroom.href = buildWhatsAppUrl('Hernán', name, confirmedCount, message);
-if (waOptionalBride) waOptionalBride.href = buildWhatsAppUrl('María', name, confirmedCount, message);
+if (waOptionalGroom) waOptionalGroom.href = buildWhatsAppUrl('Hernán', name, confirmedCount, additionalGuestNames);
+if (waOptionalBride) waOptionalBride.href = buildWhatsAppUrl('María', name, confirmedCount, additionalGuestNames);
 renderRsvpDone(saved);
 if (res.ok) {
 Toast.show('¡Listo! Guardamos tu respuesta 💛', 'heart', 3200);

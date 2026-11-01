@@ -1375,7 +1375,10 @@ body.post-boda .gallery-album-cta{
 }
 .rsvp-form { display: flex; flex-direction: column; gap: 16px; margin-top: 8px; }
 .rsvp-form__field { display: flex; flex-direction: column; gap: 6px; }
-.rsvp-form__field label {
+.rsvp-additional-guests { display: flex; flex-direction: column; gap: 12px; }
+.rsvp-additional-guests__field { display: flex; flex-direction: column; gap: 6px; }
+.rsvp-form__field label,
+.rsvp-form__label {
   font-family: var(--sans);
   font-size: .6rem;
   font-weight: 500;
@@ -1383,7 +1386,8 @@ body.post-boda .gallery-album-cta{
   text-transform: uppercase;
   color: var(--olive-dark);
 }
-.rsvp-form__field label span {
+.rsvp-form__field label span,
+.rsvp-form__label span {
   color: var(--muted-dark);
   font-weight: 400;
   letter-spacing: .06em;
@@ -1391,6 +1395,7 @@ body.post-boda .gallery-album-cta{
   font-size: .62rem;
   opacity: .7;
 }
+.rsvp-form__label { margin: 0; }
 .rsvp-form__field input,
 .rsvp-form__field select,
 .rsvp-form__field textarea {
