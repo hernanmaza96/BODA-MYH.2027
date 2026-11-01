@@ -1669,7 +1669,6 @@ body.low-end .playlist-now__vinyl,
 body.low-end .event-day-banner__heart,
 body.low-end .event-day-banner__star,
 body.low-end .event-day-banner__glow,
-body.low-end .calendar__heart,
 body.low-end .reveal-date-btn__heart,
 body.low-end .opening-hint,
 body.low-end .date-precounter__hint,
@@ -3853,9 +3852,9 @@ body.post-boda .floating-nav a[href="#confirmacion"]{display:none}
 }
 @keyframes calHeartBeat{
   0%,52%,100%{transform:scale(1);filter:drop-shadow(0 2px 5px rgba(200,120,110,.4))}
-  10%{transform:scale(1.2);filter:drop-shadow(0 0 10px rgba(217,130,120,.8))}
-  22%{transform:scale(1.03)}
-  34%{transform:scale(1.14);filter:drop-shadow(0 0 8px rgba(217,130,120,.65))}
+  10%{transform:scale(1.22);filter:drop-shadow(0 0 11px rgba(217,130,120,.82))}
+  22%{transform:scale(1.02)}
+  34%{transform:scale(1.15);filter:drop-shadow(0 0 8px rgba(217,130,120,.68))}
   46%{transform:scale(1)}
 }
 @keyframes calHeartHalo{

@@ -963,6 +963,29 @@ window.addEventListener(ev, () => { if (nav?.classList.contains('is-visible')) w
 toggleNav();
 // Marca en dorado la sección donde estás
 const navLinks = nav ? Array.from(nav.querySelectorAll('a[href^="#"]')) : [];
+nav?.addEventListener('click', event => {
+const link = event.target.closest('a[href^="#"]');
+if (!link || !nav.contains(link)) return;
+const target = document.getElementById(link.hash.slice(1));
+if (!target) return;
+event.preventDefault();
+history.pushState(null, '', link.hash);
+const navRect = nav.getBoundingClientRect();
+const topInset = 20;
+const bottomInset = Math.max(topInset, window.innerHeight - navRect.top + 16);
+const availableCenter = (topInset + window.innerHeight - bottomInset) / 2;
+const targetRect = target.getBoundingClientRect();
+const focus = targetRect.height <= window.innerHeight - topInset - bottomInset
+? target
+: target.querySelector('h1, h2') || target;
+const focusRect = focus.getBoundingClientRect();
+const targetY = window.scrollY + focusRect.top + focusRect.height / 2 - availableCenter;
+const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+window.scrollTo({
+top: Math.max(0, Math.min(targetY, maxScroll)),
+behavior: reducedMotion ? 'auto' : 'smooth'
+});
+});
 if (navLinks.length && 'IntersectionObserver' in window) {
 let navCurrent = null;
 const setNavActive = id => {
