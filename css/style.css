@@ -532,11 +532,11 @@ body.theme-light .theme-toggle{
 .grand-day-section .section-heading p{color:var(--muted)}
 .timeline{width:min(760px,100%);margin:auto;position:relative}
 .timeline::before{content:"";position:absolute;left:116px;top:25px;bottom:25px;width:1px;background:linear-gradient(var(--olive-mist),rgba(201,206,167,.08))}
-.timeline-item{display:grid;grid-template-columns:88px 58px 1fr;align-items:start;min-height:125px;transition:opacity .5s ease}
+.timeline-item{--timeline-side-width:88px;display:grid;grid-template-columns:88px 58px 1fr;align-items:start;min-height:125px;transition:opacity .5s ease}
 .timeline-time{font-family:var(--serif);font-size:1.15rem;color:var(--gold-light);padding-top:4px;text-align:right;font-weight:500;transition:color .5s ease}
 .timeline-dot{width:38px;height:38px;border:1px solid rgba(201,206,167,.5);border-radius:50%;background:rgba(58,64,32,.7);display:grid;place-items:center;margin:0 auto;color:var(--gold-light);font-family:var(--serif);font-size:.78rem;z-index:1;transition:all .5s ease}
 .timeline-copy{padding-left:22px}
-.timeline-copy span{display:block;font-family:var(--serif);font-size:1.45rem;font-weight:500;color:var(--cream-soft);line-height:1.2;transition:color .5s ease}
+.timeline-copy span{display:block;font-family:var(--serif);font-size:1.45rem;font-weight:500;color:var(--cream-soft);line-height:1.2;white-space:nowrap;transition:color .5s ease}
 .timeline-copy p{margin:8px 0 0;color:var(--muted);font-size:.88rem;max-width:440px;font-weight:300}
 .timeline-item.is-past{opacity:.42}
 .timeline-item.is-current .timeline-time{color:#fff;font-weight:600}
@@ -1821,7 +1821,7 @@ body.theme-light .toast__icon{color:#d6b987}
   .music-player__vinyl{width:50px;height:50px}
 
   .timeline::before{left:98px}
-  .timeline-item{grid-template-columns:74px 50px 1fr;min-height:118px}
+  .timeline-item{--timeline-side-width:74px;grid-template-columns:74px 50px 1fr;min-height:118px}
   .timeline-copy span{font-size:1.3rem}
 }
 
@@ -1838,7 +1838,7 @@ body.theme-light .toast__icon{color:#d6b987}
   .dress-code-card--visual{width:64%;margin-top:clamp(-140px,-16vw,-110px);aspect-ratio:1 / 1.3;padding:16px;border-width:5px}
 
   .timeline::before{left:82px}
-  .timeline-item{grid-template-columns:60px 44px 1fr;min-height:120px}
+  .timeline-item{--timeline-side-width:60px;grid-template-columns:60px 44px 1fr;min-height:120px}
   .timeline-time{font-size:1rem}
   .timeline-dot{width:34px;height:34px;font-size:.66rem}
   .timeline-copy{padding-left:14px}
@@ -1905,7 +1905,7 @@ body.theme-light .toast__icon{color:#d6b987}
   .display-title{font-size:clamp(2.6rem,12vw,3.8rem)}
   .cover-intro{font-size:.98rem;line-height:1.65}
   .timeline::before{left:70px}
-  .timeline-item{grid-template-columns:52px 38px 1fr;min-height:130px}
+  .timeline-item{--timeline-side-width:52px;grid-template-columns:52px 38px 1fr;min-height:130px}
   .timeline-time{font-size:.92rem}
   .timeline-dot{width:30px;height:30px;font-size:.6rem}
   .timeline-copy{padding-left:12px}
@@ -1979,7 +1979,7 @@ body.theme-light .toast__icon{color:#d6b987}
   .section-frame::before{inset:7px}
 
   .timeline::before{left:60px}
-  .timeline-item{grid-template-columns:44px 32px 1fr;min-height:126px}
+  .timeline-item{--timeline-side-width:44px;grid-template-columns:44px 32px 1fr;min-height:126px}
   .timeline-time{font-size:.85rem}
   .timeline-dot{width:26px;height:26px;font-size:.55rem;border-width:1px}
   .timeline-copy{padding-left:10px}
@@ -2045,7 +2045,7 @@ body.theme-light .toast__icon{color:#d6b987}
   .cover-intro{font-size:.9rem}
   .section-frame{padding:28px 12px}
 
-  .timeline-item{grid-template-columns:40px 28px 1fr;min-height:120px}
+  .timeline-item{--timeline-side-width:40px;grid-template-columns:40px 28px 1fr;min-height:120px}
   .timeline-time{font-size:.8rem}
   .timeline-dot{width:24px;height:24px;font-size:.5rem}
   .timeline-copy span{font-size:.94rem}
@@ -2380,7 +2380,7 @@ body{
 }
 
 .timeline-dot{
-  width:42px;
+  width:min(42px,100%);
   height:42px;
   font-size:.85rem;
   box-shadow:
@@ -3952,3 +3952,19 @@ body.low-end .calendar__day--heart::before{animation:none!important;opacity:0}
   padding-bottom:calc(150px + env(safe-area-inset-bottom,0px));
 }
 .closing-seal{margin-bottom:26px}
+
+/* Mantiene el eje original de los íconos y centra la hora y el nombre. */
+.timeline-item{align-items:center}
+.timeline-time{
+  padding-top:0;
+  padding-right:6px;
+  text-align:right;
+}
+.timeline-copy{
+  text-align:left;
+  padding-left:6px;
+}
+.timeline-copy p{
+  margin-left:auto;
+  margin-right:auto;
+}
