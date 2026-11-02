@@ -799,6 +799,11 @@ body.theme-light .theme-toggle{
 .hand-note--light{color:var(--gold-light)}
 .closing-content .hand-note,
 .closing-content .handwritten-note{margin-top:18px}
+.closing-content .handwritten-note{
+  font-family:var(--serif);
+  font-style:normal;
+  transform:none;
+}
 
 /* ============ PLAYLIST ============ */
 .playlist-section{padding:clamp(80px,12vw,150px) 20px;background:radial-gradient(ellipse at 50% 100%,#4c5429 0%,var(--olive-deep) 65%)}
@@ -3967,4 +3972,134 @@ body.low-end .calendar__day--heart::before{animation:none!important;opacity:0}
 .timeline-copy p{
   margin-left:auto;
   margin-right:auto;
+}
+
+/* ============================================================
+   ITINERARIO · mismo diseño, más compacto, con frase breve bajo
+   cada título y acabado acorde al resto de la invitación
+   (marco fino dorado, medallones con doble aro, tipografía serif)
+   ============================================================ */
+.grand-day-section .timeline{
+  isolation:isolate;
+  padding:6px 0;
+}
+
+/* Marco: borde fino + filete interior, igual que las tarjetas de la web.
+   Está por fuera del contenido, así que no mueve nada. */
+.grand-day-section .timeline::after{
+  content:"";
+  position:absolute;
+  inset:-24px -12px;
+  z-index:-1;
+  border:1px solid rgba(201,206,167,.26);
+  border-radius:6px;
+  background:linear-gradient(160deg,rgba(247,243,232,.055),rgba(247,243,232,.012) 60%);
+  outline:1px solid rgba(214,185,135,.18);
+  outline-offset:-8px;
+  box-shadow:0 24px 60px -28px rgba(0,0,0,.5);
+  pointer-events:none;
+}
+@media(min-width:721px){
+  .grand-day-section .timeline{width:min(560px,100%)}
+}
+
+.grand-day-section .timeline::before{
+  top:44px;
+  bottom:44px;
+  background:linear-gradient(180deg,
+    transparent 0%,
+    rgba(214,185,135,.55) 10%,
+    rgba(214,185,135,.55) 90%,
+    transparent 100%);
+}
+
+.grand-day-section .timeline-item{
+  min-height:0;
+  padding:clamp(14px,3.4vw,20px) 0;
+}
+
+/* Hora */
+.grand-day-section .timeline-time{
+  color:var(--gold-light);
+  letter-spacing:.03em;
+}
+
+/* Medallón: siempre circular, con doble aro dorado */
+.grand-day-section .timeline-dot{
+  width:min(42px,100%);
+  height:auto;
+  aspect-ratio:1;
+  position:relative;
+  border:1px solid rgba(214,185,135,.6);
+  background:radial-gradient(circle at 35% 28%,#56602f 0%,#3a4020 78%);
+  color:var(--gold-light);
+  font-size:1rem;
+  line-height:1;
+  box-shadow:0 4px 12px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.1);
+}
+.grand-day-section .timeline-dot::before{
+  content:"";
+  position:absolute;
+  inset:3px;
+  border:1px solid rgba(214,185,135,.28);
+  border-radius:50%;
+  pointer-events:none;
+}
+/* "M&H" entra dentro del círculo */
+.grand-day-section .timeline-item:nth-child(3) .timeline-dot{
+  font-size:clamp(.5rem,2.2vw,.6rem);
+  letter-spacing:0;
+  white-space:nowrap;
+  padding:0;
+}
+
+/* Hito actual (día de la boda) */
+.grand-day-section .timeline-item.is-current .timeline-dot{
+  background:var(--gold-light);
+  color:var(--olive-deep);
+  border-color:var(--gold-light);
+  box-shadow:0 0 0 6px rgba(214,185,135,.14),0 0 28px rgba(214,185,135,.5);
+}
+.grand-day-section .timeline-item.is-current .timeline-dot::before{
+  border-color:rgba(58,64,32,.3);
+}
+
+/* Título + frase */
+.grand-day-section .timeline-copy span{
+  white-space:normal;
+  line-height:1.15;
+  letter-spacing:.01em;
+}
+.grand-day-section .timeline-copy p{
+  margin:5px 0 0;
+  max-width:420px;
+  font-family:var(--serif);
+  font-style:italic;
+  font-weight:400;
+  font-size:clamp(.84rem,3.3vw,.98rem);
+  line-height:1.4;
+  color:var(--olive-mist);
+}
+.grand-day-section .timeline-item.is-current .timeline-copy p{color:var(--cream-soft)}
+
+/* Modo claro */
+body.theme-light .grand-day-section .timeline::after{
+  border-color:rgba(117,88,58,.3);
+  background:linear-gradient(160deg,rgba(255,253,248,.7),rgba(255,253,248,.3));
+  outline-color:rgba(117,88,58,.16);
+  box-shadow:0 20px 44px -26px rgba(60,66,32,.3);
+}
+body.theme-light .grand-day-section .timeline::before{
+  background:linear-gradient(180deg,transparent 0%,rgba(117,88,58,.5) 10%,rgba(117,88,58,.5) 90%,transparent 100%);
+}
+body.theme-light .grand-day-section .timeline-dot{
+  background:radial-gradient(circle at 35% 28%,#fffdf8 0%,#f2ecdc 80%);
+  color:#75583a;
+  border-color:rgba(117,88,58,.5);
+  box-shadow:0 4px 12px rgba(60,66,32,.15),inset 0 1px 0 rgba(255,255,255,.9);
+}
+body.theme-light .grand-day-section .timeline-dot::before{border-color:rgba(117,88,58,.22)}
+body.theme-light .grand-day-section .timeline-copy p{color:#5a5a43}
+body.theme-light .grand-day-section .timeline-item.is-current .timeline-dot{
+  background:#75583a;color:#fff;border-color:#75583a;
 }
