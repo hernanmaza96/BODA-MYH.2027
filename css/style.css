@@ -4103,3 +4103,114 @@ body.theme-light .grand-day-section .timeline-copy p{color:#5a5a43}
 body.theme-light .grand-day-section .timeline-item.is-current .timeline-dot{
   background:#75583a;color:#fff;border-color:#75583a;
 }
+/* ============================================================
+   REGALOS — frase de la urna: debajo del texto principal, en dorado
+   y en cursiva serif (solo texto, no cambia el diseño de la tarjeta)
+   ============================================================ */
+.gifts-card .gifts-urn{
+  max-width:600px;
+  margin:22px auto 0;
+  font-family:var(--serif);
+  font-style:italic;
+  font-weight:400;
+  font-size:clamp(1.05rem,3vw,1.22rem);
+  line-height:1.5;
+  color:#9a7544;
+  text-wrap:balance;
+}
+body.theme-light .gifts-card .gifts-urn{color:#9a7544}
+
+/* ============================================================
+   REGALOS — frase de cierre al pie de la tarjeta (letra recta, sin cursiva)
+   ============================================================ */
+.gifts-card .gifts-thanks{
+  margin:34px auto 0;
+  font-family:var(--serif);
+  font-style:normal;
+  font-weight:500;
+  font-size:clamp(1.05rem,3vw,1.22rem);
+  letter-spacing:.02em;
+  line-height:1.4;
+  text-align:center;
+  color:#9a7544;
+}
+
+/* ============================================================
+   CELEBRACIÓN — en celular los íconos (♡ y ✦) se ven del mismo
+   tamaño relativo al círculo que en PC. "M&H" no se toca.
+   ============================================================ */
+@media(max-width:480px){
+  .grand-day-section .timeline-item:not(:nth-child(3)) .timeline-dot{font-size:.77rem}
+}
+@media(max-width:380px){
+  .grand-day-section .timeline-item:not(:nth-child(3)) .timeline-dot{font-size:.65rem}
+}
+@media(max-width:340px){
+  .grand-day-section .timeline-item:not(:nth-child(3)) .timeline-dot{font-size:.57rem}
+}
+
+/* ============================================================
+   CELEBRACIÓN — título más cerca del divisor; cuadro más largo (mismo
+   ancho); contenido centrado y con la misma separación en todos lados
+   (arriba, entre hitos y abajo = --tl-gap).
+   ============================================================ */
+.grand-day-section{
+  padding-top:clamp(28px,5vw,48px);
+}
+@supports (grid-template-columns:subgrid){
+  .grand-day-section .timeline{
+    --tl-gap:clamp(28px,7vw,40px);
+    display:grid;
+    --tl-dot:42px;
+    grid-template-columns:max-content var(--tl-dot) minmax(0,max-content);
+    justify-content:center;
+    column-gap:12px;
+    row-gap:var(--tl-gap);
+    padding:0;
+  }
+  /* Marco: mismo ancho de antes, más alto (aire arriba y abajo = --tl-gap) */
+  .grand-day-section .timeline::after{
+    inset:calc(var(--tl-gap) * -1) -12px;
+  }
+  /* La línea ahora se dibuja por tramos, centrada en la columna de los rombos */
+  .grand-day-section .timeline::before{display:none}
+
+  .grand-day-section .timeline-item{
+    grid-column:1 / -1;
+    display:grid;
+    grid-template-columns:subgrid;
+    align-items:center;
+    position:relative;
+    min-height:0;
+    padding:0;
+  }
+  .grand-day-section .timeline-item::before{
+    content:"";
+    position:absolute;
+    grid-column:2 / 3;
+    grid-row:1;
+    justify-self:center;
+    top:calc(var(--tl-gap) * -1);
+    bottom:0;
+    width:1px;
+    background:rgba(214,185,135,.55);
+    pointer-events:none;
+  }
+  .grand-day-section .timeline-item:first-child::before{top:50%}
+  .grand-day-section .timeline-item:last-child::before{bottom:50%}
+  body.theme-light .grand-day-section .timeline-item::before{background:rgba(117,88,58,.5)}
+
+  .grand-day-section .timeline-dot{width:var(--tl-dot)}
+  .grand-day-section .timeline-time{padding:0}
+  .grand-day-section .timeline-copy{padding-left:0}
+}
+/* Tamaño del círculo: el mismo que tenía en cada ancho de pantalla */
+@media(max-width:480px){
+  @supports (grid-template-columns:subgrid){.grand-day-section .timeline{--tl-dot:38px}}
+}
+@media(max-width:380px){
+  @supports (grid-template-columns:subgrid){.grand-day-section .timeline{--tl-dot:32px}}
+}
+@media(max-width:340px){
+  @supports (grid-template-columns:subgrid){.grand-day-section .timeline{--tl-dot:28px}}
+}
