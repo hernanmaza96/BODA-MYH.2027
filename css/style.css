@@ -1085,6 +1085,7 @@ body.post-boda .gallery-album-cta{
 .gifts-card .section-kicker{color:var(--olive-dark)}
 .gifts-card h2{font-size:clamp(2rem,6vw,3.8rem);font-family:var(--serif);font-weight:500;color:var(--ink-dark)}
 .gifts-message{max-width:600px;margin:0 auto;color:var(--ink-dark);font-family:var(--serif);font-size:clamp(1rem,2.6vw,1.18rem);line-height:1.7}
+.gifts-urn-note{max-width:600px;margin:14px auto 0;color:var(--gold);font-family:var(--script);font-size:clamp(1.45rem,3.8vw,2rem);line-height:1.25;letter-spacing:.01em}
 .bank-details{display:grid;gap:12px;text-align:left;margin:36px auto 28px;max-width:520px}
 .bank-detail{display:flex;flex-direction:column;gap:6px;padding:18px 20px;background:linear-gradient(145deg,rgba(255,253,248,.95),rgba(244,236,221,.88));border:1px solid rgba(109,119,67,.18);border-radius:14px;box-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 4px 14px rgba(60,66,32,.06);transition:border-color .3s ease,box-shadow .3s ease}
 .bank-detail:hover{border-color:rgba(109,119,67,.32);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 8px 22px rgba(60,66,32,.1)}
@@ -1383,6 +1384,13 @@ body.post-boda .gallery-album-cta{
 }
 .rsvp-form { display: flex; flex-direction: column; gap: 16px; margin-top: 8px; }
 .rsvp-form__field { display: flex; flex-direction: column; gap: 6px; }
+.rsvp-form__companions > div { display: flex; flex-direction: column; gap: 10px; }
+.rsvp-form__companion { display: flex; flex-direction: column; gap: 6px; }
+.rsvp-form__companion label {
+  color: var(--muted-dark);
+  font-family: var(--sans);
+  font-size: .75rem;
+}
 .rsvp-form__field label {
   font-family: var(--sans);
   font-size: .6rem;

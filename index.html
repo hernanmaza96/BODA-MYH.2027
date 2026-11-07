@@ -908,7 +908,10 @@
             <span></span><i>♡</i><span></span>
           </div>
           <p class="gifts-message">
-            Su presencia ya es un regalo enorme. Si de todos modos quieren tener un detalle con nosotros, les dejamos la información bancaria. Tambien encontrarán una urna en el salón.
+            Su presencia ya es un regalo enorme. Si de todos modos quieren tener un detalle con nosotros, les dejamos la información bancaria.
+          </p>
+          <p class="gifts-urn-note">
+            También encontrarán una urna en el salón.
           </p>
           <div class="bank-details">
             <div class="bank-detail">
@@ -978,9 +981,9 @@
           <div
             class="confirm-deadline"
             id="confirm-deadline"
-            data-deadline="2027-01-10T23:59:59-03:00"
+            data-deadline="2026-12-10T23:59:59-03:00"
           >
-            RSVP · Confirmar antes del <strong>10 de enero</strong>
+            RSVP · Confirmar antes del <strong>10 de diciembre</strong>
           </div>
           <div class="confirm-guest-note" id="confirm-guest-text">
             Tu invitación es para 1 persona.
@@ -1072,6 +1075,18 @@
                     <span>· obligatorio</span></label
                   >
                   <select id="rsvp-guests" name="guests"></select>
+                </div>
+
+                <div
+                  class="rsvp-form__field rsvp-form__companions"
+                  id="rsvp-companions-field"
+                  hidden
+                >
+                  <label id="rsvp-companions-label"
+                    >Nombres de acompañantes
+                    <span>· opcional</span></label
+                  >
+                  <div id="rsvp-companions"></div>
                 </div>
 
                 <div class="rsvp-form__field">

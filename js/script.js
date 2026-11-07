@@ -69,7 +69,7 @@ place: 'Urbana Lounge',
 mapLink: 'https://www.google.com/maps?q=-37.8745289,-58.289135&z=17&hl=es',
 isoTimestamp: '2027-02-20T19:00:00-03:00',
 endTimestamp: '2027-02-21T01:00:00-03:00',
-rsvpDeadline: '2027-01-10T23:59:59-03:00',
+rsvpDeadline: '2026-12-10T23:59:59-03:00',
 calendar: {
 title: 'Boda de María & Hernán',
 location: 'Urbana Lounge',
@@ -1061,6 +1061,8 @@ const rsvpForm = document.getElementById('rsvp-form');
 const rsvpName = document.getElementById('rsvp-name');
 const rsvpGuests = document.getElementById('rsvp-guests');
 const rsvpGuestsField = document.getElementById('rsvp-guests-field');
+const rsvpCompanionsField = document.getElementById('rsvp-companions-field');
+const rsvpCompanions = document.getElementById('rsvp-companions');
 const rsvpMessage = document.getElementById('rsvp-message');
 const rsvpContact = document.getElementById('rsvp-contact');
 const rsvpSubmit = document.getElementById('rsvp-submit');
@@ -1084,19 +1086,47 @@ rsvpGuests.appendChild(opt);
 }
 rsvpGuests.value = max;
 }
-function buildMessageForRsvp(name, confirmedCount, extraMessage) {
+function renderCompanionFields(count) {
+if (!rsvpCompanions || !rsvpCompanionsField) return;
+const existingNames = Array.from(rsvpCompanions.querySelectorAll('input'), input => input.value);
+const companionCount = Math.max(0, count - 1);
+rsvpCompanions.replaceChildren();
+rsvpCompanionsField.hidden = companionCount === 0;
+for (let i = 0; i < companionCount; i++) {
+const field = document.createElement('div');
+field.className = 'rsvp-form__companion';
+const label = document.createElement('label');
+const input = document.createElement('input');
+const inputId = `rsvp-companion-${i + 1}`;
+label.htmlFor = inputId;
+label.textContent = `Acompañante ${i + 1}`;
+input.type = 'text';
+input.id = inputId;
+input.name = 'companionNames';
+input.placeholder = 'Nombre y apellido';
+input.maxLength = 120;
+input.autocomplete = 'off';
+input.value = existingNames[i] || '';
+field.append(label, input);
+rsvpCompanions.appendChild(field);
+}
+}
+function buildMessageForRsvp(name, confirmedCount, companionNames = []) {
 const safeName = name || guestName;
+const companionsLine = companionNames.length
+? `\nAcompañantes: ${companionNames.join(', ')}`
+: '';
 if (action === 'all') {
-return `¡Hola! Confirmo mi asistencia a la boda. 💍✨\n\nNombre: ${safeName}\nAsistentes: ${confirmedCount} ${confirmedCount === 1 ? 'persona' : 'personas'}\nLugar: ${EVENT_PLACE}\nUbicación: ${MAP_LINK}\n\n¡Nos vemos muy pronto!`;
+return `¡Hola! Confirmo mi asistencia a la boda. 💍✨\n\nNombre: ${safeName}${companionsLine}\nAsistentes: ${confirmedCount} ${confirmedCount === 1 ? 'persona' : 'personas'}\nLugar: ${EVENT_PLACE}\nUbicación: ${MAP_LINK}\n\n¡Nos vemos muy pronto!`;
 }
 if (action === 'less') {
-return `¡Hola! Confirmo asistencia parcial a la boda. 💍✨\n\nNombre: ${safeName}\nAsistentes confirmados: ${confirmedCount} de ${totalGuests}\nLugar: ${EVENT_PLACE}\nUbicación: ${MAP_LINK}\n\n¡Muchas gracias!`;
+return `¡Hola! Confirmo asistencia parcial a la boda. 💍✨\n\nNombre: ${safeName}${companionsLine}\nAsistentes confirmados: ${confirmedCount} de ${totalGuests}\nLugar: ${EVENT_PLACE}\nUbicación: ${MAP_LINK}\n\n¡Muchas gracias!`;
 }
 return `¡Hola! Lamentablemente no podremos acompañarlos en la boda. ❤️\n\nNombre: ${safeName}\nLugar: ${EVENT_PLACE}\n\nLes deseamos lo mejor en este día tan especial.`;
 }
-function buildWhatsAppUrl(recipient, name, confirmedCount, extraMessage) {
+function buildWhatsAppUrl(recipient, name, confirmedCount, companionNames) {
 const phone = recipient === 'María' ? PHONE_BRIDE : PHONE_GROOM;
-const msg = buildMessageForRsvp(name, confirmedCount, extraMessage);
+const msg = buildMessageForRsvp(name, confirmedCount, companionNames);
 return `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
 }
 function loadRsvp() {
@@ -1160,15 +1190,18 @@ if (titleEl) titleEl.textContent = 'Confirmá tu asistencia';
 if (modalSummary) modalSummary.textContent = `Tu invitación es para ${totalGuests} ${totalGuests === 1 ? 'persona' : 'personas'}. Completá los datos para confirmar.`;
 rsvpGuestsField?.removeAttribute('hidden');
 fillGuestsOptions(totalGuests);
+renderCompanionFields(totalGuests);
 } else if (type === 'less') {
 if (titleEl) titleEl.textContent = '¿Cuántas personas asistirán?';
 if (modalSummary) modalSummary.textContent = `Tu invitación es para ${totalGuests} ${totalGuests === 1 ? 'persona' : 'personas'}. Indicá cuántas podrán venir.`;
 rsvpGuestsField?.removeAttribute('hidden');
 fillGuestsOptions(Math.max(1, totalGuests - 1));
+renderCompanionFields(Number(rsvpGuests?.value || 1));
 } else {
 if (titleEl) titleEl.textContent = 'Nos avisa que no vas a poder asistir';
 if (modalSummary) modalSummary.textContent = '';
 rsvpGuestsField?.setAttribute('hidden', '');
+renderCompanionFields(0);
 }
 if (rsvpName) rsvpName.value = (guestName && guestName !== CONFIG.guest.defaultName) ? guestName : '';
 if (rsvpMessage) rsvpMessage.value = '';
@@ -1189,6 +1222,7 @@ document.body.classList.remove('modal-open');
 document.getElementById('btn-confirm-all')?.addEventListener('click', () => openModal('all'));
 document.getElementById('btn-confirm-less')?.addEventListener('click', () => openModal('less'));
 document.getElementById('btn-decline')?.addEventListener('click', () => openModal('none'));
+rsvpGuests?.addEventListener('change', () => renderCompanionFields(Number(rsvpGuests.value)));
 modalClose?.addEventListener('click', closeModal);
 modalOverlay?.addEventListener('click', closeModal);
 document.addEventListener('keydown', e => {
@@ -1203,6 +1237,11 @@ const name = String(rsvpName?.value || '').trim();
 const message = String(rsvpMessage?.value || '').trim();
 const contact = String(rsvpContact?.value || '').trim();
 const confirmedCount = action === 'none' ? 0 : Number(rsvpGuests?.value || totalGuests);
+const companionNames = Array.from(rsvpCompanions?.querySelectorAll('input') || [], input => input.value.trim()).filter(Boolean);
+const submissionMessage = [
+message,
+companionNames.length ? `Acompañantes: ${companionNames.join(', ')}` : ''
+].filter(Boolean).join('\n');
 if (!name) {
 Toast.show('Completá tu nombre para confirmar', 'info');
 rsvpName?.focus();
@@ -1218,7 +1257,8 @@ action,
 name,
 contact,
 confirmedGuests: confirmedCount,
-message
+companionNames,
+message: submissionMessage
 });
 let statusText = 'confirmado';
 if (action === 'less') statusText = 'confirmado parcialmente';
@@ -1229,9 +1269,10 @@ name,
 contact,
 guests: totalGuests,
 confirmedGuests: confirmedCount,
+companionNames,
 status: statusText,
 action,
-message
+message: submissionMessage
 });
 if (rsvpSubmit) {
 rsvpSubmit.disabled = false;
@@ -1243,8 +1284,8 @@ rsvpSuccess?.removeAttribute('hidden');
 rsvpSuccess?.setAttribute('aria-hidden', 'false');
 const saved = loadRsvp();
 if (rsvpSuccessText) rsvpSuccessText.textContent = getRsvpMessage(saved);
-if (waOptionalGroom) waOptionalGroom.href = buildWhatsAppUrl('Hernán', name, confirmedCount, message);
-if (waOptionalBride) waOptionalBride.href = buildWhatsAppUrl('María', name, confirmedCount, message);
+if (waOptionalGroom) waOptionalGroom.href = buildWhatsAppUrl('Hernán', name, confirmedCount, companionNames);
+if (waOptionalBride) waOptionalBride.href = buildWhatsAppUrl('María', name, confirmedCount, companionNames);
 renderRsvpDone(saved);
 if (res.ok) {
 Toast.show('¡Listo! Guardamos tu respuesta 💛', 'heart', 3200);
