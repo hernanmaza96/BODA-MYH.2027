@@ -478,8 +478,8 @@ body.theme-light .theme-toggle{
 .envelope-css.is-opening .envelope-css__photo{opacity:1;transform:translate(-50%,-80%) scale(1) rotateZ(.4deg);transition:transform 3.6s cubic-bezier(.32,.02,.25,1) .15s,opacity 1.2s ease .15s}
 .envelope-css.is-opening .envelope-css__photo img{animation:paperSettle 3.6s cubic-bezier(.32,.02,.25,1) .15s both}
 @keyframes paperSettle{0%{transform:rotate(-1.2deg) rotateX(2deg) rotateY(-1.5deg) skewX(.3deg)}70%{transform:rotate(-1.6deg) rotateX(3deg) rotateY(-2deg) skewX(.4deg)}100%{transform:rotate(-1deg) rotateX(1.5deg) rotateY(-1deg) skewX(.2deg)}}
-.envelope-opening.is-zooming .envelope-css__photo{transform:translate(-50%,-260%) scale(3.8);opacity:0;transition:transform 1.8s cubic-bezier(.6,.02,.4,1),opacity 1.4s ease .3s}
-.envelope-opening.is-zooming .envelope-css__body,.envelope-opening.is-zooming .envelope-css__flap,.envelope-opening.is-zooming .envelope-css__left,.envelope-opening.is-zooming .envelope-css__right,.envelope-opening.is-zooming .envelope-css__bottom{opacity:0;transition:opacity 1s ease}
+.envelope-opening.is-zooming .envelope-css__photo{transform:translate(-50%,-80%) scale(1);opacity:0;transition:transform 1.8s cubic-bezier(.6,.02,.4,1),opacity 1.8s cubic-bezier(.6,.02,.4,1)}
+.envelope-opening.is-zooming .envelope-css__body,.envelope-opening.is-zooming .envelope-css__flap,.envelope-opening.is-zooming .envelope-css__left,.envelope-opening.is-zooming .envelope-css__right,.envelope-opening.is-zooming .envelope-css__bottom{opacity:0;transition:opacity 1.8s cubic-bezier(.6,.02,.4,1)}
 .opening-hint{position:relative;z-index:4;display:inline-block;margin:0 auto;padding:10px 22px;font-size:.78rem;letter-spacing:.18em;color:#3a4020;text-transform:uppercase;font-weight:500;background:rgba(253,251,243,.72);border:1px solid rgba(109,119,67,.3);border-radius:999px;-webkit-backdrop-filter: blur(6px); backdrop-filter:blur(6px);text-shadow:0 1px 0 rgba(255,255,255,.8);animation:hint 2.2s ease-in-out infinite;box-shadow:0 6px 16px rgba(60,66,32,.1)}
 @keyframes hint{50%{opacity:.65;transform:translateY(3px)}}
 
@@ -3534,12 +3534,11 @@ body.low-end .cover-section::before{animation:none}
 
 /* ---------- zoom final hacia la invitación ---------- */
 .envelope-opening.is-zooming .env-layer,
-.envelope-opening.is-zooming .env-flap{opacity:0;transition:opacity 1s ease}
+.envelope-opening.is-zooming .env-flap{opacity:0;transition:opacity 1.8s cubic-bezier(.6,.02,.4,1)}
 .envelope-opening.is-zooming .env-rig .envelope-css__photo{animation:envCardZoom 1.8s cubic-bezier(.6,.02,.4,1) forwards}
 @keyframes envCardZoom{
   0%{transform:translate(-50%,-50%) translateY(-32.1%) scale(1) rotate(-.9deg);opacity:1}
-  60%{opacity:1}
-  100%{transform:translate(-50%,-50%) translateY(-40%) scale(3.8) rotate(0deg);opacity:0}
+  100%{transform:translate(-50%,-50%) translateY(-32.1%) scale(1) rotate(-.9deg);opacity:0}
 }
 @media (prefers-reduced-motion:reduce){
   .envelope-css.is-opening .env-front,
@@ -3551,7 +3550,7 @@ body.low-end .cover-section::before{animation:none}
 }
 
 /* La sombra del sobre se va junto con él al hacer el zoom final */
-.envelope-opening.is-zooming .envelope-css::before{opacity:0;transition:opacity .8s ease}
+.envelope-opening.is-zooming .envelope-css::before{opacity:0;transition:opacity 1.8s cubic-bezier(.6,.02,.4,1)}
 
 /* ============================================================
    VESTIMENTA — la ilustración (dresscode.png) queda centrada en la
