@@ -3,7 +3,7 @@
 // Estrategia: precache de assets críticos + stale-while-revalidate
 // ============================================================
 
-const CACHE = 'myh-v25';
+const CACHE = 'myh-v26';
 // Solo lo que necesita la primera pantalla (sobre). El resto se guarda solo la primera vez que se usa.
 const PRECACHE = [
   './',
