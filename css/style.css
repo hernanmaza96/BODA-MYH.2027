@@ -4053,7 +4053,7 @@ body.low-end .calendar__day--heart::before{animation:none!important;opacity:0}
   pointer-events:none;
 }
 /* "M&H" entra dentro del círculo */
-.grand-day-section .timeline-item:nth-child(3) .timeline-dot{
+.grand-day-section .timeline-item:nth-child(4) .timeline-dot{
   font-size:clamp(.5rem,2.2vw,.6rem);
   letter-spacing:0;
   white-space:nowrap;
@@ -4147,13 +4147,13 @@ body.theme-light .gifts-card .gifts-urn{color:#9a7544}
    tamaño relativo al círculo que en PC. "M&H" no se toca.
    ============================================================ */
 @media(max-width:480px){
-  .grand-day-section .timeline-item:not(:nth-child(3)) .timeline-dot{font-size:.77rem}
+  .grand-day-section .timeline-item:not(:nth-child(4)) .timeline-dot{font-size:.77rem}
 }
 @media(max-width:380px){
-  .grand-day-section .timeline-item:not(:nth-child(3)) .timeline-dot{font-size:.65rem}
+  .grand-day-section .timeline-item:not(:nth-child(4)) .timeline-dot{font-size:.65rem}
 }
 @media(max-width:340px){
-  .grand-day-section .timeline-item:not(:nth-child(3)) .timeline-dot{font-size:.57rem}
+  .grand-day-section .timeline-item:not(:nth-child(4)) .timeline-dot{font-size:.57rem}
 }
 
 /* ============================================================
